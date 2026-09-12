@@ -23,7 +23,6 @@
 - A placeholder protected home page ("Signed in" + sign-out button).
 - Operator recovery scripts for lockout: set a new password, remove TOTP factors.
 - Design tokens, fonts, and the UI primitives these screens use ([`01-design-system.md`](../01-design-system.md) §5).
-- Unit tests and mobile-viewport E2E tests.
 
 ### Out of scope (future stories)
 - **Password reset by email**: specified in [US-002](US-002-password-reset.md) (paused). Until then, the password can only be
@@ -323,30 +322,27 @@ src/
     auth/route-guard.ts          # resolveRoute, homeFor (pure, table-driven)
     auth/password-policy.ts      # shared zod schema (scripts + app)
     auth/actions.ts              # signOut
-tests/
-  unit/route-guard.test.ts
-  unit/auth-state.test.ts
-  unit/password-policy.test.ts
-  e2e/auth.spec.ts
 ```
+
+No `tests/` directory — see the Deviations section for why.
 
 A browser Supabase client (`lib/supabase/client.ts`) is **not needed** for this story. Add it only when a later story requires it.
 
 ## 8. Implementation tasks (in order)
 
-Each task ends with `pnpm lint && pnpm typecheck && pnpm test` passing. Make one commit per task.
+Each task ends with `pnpm typecheck` passing (no lint step, no automated test suite — see Deviations). Make one commit per task.
 
 | # | Task | Done when |
 |---|------|-----------|
-| T1 | **Scaffold**: `create-next-app` (TS, App Router, Tailwind, ESLint, `src/`, pnpm), Prettier, Vitest, Playwright (mobile profile default), `.env.example`, `.gitignore`, `package.json` scripts (`dev`, `build`, `lint`, `typecheck`, `test`, `test:e2e`, `owner:*`, `db:reset`, `db:types`). Security headers + noindex. Root layout with viewport export. | `pnpm dev` serves a page. All checks green. |
+| T1 | **Scaffold**: `create-next-app` (TS, App Router, Tailwind, `src/`, pnpm), Prettier, `.env.example`, `.gitignore`, `package.json` scripts (`dev`, `build`, `typecheck`, `owner:*`, `db:reset`, `db:types`). Security headers + noindex. Root layout with viewport export. | `pnpm dev` serves a page. `pnpm typecheck` is green. |
 | T2 | **Supabase local**: `supabase init`, config from §6.1, migration (§6.2), `docs/setup.md` (local setup + hosted checklist). | `supabase start && supabase db reset` succeeds. Signups are rejected. |
-| T3 | **Password policy + owner scripts** (§3) with unit tests for the policy. | `pnpm owner:create --email …` creates the owner from prompted input. A second run refuses. Reset scripts work against local Supabase. The password never appears in output. |
-| T4 | **Auth core**: `lib/supabase/*`, `lib/auth/state.ts`, `lib/auth/route-guard.ts`, `src/proxy.ts`, and unit tests covering every cell of §4.2. | Unit tests green. An unauthenticated visit to `/` redirects to `/login`. |
+| T3 | **Password policy + owner scripts** (§3). | `pnpm owner:create --email …` creates the owner from prompted input. A second run refuses. Reset scripts work against local Supabase. The password never appears in output. |
+| T4 | **Auth core**: `lib/supabase/*`, `lib/auth/state.ts`, `lib/auth/route-guard.ts`, `src/proxy.ts`. | An unauthenticated visit to `/` redirects to `/login`. |
 | T5 | **Design system**: tokens and fonts in `globals.css`/`layout.tsx` (01-design-system §4), the primitives in `components/ui/*` with all README states, and the `(auth)` layout. Add a dev-only `/_dev/ui` page that renders every primitive in every state for visual comparison with the v2 file. It must return 404 in production builds. | Primitives match the v2 file side by side. Renders at 320px without horizontal scroll. Palette grep (01-design-system §4.2) is empty. |
 | T6 | **Login** (§5.1) + sign out (§5.5). | Owner can sign in and lands on `/setup-2fa`. |
 | T7 | **Enrollment** (§5.2). | Owner can enroll with Bitwarden or Google Authenticator and lands on `/`. |
 | T8 | **Verify** (§5.3) + protected placeholder (§5.4). | A second sign-in requires a code. The app is reachable only at aal2. |
-| T9 | **E2E tests** (§9.2) + README quickstart. | `pnpm test:e2e` green against local Supabase. |
+| T9 | **Manual verification** (§9.2) + README quickstart. | Every scenario in the manual test plan is checked by hand against local Supabase. |
 
 ## 9. Acceptance criteria and tests
 
@@ -380,22 +376,35 @@ Each task ends with `pnpm lint && pnpm typecheck && pnpm test` passing. Make one
     (with the 01-design-system §6 resolutions). The TOTP secret, code input, and CLI command are in DM Mono. Gold appears only on
     primary buttons, focus rings, the brand mark, and the "Open in authenticator app" link.
 
-### 9.2 E2E test plan (`tests/e2e/auth.spec.ts`, mobile profile)
+### 9.2 Manual verification plan (mobile viewport, against local Supabase)
 
-- **Setup:** `supabase db reset`, then create the owner through the admin API in a global setup that exposes the credentials to the tests.
-- **TOTP codes:** read the secret from the setup page's DOM and generate codes with `otplib` (`authenticator.generate(secret)`).
-  To avoid code reuse between steps, wait for the next 30s window or use the adjacent time step.
-- **Scenarios:** AC 3–11, 14 (checked via `boundingBox()` and `document.documentElement.scrollWidth`).
-- Tests run **serially** because they share the one owner.
+There is no automated test suite (see Deviations). Verify by hand, in a real mobile-width browser
+window (375px and 320px) against `supabase start`, before marking T9 done:
+
+- **Setup:** `supabase db reset`, then `pnpm owner:create` to create the owner.
+- **TOTP codes:** enroll for real in an authenticator app (Bitwarden, Google Authenticator, or
+  `otplib`'s `authenticator.generate(secret)` run ad hoc in a Node REPL) to produce codes.
+- **Scenarios:** walk through AC 1–15 by hand, one at a time, including the negative cases (wrong
+  password, wrong code, abandoned enrollment, direct navigation to protected routes at each auth state).
+- Check `document.documentElement.scrollWidth` and button bounding boxes in devtools at 320px/375px for AC 6/14.
 
 ## 10. Definition of done
 
-- All tasks T1–T9 are complete and all acceptance criteria pass.
-- `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, and `pnpm test:e2e` are green.
+- All tasks T1–T9 are complete and all acceptance criteria pass (verified manually per §9.2).
+- `pnpm typecheck` and `pnpm build` are green. There is no `pnpm lint`, `pnpm test`, or `pnpm test:e2e`.
 - No `SUPABASE_SECRET_KEY` usage under `src/` (`grep -r SUPABASE_SECRET_KEY src/` is empty).
 - `README.md` quickstart covers: install, `supabase start`, env setup, `pnpm owner:create`, `pnpm dev`, enrolling TOTP.
 - `docs/setup.md` covers the hosted Supabase checklist.
 - Any deviation from this spec is written back into this file under a **"Deviations"** heading with the reason.
+
+## 12. Deviations
+
+- **No ESLint, no automated test suite (Vitest/Playwright/otplib).** The operator decided not to carry
+  linting or automated testing in this project; all mentions of `pnpm lint`, `pnpm test`, `pnpm test:e2e`,
+  unit tests, and E2E tests have been removed from this story and from `00-overview.md`/`AGENTS.md`.
+  `pnpm typecheck` (`tsc --noEmit`) is the only automated check. Every acceptance criterion is instead
+  verified manually per §9.2. Tasks T3 and T4, which originally called for unit tests, and T9, which
+  originally built the E2E suite, are scoped down accordingly.
 
 ## 11. Open questions (defaults apply until answered)
 

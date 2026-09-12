@@ -31,10 +31,8 @@ The application is built and maintained by AI agents working from the specs in `
 | Local dev DB | Supabase CLI (`supabase start`, Docker) | All schema changes are SQL migrations in `supabase/migrations/`. |
 | Validation | `zod` | Validate every Server Action input. |
 | Package manager | `pnpm` | |
-| Unit tests | `vitest` | |
-| E2E tests | `@playwright/test` using a **mobile device profile** (e.g. `devices['iPhone 13']`) as the default project | `otplib` (or equivalent) generates TOTP codes in tests. |
 | Scripts | `tsx` | For owner-management CLI scripts in `scripts/`. |
-| Lint / format | ESLint (Next config) + Prettier | |
+| Format | Prettier | No ESLint, no automated test suite (unit or E2E) — removed deliberately; see US-001 Deviations. Type-checking (`tsc --noEmit`) is the only automated check. |
 
 > Agents: always check the installed version's official docs before using an API. Library APIs
 > change, and this spec describes intent rather than exact function signatures.
@@ -174,10 +172,9 @@ create policy "require aal2"
 │   └── lib/
 │       ├── supabase/             # server/browser/proxy clients, generated types
 │       └── auth/                 # pure guard logic, auth helpers
-└── tests/
-    ├── unit/
-    └── e2e/
 ```
+
+There is no `tests/` directory — no automated test suite is maintained (see US-001 Deviations).
 
 ## 9. User stories index
 

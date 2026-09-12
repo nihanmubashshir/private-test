@@ -25,9 +25,7 @@ Stack: **Next.js (App Router, TypeScript) + Tailwind CSS + Supabase**. There is 
 |---------|---------|
 | `pnpm dev` | Run the app on http://localhost:3000 |
 | `pnpm build` | Production build |
-| `pnpm lint` / `pnpm typecheck` | ESLint / `tsc --noEmit` |
-| `pnpm test` | Vitest unit tests |
-| `pnpm test:e2e` | Playwright E2E (mobile profile; needs local Supabase running) |
+| `pnpm typecheck` | `tsc --noEmit` |
 | `supabase start` / `supabase stop` | Local Supabase (Docker) |
 | `pnpm db:reset` | Re-apply all migrations to local DB |
 | `pnpm db:types` | Regenerate `src/lib/supabase/database.types.ts` |
@@ -59,8 +57,18 @@ Stack: **Next.js (App Router, TypeScript) + Tailwind CSS + Supabase**. There is 
 
 ## Definition of done (every task)
 
-- `pnpm lint && pnpm typecheck && pnpm test` pass. For UI or auth changes, `pnpm test:e2e` passes too.
-- New logic has unit tests. New user-facing flows have E2E coverage in the mobile profile.
+- `pnpm typecheck` passes. There is no lint step and no automated test suite (ESLint, Vitest, and
+  Playwright were deliberately removed; see the Deviations section of US-001).
 - Manually check the screen at 375px width.
 - The story file's acceptance criteria that the task covers are met.
 - Keep commits small and scoped to one task, with messages like `US-001 T4: auth state + route guard`.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
