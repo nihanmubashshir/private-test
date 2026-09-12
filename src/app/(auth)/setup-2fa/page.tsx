@@ -56,8 +56,9 @@ export default async function SetupTwoFactorPage() {
   }
 
   const { id: factorId, totp } = enrollData;
-  // auth-js returns the raw SVG for qr_code, not a ready-made data URI.
-  const qrSrc = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(totp.qr_code)}`;
+  // auth-js already prepends "data:image/svg+xml;utf-8," to qr_code
+  // (see GoTrueClient.js) — it's ready to use as an <img src> as-is.
+  const qrSrc = totp.qr_code;
 
   return (
     <div className="flex flex-col gap-5">
