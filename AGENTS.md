@@ -7,6 +7,15 @@ Instructions for AI agents working in this repository. Read this file first, the
 A private, **single-user**, **mobile-first** personal dashboard.
 Stack: **Next.js (App Router, TypeScript) + Tailwind CSS + Supabase**. There is no other backend.
 
+## Hosting
+
+Confirmed working on **Vercel** (import the GitHub repo, add `NEXT_PUBLIC_SUPABASE_URL`,
+`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_APP_NAME` as env vars — never
+`SUPABASE_SECRET_KEY`, which is for local operator scripts only). `src/proxy.ts` (Next.js 16's
+renamed `middleware.ts`) deploys correctly with no special config. After deploying, set the
+hosted Supabase project's Authentication → URL Configuration → Site URL to the live deployment
+URL, per the `docs/setup.md` hosted checklist.
+
 ## Specs are the source of truth
 
 - `docs/spec/00-overview.md`: product principles, architecture, security model, and conventions. **Read it fully.**

@@ -402,7 +402,7 @@ window (375px and 320px) against `supabase start`, before marking T9 done:
 | # | Question | Default used |
 |---|----------|--------------|
 | Q1 | Session lifetime / idle timeout? | Supabase defaults. |
-| Q2 | Hosting target (Vercel, self-hosted…)? | Unspecified. Nothing in this story may depend on a specific host. |
+| Q2 | Hosting target (Vercel, self-hosted…)? | Confirmed working on Vercel (see AGENTS.md § Hosting). Nothing in this story may depend on a specific host. |
 | Q3 | Recovery codes in the UI? | No. A lost authenticator is recovered with the operator script only. |
 
 ## 12. Deviations
