@@ -1,1 +1,96 @@
 @import "tailwindcss";
+
+@theme {
+  /* ---- neutral ramp (cool grey, near-black base) ---- */
+  --color-neutral-50: #f6f6f7;
+  --color-neutral-100: #e9eaec;
+  --color-neutral-200: #d2d4d8;
+  --color-neutral-300: #b0b3ba;
+  --color-neutral-400: #868a93;
+  --color-neutral-500: #63676f;
+  --color-neutral-600: #3c3f45;
+  --color-neutral-700: #2a2c31;
+  --color-neutral-800: #1c1d21;
+  --color-neutral-900: #101114;
+  --color-neutral-950: #08090a;
+
+  /* ---- accent (gold) ---- */
+  --color-accent-200: #ecd9a8;
+  --color-accent-300: #dcbc72;
+  --color-accent-500: #c9a349; /* primary action, focus ring */
+  --color-accent-600: #a8862f; /* hover */
+  --color-accent-700: #7d621f; /* active / border */
+  --color-accent-950: #211a0b; /* tint background */
+  --color-on-accent: #17120a; /* text on accent fills */
+
+  /* ---- semantic ---- */
+  --color-success-400: #3ecf8e;
+  --color-success-800: #1e6b46;
+  --color-success-950: #0f2419;
+  --color-warning-400: #e0913a;
+  --color-warning-800: #6b4413;
+  --color-warning-950: #2a1a0a;
+  --color-danger-400: #f2555a;
+  --color-danger-800: #7a2328;
+  --color-danger-950: #2a1113;
+
+  /* ---- type ---- */
+  --text-display: 2.5rem;
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.025em;
+  --text-h1: 1.75rem;
+  --text-h1--line-height: 1.15;
+  --text-h1--letter-spacing: -0.02em;
+  --text-h2: 1.25rem;
+  --text-h2--line-height: 1.3;
+  --text-base: 1rem;
+  --text-base--line-height: 1.6;
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.55;
+  --text-otp: 2rem;
+  --text-otp--line-height: 1.2;
+
+  /* added in implementation, values taken from the v2 design file (01-design-system.md §4.1b) */
+  --text-body-sm: 0.875rem; /* 14px: auth paragraphs, alert body, details label */
+  --text-body-sm--line-height: 1.6;
+  --text-control: 0.9375rem; /* 15px: md buttons, top-bar app name */
+  --text-control--line-height: 1.2;
+  --color-surface-sunken: #0c0d0f; /* disabled input bg, zebra rows */
+  --color-surface-hover: #16171b; /* table row hover, toast bg */
+  --color-danger-900: #3a171a; /* danger button hover bg */
+  --color-skeleton-shine: #1f2126;
+
+  /* ---- radius ---- */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  /* ---- motion ---- */
+  --ease-out-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* ---- control sizing ---- */
+  --spacing-tap: 2.75rem; /* 44px minimum target */
+}
+
+/* next/font hashes the family names, so map the tokens to its CSS variables. */
+@theme inline {
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-dm-mono), ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-neutral-950 text-neutral-50 font-sans antialiased;
+  }
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent-500;
+  }
+  input,
+  select,
+  textarea {
+    font-size: 1rem; /* stop iOS zoom on focus */
+  }
+}

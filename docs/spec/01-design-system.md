@@ -134,7 +134,7 @@ tokens, and feel. Do not wait for, or ask for, designer frames.
 ### 7.2 When something new is needed
 You may create a new component, variant, or token when the existing ones truly can't express the screen. Conditions:
 - Derive it from existing tokens and component patterns (same radii, borders, state treatments, focus ring). No new hues.
-- Put it in `components/ui/` with all its states, and add it to the dev-only `/_dev/ui` page.
+- Put it in `components/ui/` with all its states, and add it to the dev-only `/dev/ui` page.
 - Record it in §8 below (name, purpose, key values), so the system stays documented as it grows.
 
 ### 7.3 Example

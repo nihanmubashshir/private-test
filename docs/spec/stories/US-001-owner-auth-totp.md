@@ -116,7 +116,7 @@ Derived on every request from the Supabase session (verified claims) plus
 - `src/proxy.ts`:
   1. Builds the Supabase server client with `@supabase/ssr` and refreshes the session cookies (the standard Supabase SSR pattern).
   2. Derives state, calls `resolveRoute`, and redirects if needed. **Refreshed cookies must be copied onto the redirect response.**
-  3. Matcher excludes `_next/static`, `_next/image`, `favicon.ico`, and static image/font files.
+  3. Matcher excludes `_next/static`, `_next/image`, `favicon.ico`, static image/font files, and `dev/` (the dev-only UI gallery — see Deviations).
 - Server Actions are not reliably covered by the proxy. **Each action re-checks the required state itself**
   (sign in: `ANON`; enroll: `NEEDS_ENROLL`; verify: `NEEDS_VERIFY`; sign out: any signed-in state).
 - After any successful auth step, the action re-derives state and redirects to `homeFor(newState)`.
@@ -338,7 +338,7 @@ Each task ends with `pnpm typecheck` passing (no lint step, no automated test su
 | T2 | **Supabase local**: `supabase init`, config from §6.1, migration (§6.2), `docs/setup.md` (local setup + hosted checklist). | `supabase start && supabase db reset` succeeds. Signups are rejected. |
 | T3 | **Password policy + owner scripts** (§3). | `pnpm owner:create --email …` creates the owner from prompted input. A second run refuses. Reset scripts work against local Supabase. The password never appears in output. |
 | T4 | **Auth core**: `lib/supabase/*`, `lib/auth/state.ts`, `lib/auth/route-guard.ts`, `src/proxy.ts`. | An unauthenticated visit to `/` redirects to `/login`. |
-| T5 | **Design system**: tokens and fonts in `globals.css`/`layout.tsx` (01-design-system §4), the primitives in `components/ui/*` with all README states, and the `(auth)` layout. Add a dev-only `/_dev/ui` page that renders every primitive in every state for visual comparison with the v2 file. It must return 404 in production builds. | Primitives match the v2 file side by side. Renders at 320px without horizontal scroll. Palette grep (01-design-system §4.2) is empty. |
+| T5 | **Design system**: tokens and fonts in `globals.css`/`layout.tsx` (01-design-system §4), the primitives in `components/ui/*` with all README states, and the `(auth)` layout. Add a dev-only `/dev/ui` page that renders every primitive in every state for visual comparison with the v2 file. It must return 404 in production builds. | Primitives match the v2 file side by side. Renders at 320px without horizontal scroll. Palette grep (01-design-system §4.2) is empty. |
 | T6 | **Login** (§5.1) + sign out (§5.5). | Owner can sign in and lands on `/setup-2fa`. |
 | T7 | **Enrollment** (§5.2). | Owner can enroll with Bitwarden or Google Authenticator and lands on `/`. |
 | T8 | **Verify** (§5.3) + protected placeholder (§5.4). | A second sign-in requires a code. The app is reachable only at aal2. |
@@ -423,3 +423,8 @@ window (375px and 320px) against `supabase start`, before marking T9 done:
   unaffected — they remain the source of truth and apply identically to local Docker once available;
   see `docs/setup.md` for the hosted checklist this makes necessary (settings that `config.toml` only
   applies to a local stack).
+- **Dev UI gallery lives at `/dev/ui`, not `/_dev/ui`.** A folder named `_dev` is a Next.js App Router
+  "private folder" — segments starting with `_` are excluded from routing entirely, at the framework
+  level, so `/_dev/ui` cannot exist as an actual page regardless of the `NODE_ENV` check. The page and
+  the proxy matcher exclusion both use `dev/ui` / `dev/` instead. It still 404s in production via the
+  same `process.env.NODE_ENV === "production"` check.
