@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
         source: "/:path*",
         headers: securityHeaders,
       },
+      {
+        // The TOTP secret and QR are rendered only in this response; never cache it.
+        source: "/setup-2fa",
+        headers: [{ key: "Cache-Control", value: "no-store" }],
+      },
     ];
   },
 };

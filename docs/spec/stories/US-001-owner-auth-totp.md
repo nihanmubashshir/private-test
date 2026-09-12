@@ -428,3 +428,19 @@ window (375px and 320px) against `supabase start`, before marking T9 done:
   level, so `/_dev/ui` cannot exist as an actual page regardless of the `NODE_ENV` check. The page and
   the proxy matcher exclusion both use `dev/ui` / `dev/` instead. It still 404s in production via the
   same `process.env.NODE_ENV === "production"` check.
+- **A failed `/setup-2fa` verify attempt shows a new secret/QR only when JavaScript is unavailable.**
+  Supabase's `mfa.enroll()` returns the TOTP secret exactly once — it cannot be re-fetched from
+  `listFactors()` — so redisplaying the *same* secret after a failed code requires the page not to
+  re-run its enroll step. §5.2 also requires the secret never be logged, cached, or stored anywhere
+  but the rendered HTML, which rules out caching it in a cookie to survive a re-render. With
+  JavaScript enabled (the normal case), this isn't an issue: `useActionState`'s `formAction` calls
+  `verifyEnrollment` via `fetch`, and because that action never calls `revalidatePath`/`revalidateTag`,
+  Next.js's action handler sets `skipPageRendering = true` (`node_modules/next/dist/server/app-render/
+  action-handler.js`) and never re-executes the page's Server Component — only the form's local error
+  state updates, so the same secret and QR stay on screen, satisfying AC7. Only the no-JS fallback
+  (a plain HTML form POST, which must return a fully re-rendered page) re-runs the page component,
+  which unenrolls the just-created factor and enrolls a new one, showing a different secret after a
+  wrong code. Given US-001 §7's "works without client JS **where practical**," and that fixing this
+  would mean either violating the "HTML-only" secret-handling rule or adding a stateful mechanism this
+  single-user app doesn't otherwise need, this narrow no-JS-only edge case is accepted as a known
+  limitation rather than fixed.
