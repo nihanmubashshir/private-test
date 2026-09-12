@@ -397,6 +397,14 @@ window (375px and 320px) against `supabase start`, before marking T9 done:
 - `docs/setup.md` covers the hosted Supabase checklist.
 - Any deviation from this spec is written back into this file under a **"Deviations"** heading with the reason.
 
+## 11. Open questions (defaults apply until answered)
+
+| # | Question | Default used |
+|---|----------|--------------|
+| Q1 | Session lifetime / idle timeout? | Supabase defaults. |
+| Q2 | Hosting target (Vercel, self-hosted…)? | Unspecified. Nothing in this story may depend on a specific host. |
+| Q3 | Recovery codes in the UI? | No. A lost authenticator is recovered with the operator script only. |
+
 ## 12. Deviations
 
 - **No ESLint, no automated test suite (Vitest/Playwright/otplib).** The operator decided not to carry
@@ -405,11 +413,13 @@ window (375px and 320px) against `supabase start`, before marking T9 done:
   `pnpm typecheck` (`tsc --noEmit`) is the only automated check. Every acceptance criterion is instead
   verified manually per §9.2. Tasks T3 and T4, which originally called for unit tests, and T9, which
   originally built the E2E suite, are scoped down accordingly.
-
-## 11. Open questions (defaults apply until answered)
-
-| # | Question | Default used |
-|---|----------|--------------|
-| Q1 | Session lifetime / idle timeout? | Supabase defaults. |
-| Q2 | Hosting target (Vercel, self-hosted…)? | Unspecified. Nothing in this story may depend on a specific host. |
-| Q3 | Recovery codes in the UI? | No. A lost authenticator is recovered with the operator script only. |
+- **Development done against a hosted Supabase project, not local Docker.** The build environment's
+  user account lacks Docker socket permissions (and granting them is a persistent, root-equivalent
+  system change out of scope to make unilaterally), so `supabase start`/`supabase db reset` were not
+  used. Instead the operator created a hosted Supabase project and supplied its credentials in
+  `.env.local`. The environment also has no outbound IPv6 route, and Supabase's direct Postgres host
+  is IPv6-only, so the migration in §6.2 was applied by the operator via the hosted project's SQL
+  Editor rather than `supabase db push`. `supabase/config.toml` and `supabase/migrations/` are
+  unaffected — they remain the source of truth and apply identically to local Docker once available;
+  see `docs/setup.md` for the hosted checklist this makes necessary (settings that `config.toml` only
+  applies to a local stack).
