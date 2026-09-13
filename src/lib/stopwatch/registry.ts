@@ -1,4 +1,4 @@
-import { Dumbbell, Footprints, type LucideIcon } from "lucide-react";
+import { BookOpen, Dumbbell, Footprints, type LucideIcon } from "lucide-react";
 import type { Database } from "@/lib/supabase/database.types";
 
 type PublicTables = Database["public"]["Tables"];
@@ -78,6 +78,20 @@ export const stopwatchKinds = {
     newHref: "/gym/plans",
     detailHref: (id: string) => `/gym/sessions/${id}`,
     editHref: (id: string) => `/gym/sessions/${id}`,
+    hasCustomHomeCard: true,
+  },
+  reading: {
+    table: "reading_sessions",
+    label: "reading session",
+    activeLabel: "Reading",
+    href: "/reading",
+    name: "Reading",
+    icon: BookOpen,
+    newHref: "/reading",
+    // A session's own detail isn't independently interesting — this shim resolves to the book it
+    // belongs to (US-016).
+    detailHref: (id: string) => `/reading/sessions/${id}`,
+    editHref: (id: string) => `/reading/sessions/${id}`,
     hasCustomHomeCard: true,
   },
 } satisfies Record<string, StopwatchKindConfig>;

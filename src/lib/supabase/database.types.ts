@@ -63,6 +63,39 @@ export type Database = {
         }
         Relationships: []
       }
+      books: {
+        Row: {
+          created_at: string
+          current_page: number
+          id: string
+          owner_id: string
+          status: Database["public"]["Enums"]["book_status"]
+          title: string
+          total_pages: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_page?: number
+          id?: string
+          owner_id?: string
+          status?: Database["public"]["Enums"]["book_status"]
+          title: string
+          total_pages: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_page?: number
+          id?: string
+          owner_id?: string
+          status?: Database["public"]["Enums"]["book_status"]
+          title?: string
+          total_pages?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       feature_requests: {
         Row: {
           created_at: string
@@ -95,6 +128,7 @@ export type Database = {
       }
       goals: {
         Row: {
+          book_id: string | null
           completed_at: string | null
           created_at: string
           id: string
@@ -112,6 +146,7 @@ export type Database = {
           workout_id: string | null
         }
         Insert: {
+          book_id?: string | null
           completed_at?: string | null
           created_at?: string
           id?: string
@@ -129,6 +164,7 @@ export type Database = {
           workout_id?: string | null
         }
         Update: {
+          book_id?: string | null
           completed_at?: string | null
           created_at?: string
           id?: string
@@ -146,6 +182,13 @@ export type Database = {
           workout_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "goals_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "goals_workout_id_fkey"
             columns: ["workout_id"]
@@ -372,6 +415,56 @@ export type Database = {
         }
         Relationships: []
       }
+      reading_sessions: {
+        Row: {
+          book_id: string
+          created_at: string
+          duration_seconds: number | null
+          end_page: number | null
+          ended_at: string | null
+          id: string
+          owner_id: string
+          start_page: number
+          started_at: string
+          time_zone: string
+          updated_at: string
+        }
+        Insert: {
+          book_id: string
+          created_at?: string
+          duration_seconds?: number | null
+          end_page?: number | null
+          ended_at?: string | null
+          id?: string
+          owner_id?: string
+          start_page: number
+          started_at: string
+          time_zone: string
+          updated_at?: string
+        }
+        Update: {
+          book_id?: string
+          created_at?: string
+          duration_seconds?: number | null
+          end_page?: number | null
+          ended_at?: string | null
+          id?: string
+          owner_id?: string
+          start_page?: number
+          started_at?: string
+          time_zone?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reading_sessions_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       runs: {
         Row: {
           created_at: string
@@ -553,9 +646,10 @@ export type Database = {
       seed_gym_defaults: { Args: never; Returns: undefined }
     }
     Enums: {
+      book_status: "reading" | "finished"
       goal_kind: "target" | "streak"
       goal_status: "active" | "paused" | "completed"
-      goal_subject: "weight" | "running" | "gym" | "workout" | "prayer"
+      goal_subject: "weight" | "running" | "gym" | "workout" | "prayer" | "book"
       prayer_status: "mosque" | "home" | "qadha"
       tracked_field: "reps" | "weight" | "duration" | "distance"
       waqt: "fajr" | "dhuhr" | "asr" | "maghrib" | "isha"
@@ -689,9 +783,10 @@ export const Constants = {
   },
   public: {
     Enums: {
+      book_status: ["reading", "finished"],
       goal_kind: ["target", "streak"],
       goal_status: ["active", "paused", "completed"],
-      goal_subject: ["weight", "running", "gym", "workout", "prayer"],
+      goal_subject: ["weight", "running", "gym", "workout", "prayer", "book"],
       prayer_status: ["mosque", "home", "qadha"],
       tracked_field: ["reps", "weight", "duration", "distance"],
       waqt: ["fajr", "dhuhr", "asr", "maghrib", "isha"],
