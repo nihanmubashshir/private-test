@@ -25,6 +25,27 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.11.0",
+    date: "2026-09-13",
+    title: "Goals",
+    changes: [
+      {
+        kind: "added",
+        text: "Goals: reach a number, like a body weight or a heaviest set, or keep a streak, like the gym five days a week.",
+      },
+      { kind: "added", text: "Progress comes from what you already log — there's no separate step to update a goal." },
+      { kind: "added", text: "Up to three goals on Home, nearest to done first, and every goal from Settings." },
+      { kind: "added", text: "A goal marks itself complete the moment you reach it." },
+      {
+        kind: "added",
+        text: "Add exercises to a session while it's running, so a session started on a rest day has something to log.",
+      },
+      { kind: "improved", text: "Starting a session on a rest day is easier to find." },
+      { kind: "fixed", text: "A second weight or exercise can now be saved without leaving the screen first." },
+      { kind: "fixed", text: "Saving a time zone now closes the sheet and confirms it." },
+    ],
+  },
+  {
     version: "0.10.0",
     date: "2026-09-13",
     title: "Gym sessions",

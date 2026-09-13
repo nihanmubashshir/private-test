@@ -16,13 +16,13 @@ drafts are renumbered into this repo's sequence:
 
 | New | Draft | Title | Status | Depends on |
 |-----|-------|-------|--------|------------|
-| [US-006](stories/US-006-changelog.md) | US-004 | What's new (changelog) + Settings screen | **Ready** | — |
-| [US-007](stories/US-007-app-shell.md) | US-002 | App shell rework — Home as the only root | Planned | US-006 |
-| [US-008](stories/US-008-app-time-zone.md) | — | App-wide time zone setting | Planned | US-006 |
-| [US-009](stories/US-009-weight-tracking.md) | US-003 | Weight tracking with trajectory | Planned | US-007, US-008 |
-| [US-010](stories/US-010-gym-plans.md) | US-005 | Workout library and gym plans | Planned | US-007 |
-| [US-011](stories/US-011-gym-session.md) | US-006 | Gym session — timed, per-exercise logging | Planned | US-010 |
-| [US-012](stories/US-012-goals.md) | US-007 | Goals — target and streak | Planned | US-009, US-011 |
+| [US-006](stories/US-006-changelog.md) | US-004 | What's new (changelog) + Settings screen | Done | — |
+| [US-007](stories/US-007-app-shell.md) | US-002 | App shell rework — Home as the only root | Done | US-006 |
+| [US-008](stories/US-008-app-time-zone.md) | — | App-wide time zone setting | Done | US-006 |
+| [US-009](stories/US-009-weight-tracking.md) | US-003 | Weight tracking with trajectory | Done | US-007, US-008 |
+| [US-010](stories/US-010-gym-plans.md) | US-005 | Workout library and gym plans | Done | US-007 |
+| [US-011](stories/US-011-gym-session.md) | US-006 | Gym session — timed, per-exercise logging | Done | US-010 |
+| [US-012](stories/US-012-goals.md) | US-007 | Goals — target and streak | Done | US-009, US-011 |
 | [US-013](stories/US-013-feature-requests.md) | US-008 | Feature request log | Planned | US-007 |
 | [US-014](stories/US-014-radial-menu.md) | US-009 | Radial quick-action menu | Planned | US-013 |
 

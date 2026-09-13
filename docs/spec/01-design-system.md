@@ -190,6 +190,9 @@ Components, variants, and tokens added by agents beyond the handoff. Add a row f
 | US-011 | `components/gym/{session-screen,set-inputs,rest-timer,session-summary}.tsx` | The active session and its record | Set inputs generated from `tracks` via one spec table; steppers plus tap-to-keypad, never the OS keyboard; rest counts up; no back chevron on the session — Minimise instead, so leaving never reads as cancelling |
 | US-011 | `Keypad` takes `KeypadRules` | Reps, load, seconds and metres reuse one keypad | Integer-only rules render a dead spacer where the decimal key sits, so the 3×4 grid keeps its shape and `0` never moves |
 
+| US-012 | `components/goals/goal-progress.tsx` | A goal's bar (target) or day strip (streak) | **Never gold** (§10.2): `neutral-300` fill on `neutral-800`, `success-400` once reached. The bar animates `transform: scaleX`, not `width`, which would force layout per frame. Today, not yet qualified, is ring-outlined — the day isn't over |
+| US-012 | `components/gym/workout-picker.tsx` | Search-and-tap exercise list shared by the plan editor and the live session | Replaced the plan editor's private picker when the session needed the same list |
+
 ## 9. shadcn/ui + Radix (added in US-005)
 
 shadcn/ui components are **copied source** in `src/components/ui/`, built on Radix primitives. They are a behavior and accessibility
