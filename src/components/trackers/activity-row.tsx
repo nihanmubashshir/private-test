@@ -30,7 +30,10 @@ export function ActivityRow({ session, deviceTimeZone, divider = false }: Activi
   const spansNextDay = endsOn > startsOn;
 
   return (
-    <Link href={config.detailHref(session.id)} className="hover:bg-surface-hover flex min-h-16 items-center gap-3">
+    <Link
+      href={config.detailHref(session.id)}
+      className="hover:bg-surface-hover active:bg-surface-hover flex min-h-16 items-center gap-3"
+    >
       <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-neutral-800">
         <Icon className="size-5 text-neutral-50" strokeWidth={1.75} aria-hidden />
       </span>

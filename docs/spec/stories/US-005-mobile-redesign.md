@@ -431,6 +431,13 @@ Test on **a real iPhone with the app installed to the Home Screen** and **Androi
 
 ## 14. Deviations
 
+- **T12 — `ViewTransition` skipped, per §7.3's own fallback instruction.** `view-transitions.md`
+  says the feature needs React canary; this project pins a stable `react@19.2.8`
+  (`node -e "console.log('ViewTransition' in require('react'))"` → `false`), so it isn't
+  importable at all here, not just "not yet stable enough to commit to." Skipped entirely, as
+  §7.3 directs for the experimental case. Revisit if/when the project moves to a React version
+  that ships it.
+
 - **T10 — the Account screen (§6.7) is descoped entirely, on direct product direction.** The full
   card-group redesign (Profile/Security/This device/App groups, the install-app Drawer) is not
   built. What stays: the `/account` tab and T4's stub (`LargeTitle h1 "Account"` + a full-width

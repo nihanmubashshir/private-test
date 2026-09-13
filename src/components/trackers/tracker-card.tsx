@@ -68,7 +68,7 @@ export function TrackerCard({ kind, active, lastCompleted, primaryAction = true 
 
   return (
     <div className="flex flex-col gap-4 rounded-lg border border-neutral-800 bg-neutral-900 p-4">
-      <Link href={config.href} className="flex min-h-14 items-center gap-3">
+      <Link href={config.href} className="hover:bg-surface-hover active:bg-surface-hover -mx-2 flex min-h-14 items-center gap-3 rounded-md px-2">
         <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-neutral-800">
           <Icon className="size-5 text-neutral-50" strokeWidth={1.75} aria-hidden />
         </span>
