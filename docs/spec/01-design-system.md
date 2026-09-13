@@ -181,6 +181,10 @@ Components, variants, and tokens added by agents beyond the handoff. Add a row f
 | US-007 | `--spacing-app-bar` (3.25rem), `--spacing-compact-bar` (2.75rem) | Names the shell bar heights, so a sticky offset and the bar it sits under cannot drift | Replaced hardcoded `calc(3.25rem + …)` / `calc(2.75rem + …)` in `app-bar`, `large-title`, `day-group-header` and the stopwatch skeleton |
 | US-007 | ~~`components/shell/tab-bar.tsx`~~ | Removed with the tab bar; Home is the only root | — |
 
+| US-009 | `components/ui/keypad.tsx` | Decimal entry where the OS keyboard must never open | 3×4 grid, 56px keys (fits 320px), mono 24px, `neutral-900` on an `800` hairline, `active:bg-surface-hover` + `scale-[0.97]`, `navigator.vibrate(8)` per key. Rules live in `lib/weight/keypad.ts` as pure string transitions |
+| US-009 | `components/charts/{sparkline,weight-chart}.tsx` | Hand-rolled SVG charts — no charting dependency (roadmap D3) | Gold line, y axis **never including zero**, 7-day day-weighted moving average behind the raw line, a >14-day gap breaks the line, drag-to-scrub with an `aria-live` caption. Sparkline keeps a uniform aspect ratio (a stretched one turns its end dot into an ellipse); the full chart stretches and therefore puts its axis labels in positioned HTML, since a non-uniform scale squashes SVG `<text>` |
+| US-009 | `components/weight/*` | Home card, log/edit sheet, detail screen, reading row | Hero in mono `2.5rem`; direction is never coloured — a gain is not an error state; delete is optimistic with a 5s Undo toast rather than a confirm sheet |
+
 ## 9. shadcn/ui + Radix (added in US-005)
 
 shadcn/ui components are **copied source** in `src/components/ui/`, built on Radix primitives. They are a behavior and accessibility
