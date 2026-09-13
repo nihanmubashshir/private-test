@@ -3,7 +3,6 @@ import { requireFull } from "@/lib/auth/require-full";
 import { listWeighIns } from "@/lib/weight/queries";
 import { DEFAULT_RANGE, isWeightRange, rangeSince } from "@/lib/weight/range";
 import { AppBar } from "@/components/shell/app-bar";
-import { PullToRefresh } from "@/components/shell/pull-to-refresh";
 import { EmptyState } from "@/components/trackers/empty-state";
 import { WeightDetail } from "@/components/weight/weight-detail";
 
@@ -26,23 +25,21 @@ export default async function WeightPage({
   ]);
 
   return (
-    <PullToRefresh>
-      <div className="min-h-dvh">
-        <AppBar title="Weight" backHref="/" />
-        <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
-          {all.length === 0 ? (
-            <EmptyState
-              icon={Scale}
-              title="No readings yet"
-              hint="Log your weight from the card on Home."
-              actionLabel="Go to Home"
-              actionHref="/"
-            />
-          ) : (
-            <WeightDetail range={range} inRange={inRange} all={all} />
-          )}
-        </div>
+    <div className="min-h-dvh">
+      <AppBar title="Weight" backHref="/" />
+      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
+        {all.length === 0 ? (
+          <EmptyState
+            icon={Scale}
+            title="No readings yet"
+            hint="Log your weight from the card on Home."
+            actionLabel="Go to Home"
+            actionHref="/"
+          />
+        ) : (
+          <WeightDetail range={range} inRange={inRange} all={all} />
+        )}
       </div>
-    </PullToRefresh>
+    </div>
   );
 }

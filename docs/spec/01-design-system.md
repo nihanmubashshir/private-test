@@ -162,7 +162,7 @@ Components, variants, and tokens added by agents beyond the handoff. Add a row f
 | US-005 | `components/shell/{tab-bar,large-title,app-bar,bottom-cta}.tsx` | The app shell chrome: bottom tab bar, tab-root collapsing header, stack-screen top bar, sticky bottom action container | §5.2–§5.4, §7.6 |
 | US-005 | `components/shell/navigation-progress.tsx` | A 2px top progress bar any component can report pending work to via `useNavigationProgress()`, so the PWA has loading feedback a browser's own chrome would otherwise give for free | Shows after a 150ms delay, `neutral-300` (never gold), §7.3 |
 | US-005 | `components/shell/offline-banner.tsx` | Connectivity banner — the whole offline story for this app (§14 Deviations) | `online`/`offline` events; warning while offline, a 2s "Back online" success state, then `router.refresh()` |
-| US-005 | `components/shell/pull-to-refresh.tsx` | Pull-to-refresh on Home/Activity/Running, since iOS standalone PWAs have no browser one | Touch-tracked, 64px threshold, `router.refresh()` inside a transition reported to `NavigationProgress` |
+| US-005 | ~~`components/shell/pull-to-refresh.tsx`~~ | Removed in US-010 on owner instruction: `NavigationProgress` is refresh feedback enough, and a hand-rolled swipe gesture competes with scroll for no real gain | — |
 | US-005 | `components/shell/today-eyebrow.tsx` | Home's "today" eyebrow, rendered after mount in the device's zone | `formatFullDate` |
 | US-005 | `components/shell/toast-on-param.tsx` | Fires a success toast when a Server Action redirect carries a `?saved=1`/`?updated=1`/`?deleted=1` flag, then strips it | §5.6 |
 | US-005 | `components/trackers/{tracker-card,activity-row,activity-list,day-group-header,empty-state,recent-activity}.tsx` | Tracker-agnostic screen pieces, built from the registry rather than any one tracker: Home's entry card, a completed-session row (shared by Home and Activity), the grouped infinite-loading list, a sticky day header, and a centered empty state | §6.1, §6.2, §10.2 |
@@ -259,6 +259,6 @@ system. Full rationale and screen-by-screen application: [US-005](stories/US-005
 ### 10.4 Touch and standalone polish
 - Respect all safe-area insets: status bar (top bars), home indicator (tab bar, sticky CTAs, toasts, sheets).
 - Keyboard: viewport `interactiveWidget: "resizes-content"`. Sticky CTAs sit above the keyboard. Auth/form content sits in the top third.
-- `overscroll-behavior-y: none` on body, pull to refresh on tab roots, `touch-action: manipulation`, no tap highlight, and `user-select: none` on
-  chrome/buttons/rows only.
+- `overscroll-behavior-y: none` on body, `touch-action: manipulation`, no tap highlight, and `user-select: none` on
+  chrome/buttons/rows only. **No pull-to-refresh** — removed in US-010; the top progress bar is the refresh affordance.
 - Keep screens awake (Wake Lock) only where the user watches a running timer.

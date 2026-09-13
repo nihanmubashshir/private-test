@@ -168,6 +168,9 @@
   }
   body {
     @apply bg-neutral-950 text-neutral-50 font-sans antialiased;
+    /* No scroll chaining past the page. US-005's pull-to-refresh, which this used to
+       reserve the gesture for, was removed in US-010 — the top progress bar is refresh
+       feedback enough, and a hand-rolled swipe gesture is one more thing to fight. */
     overscroll-behavior-y: none;
   }
   *:focus-visible {

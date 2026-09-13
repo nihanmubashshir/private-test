@@ -4,7 +4,6 @@ import { stopwatchKinds, type StopwatchKind } from "@/lib/stopwatch/registry";
 import { LargeTitle } from "@/components/shell/large-title";
 import { TodayEyebrow } from "@/components/shell/today-eyebrow";
 import { SettingsButton } from "@/components/shell/settings-button";
-import { PullToRefresh } from "@/components/shell/pull-to-refresh";
 import { ToastOnParam } from "@/components/shell/toast-on-param";
 import { TrackerCard } from "@/components/trackers/tracker-card";
 import { RecentActivity } from "@/components/trackers/recent-activity";
@@ -29,33 +28,31 @@ export default async function HomePage() {
   ]);
 
   return (
-    <PullToRefresh>
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
-        <ToastOnParam param="missing" message="That page doesn't exist." tone="warning" />
-        <LargeTitle title="Home" eyebrow={<TodayEyebrow />} rightSlot={<SettingsButton />} />
+    <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
+      <ToastOnParam param="missing" message="That page doesn't exist." tone="warning" />
+      <LargeTitle title="Home" eyebrow={<TodayEyebrow />} rightSlot={<SettingsButton />} />
 
-        <div className="flex flex-col gap-4">
-          {kinds.map((kind, index) => (
-            <TrackerCard
-              key={kind}
-              kind={kind}
-              active={actives.find((active) => active.kind === kind) ?? null}
-              lastCompleted={lastByKind[index][0] ?? null}
-              primaryAction={index === 0}
-            />
-          ))}
+      <div className="flex flex-col gap-4">
+        {kinds.map((kind, index) => (
+          <TrackerCard
+            key={kind}
+            kind={kind}
+            active={actives.find((active) => active.kind === kind) ?? null}
+            lastCompleted={lastByKind[index][0] ?? null}
+            primaryAction={index === 0}
+          />
+        ))}
 
-          <WeightCard latest={weighIns[0] ?? null} recent={weighIns} />
-        </div>
-
-        {recent.length > 0 && (
-          <div className="flex flex-col gap-3">
-            {/* No "See all": /activity is gone (US-007 §4) and each row links to its own tracker. */}
-            <h2 className="text-h2 text-neutral-50">Recent activity</h2>
-            <RecentActivity sessions={recent} />
-          </div>
-        )}
+        <WeightCard latest={weighIns[0] ?? null} recent={weighIns} />
       </div>
-    </PullToRefresh>
+
+      {recent.length > 0 && (
+        <div className="flex flex-col gap-3">
+          {/* No "See all": /activity is gone (US-007 §4) and each row links to its own tracker. */}
+          <h2 className="text-h2 text-neutral-50">Recent activity</h2>
+          <RecentActivity sessions={recent} />
+        </div>
+      )}
+    </div>
   );
 }
