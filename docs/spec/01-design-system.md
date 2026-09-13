@@ -176,6 +176,11 @@ Components, variants, and tokens added by agents beyond the handoff. Add a row f
 | US-007 | `motion` (Framer Motion) + `src/lib/motion.ts` | Gesture-driven and orchestrated animation | `EASE_OUT_SOFT` mirrors `--ease-out-soft`; `transitions.micro/sheet/push` at 160/180/220ms; `transitions.drag` is a spring. See the CSS-vs-Motion rule in §9.1 |
 | US-007 | `enter-up` keyframe + `enterDelay()` | Staggered list and section entrances | `opacity 0 → 1`, `translateY(6px) → 0`, 260ms `--ease-out-soft` `both`, delay `index × 40ms` capped at 240ms. CSS rather than Motion so a list is never briefly invisible when JS is slow or absent |
 
+| US-007 | `components/ui/entry-sheet.tsx` | The sheet every create/edit flow opens — anything writing a single record is a sheet over the current screen, never a push | vaul `Drawer` below `sm:`, `Dialog` above, like `confirm-sheet`. Header is title + Cancel (not an X), so dismiss is thumb-reachable; sticky 52px CTA padded past the home indicator; `tall` fills 85vh and scrolls, for pickers |
+| US-007 | `components/shell/navigation-depth.tsx` | Lets the app bar use `history.back()` safely | Counts in-app navigations rather than reading `history.length`, which includes entries from before the PWA was opened. Falls back to the fixed parent route when depth is 0 |
+| US-007 | `--spacing-app-bar` (3.25rem), `--spacing-compact-bar` (2.75rem) | Names the shell bar heights, so a sticky offset and the bar it sits under cannot drift | Replaced hardcoded `calc(3.25rem + …)` / `calc(2.75rem + …)` in `app-bar`, `large-title`, `day-group-header` and the stopwatch skeleton |
+| US-007 | ~~`components/shell/tab-bar.tsx`~~ | Removed with the tab bar; Home is the only root | — |
+
 ## 9. shadcn/ui + Radix (added in US-005)
 
 shadcn/ui components are **copied source** in `src/components/ui/`, built on Radix primitives. They are a behavior and accessibility
