@@ -67,8 +67,8 @@ export function RunList({ runs, showMoreHref }: RunListProps) {
       ))}
 
       {showMoreHref && (
-        <Button href={showMoreHref} variant="secondary" fullWidth>
-          Show more
+        <Button asChild variant="secondary" fullWidth>
+          <Link href={showMoreHref}>Show more</Link>
         </Button>
       )}
     </div>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/alert";
-import { Sheet } from "@/components/ui/sheet";
+import { ConfirmSheet } from "@/components/ui/confirm-sheet";
 import { StopwatchElapsed } from "./stopwatch-elapsed";
 import { useStopwatchAction } from "./use-stopwatch-action";
 import {
@@ -157,7 +157,7 @@ export function StopwatchControl({ kind, active, labels }: StopwatchControlProps
         </Button>
       )}
 
-      <Sheet
+      <ConfirmSheet
         open={discardOpen}
         onClose={() => setDiscardOpen(false)}
         title={`Discard this ${labels.label}?`}

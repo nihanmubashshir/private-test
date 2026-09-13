@@ -1,10 +1,11 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/ui/form-error";
-import { Sheet } from "@/components/ui/sheet";
+import { ConfirmSheet } from "@/components/ui/confirm-sheet";
 import { createRun, updateRun, deleteRun, type RunActionResult } from "./actions";
 import { toIso, fromIso, addDays } from "@/lib/time/wall-time";
 import { formatDuration } from "@/lib/time/format";
@@ -103,8 +104,8 @@ export function RunForm({ mode, run }: RunFormProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <Button href="/running" variant="ghost" size="sm" className="self-start">
-        ‹ Running
+      <Button asChild variant="ghost" size="sm" className="self-start">
+        <Link href="/running">‹ Running</Link>
       </Button>
 
       <h1 className="text-h1 text-neutral-50">{mode === "new" ? "Add run" : "Edit run"}</h1>
@@ -168,7 +169,7 @@ export function RunForm({ mode, run }: RunFormProps) {
           >
             Delete run
           </Button>
-          <Sheet
+          <ConfirmSheet
             open={deleteOpen}
             onClose={() => setDeleteOpen(false)}
             title="Delete this run?"

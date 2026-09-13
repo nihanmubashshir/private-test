@@ -81,12 +81,12 @@ export default async function SetupTwoFactorPage() {
       </div>
 
       <Button
-        href={totp.uri}
+        asChild
         variant="secondary"
         fullWidth
         className="border-accent-700 bg-accent-950 text-accent-300 hover:border-accent-700 hover:bg-accent-950"
       >
-        Open in authenticator app
+        <a href={totp.uri}>Open in authenticator app</a>
       </Button>
 
       <QrDetails summary="Scan a QR code instead">

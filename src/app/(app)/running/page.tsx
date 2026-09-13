@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { z } from "zod";
 import { requireFull } from "@/lib/auth/require-full";
 import { getActiveStopwatches } from "@/lib/stopwatch/server";
@@ -32,15 +33,15 @@ export default async function RunningPage({
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-6 py-7">
-      <Button href="/" variant="ghost" size="sm" className="self-start">
-        ‹ Dashboard
+      <Button asChild variant="ghost" size="sm" className="self-start">
+        <Link href="/">‹ Dashboard</Link>
       </Button>
       <h1 className="text-h1 text-neutral-50">Running</h1>
 
       <StopwatchControl kind="running" active={active} labels={{ label: "run", activeLabel: "Running" }} />
 
-      <Button href="/running/new" variant="secondary" fullWidth size="lg">
-        Add run manually
+      <Button asChild variant="secondary" fullWidth size="lg">
+        <Link href="/running/new">Add run manually</Link>
       </Button>
 
       <div className="flex flex-col gap-4">

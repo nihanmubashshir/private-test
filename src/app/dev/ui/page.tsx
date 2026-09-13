@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { MoreHorizontal, PlusIcon, Trash2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Input } from "@/components/ui/input";
@@ -9,10 +10,20 @@ import { FormError } from "@/components/ui/form-error";
 import { Badge } from "@/components/ui/badge";
 import { CopySecretButton } from "@/components/ui/copy-secret-button";
 import { Brand } from "@/components/ui/brand";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { StopwatchElapsed } from "@/components/stopwatch/stopwatch-elapsed";
 import { StopwatchControl } from "@/components/stopwatch/stopwatch-control";
 import type { StopwatchKind } from "@/lib/stopwatch/registry";
-import { SheetDemo } from "./sheet-demo";
+import { ConfirmSheetDemo } from "./confirm-sheet-demo";
+import { ToasterDemo } from "./toaster-demo";
 
 export const dynamic = "force-dynamic";
 
@@ -128,11 +139,19 @@ export default function DevUiPage() {
         </Row>
         <Row label="as link (accent-tint style via className)">
           <Button
-            href="otpauth://totp/example"
+            asChild
             variant="secondary"
             className="border-accent-700 bg-accent-950 text-accent-300"
           >
-            Open in authenticator app
+            <a href="otpauth://totp/example">Open in authenticator app</a>
+          </Button>
+        </Row>
+        <Row label="icon (44×44) / quick (56×56)">
+          <Button size="icon" variant="secondary" aria-label="Example icon button">
+            <PlusIcon className="size-5" aria-hidden />
+          </Button>
+          <Button size="quick" aria-label="Example quick action">
+            <PlusIcon className="size-6" aria-hidden />
           </Button>
         </Row>
       </Section>
@@ -302,9 +321,55 @@ export default function DevUiPage() {
         </Row>
       </Section>
 
-      <Section title="Sheet">
+      <Section title="ConfirmSheet">
         <Row label="mobile sheet below sm:, centered dialog from sm: up">
-          <SheetDemo />
+          <ConfirmSheetDemo />
+        </Row>
+      </Section>
+
+      <Section title="Skeleton">
+        <Row label="text bars (60/90/75%) and a control placeholder">
+          <div className="flex w-full max-w-xs flex-col gap-2">
+            <Skeleton className="h-3.5 w-[60%]" />
+            <Skeleton className="h-3.5 w-[90%]" />
+            <Skeleton className="h-3.5 w-[75%]" />
+            <Skeleton className="mt-2 h-tap w-full rounded-md" />
+          </div>
+        </Row>
+      </Section>
+
+      <Section title="Toaster">
+        <Row label="success / error / info / loading">
+          <ToasterDemo />
+        </Row>
+      </Section>
+
+      <Section title="DropdownMenu">
+        <Row label="menu with a destructive item">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Open menu">
+                <MoreHorizontal className="size-5" aria-hidden />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>Edit</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem variant="destructive">
+                <Trash2Icon aria-hidden />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </Row>
+      </Section>
+
+      <Section title="ToggleGroup">
+        <Row label="segmented filter, not gold">
+          <ToggleGroup type="single" defaultValue="all">
+            <ToggleGroupItem value="all">All</ToggleGroupItem>
+            <ToggleGroupItem value="running">Running</ToggleGroupItem>
+          </ToggleGroup>
         </Row>
       </Section>
     </div>
