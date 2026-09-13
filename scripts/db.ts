@@ -25,28 +25,67 @@ const CLI = (() => {
 /** The CLI stack's fixed local connection string (supabase/config.toml, [db] port). */
 const LOCAL_DB_URL = "postgresql://postgres:postgres@127.0.0.1:54322/postgres";
 
-type Target = { flags: string[]; label: string; dbUrl: string };
+type Target = {
+  /** Flags for migration list / db push / migration repair. */
+  flags: string[];
+  /** Flags for `gen types`, which spells the project flag `--project-id`. */
+  typeFlags: string[];
+  label: string;
+  /** A direct connection string for psql, when one is available. */
+  dbUrl: string | null;
+};
 
+/**
+ * Two ways to reach the hosted project, in priority order:
+ *
+ * 1. SUPABASE_ACCESS_TOKEN + SUPABASE_PROJECT_REF — the CLI asks the Management API how to connect
+ *    and picks a route that works. Use this when the direct database host is IPv6-only and the
+ *    machine has no IPv6, which is the default for a Supabase project without the IPv4 add-on.
+ * 2. SUPABASE_DB_URL — a connection string used as given. Must be the session pooler URI on an
+ *    IPv4-only machine, since the direct `db.<ref>.supabase.co` host resolves to IPv6 only.
+ */
 function resolveTarget(local: boolean): Target {
-  if (local) return { flags: ["--local"], label: "local", dbUrl: LOCAL_DB_URL };
-
-  const dbUrl = process.env.SUPABASE_DB_URL;
-  if (!dbUrl) {
-    console.error(
-      [
-        "Missing SUPABASE_DB_URL. Set it in .env.local, or pass --local to target the local stack.",
-        "",
-        "Get it from the Supabase dashboard: Project Settings -> Database -> Connection string ->",
-        "URI, session pooler. Replace [YOUR-PASSWORD] with the database password.",
-        "",
-        "If the password contains a special character it must be percent-encoded (@ -> %40, etc.),",
-        "otherwise the CLI will fail to parse the URL.",
-      ].join("\n"),
-    );
-    process.exit(1);
+  if (local) {
+    return { flags: ["--local"], typeFlags: ["--local"], label: "local", dbUrl: LOCAL_DB_URL };
   }
 
-  return { flags: ["--db-url", dbUrl], label: hostOf(dbUrl), dbUrl };
+  const token = process.env.SUPABASE_ACCESS_TOKEN;
+  const ref = process.env.SUPABASE_PROJECT_REF;
+  const password = process.env.SUPABASE_DB_PASSWORD;
+  const dbUrl = process.env.SUPABASE_DB_URL ?? null;
+
+  if (token && ref) {
+    const auth = password ? ["--password", password] : [];
+    return {
+      flags: ["--project-ref", ref, ...auth],
+      typeFlags: ["--project-id", ref],
+      label: ref,
+      dbUrl,
+    };
+  }
+
+  if (dbUrl) {
+    return { flags: ["--db-url", dbUrl], typeFlags: ["--db-url", dbUrl], label: hostOf(dbUrl), dbUrl };
+  }
+
+  console.error(
+    [
+      "No hosted target configured. Set one of these in .env.local, or pass --local.",
+      "",
+      "  A) SUPABASE_ACCESS_TOKEN + SUPABASE_PROJECT_REF   (recommended)",
+      "     Token: https://supabase.com/dashboard/account/tokens  (starts sbp_)",
+      "     Ref:   the subdomain of your project URL, https://<ref>.supabase.co",
+      "     Optionally SUPABASE_DB_PASSWORD to avoid being prompted.",
+      "     The CLI resolves a working connection itself, so this works without IPv6.",
+      "",
+      "  B) SUPABASE_DB_URL",
+      "     Dashboard -> Project Settings -> Database -> Connection string -> URI.",
+      "     Use the SESSION POOLER tab, not the direct connection: db.<ref>.supabase.co is",
+      "     IPv6-only unless the project has the IPv4 add-on. Percent-encode special",
+      "     characters in the password (@ -> %40).",
+    ].join("\n"),
+  );
+  process.exit(1);
 }
 
 /** The host alone, so a connection string is never echoed to the terminal or a log. */
@@ -108,6 +147,15 @@ function query(dbUrl: string, sql: string): string[][] {
  */
 function verify(target: Target): number {
   const { dbUrl } = target;
+  if (!dbUrl) {
+    console.error(
+      [
+        "verify needs a direct connection string, which project-ref mode does not provide.",
+        "Set SUPABASE_DB_URL as well (session pooler URI) and run it again.",
+      ].join("\n"),
+    );
+    return 1;
+  }
 
   const tables = query(
     dbUrl,
@@ -262,7 +310,7 @@ async function main() {
       process.exit(verify(target));
 
     case "types": {
-      const result = spawnSync(CLI, ["gen", "types", "typescript", ...target.flags], {
+      const result = spawnSync(CLI, ["gen", "types", "typescript", ...target.typeFlags], {
         encoding: "utf8",
         shell: false,
       });

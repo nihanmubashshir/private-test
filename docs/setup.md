@@ -72,8 +72,16 @@ Do these in order. Steps 1–3 are the dashboard; everything after runs from a t
    - `NEXT_PUBLIC_SUPABASE_URL` — `https://<ref>.supabase.co`
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` — Project Settings → API Keys
    - `SUPABASE_SECRET_KEY` — same page. Scripts only; never goes in the deployed app's environment.
-   - `SUPABASE_DB_URL` — Project Settings → Database → Connection string → URI (session pooler),
-     with `[YOUR-PASSWORD]` replaced. Percent-encode special characters in the password (`@` → `%40`).
+   - The `pnpm db` target — pick one:
+     - **A (recommended):** `SUPABASE_ACCESS_TOKEN` (from
+       [account/tokens](https://supabase.com/dashboard/account/tokens), starts `sbp_`) plus
+       `SUPABASE_PROJECT_REF`, and optionally `SUPABASE_DB_PASSWORD` so push does not prompt. The
+       CLI asks the Management API how to connect, so this works on a machine with no IPv6.
+     - **B:** `SUPABASE_DB_URL` — Project Settings → Database → Connection string → URI, **Session
+       pooler** tab, with `[YOUR-PASSWORD]` replaced. Percent-encode special characters (`@` →
+       `%40`). Not the direct connection: `db.<ref>.supabase.co` resolves to IPv6 only unless the
+       project has the paid IPv4 add-on, so it fails outright on an IPv4-only network.
+       `pnpm db verify` talks to Postgres directly and needs this one either way.
 5. **Apply the schema**, check it, and generate types:
    ```bash
    pnpm db status      # expect: every migration listed as local-only
@@ -123,9 +131,20 @@ drives all of it:
 pnpm db <command> [--local]
 ```
 
-The target is the **hosted** project by default, via `SUPABASE_DB_URL`. Add `--local` to hit the
-CLI's Docker stack instead. There is no `supabase link` step and no access token — the connection
-string is the only credential, and it lives in `.env.local`.
+The target is the **hosted** project by default; add `--local` to hit the CLI's Docker stack
+instead. There is no `supabase link` step and no `supabase/.temp` state — credentials live in
+`.env.local` and nothing else.
+
+Two ways to address the hosted project, tried in this order:
+
+1. `SUPABASE_ACCESS_TOKEN` + `SUPABASE_PROJECT_REF` (+ optional `SUPABASE_DB_PASSWORD`). The CLI
+   resolves the connection through the Management API and picks a route that works.
+2. `SUPABASE_DB_URL`, used exactly as given.
+
+Prefer the first. A Supabase project's direct database host is **IPv6-only** unless you pay for the
+IPv4 add-on, so on an IPv4-only network a hand-copied direct connection string fails with
+`dial error (connect ECONNREFUSED 2406:...)`. Option 2 then requires specifically the *session
+pooler* URI.
 
 | Command | What it does |
 |---------|--------------|
