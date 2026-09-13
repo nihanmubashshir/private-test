@@ -144,9 +144,17 @@ create policy "require aal2"
 ### 6.2 Time handling (all features)
 
 1. **Instants and zones are stored separately.** Any user-meaningful moment is a `timestamptz` column (UTC instant, sent and returned as an
-   ISO 8601 string), plus a `time_zone text` column holding the IANA zone of the device where it was recorded.
+   ISO 8601 string), plus a `time_zone text` column holding the IANA zone the record was made in.
 2. **The client supplies both.** Timestamps come from the client (`new Date().toISOString()` at the moment of the action, or
-   converted from form inputs on the client), and the zone comes from `Intl.DateTimeFormat().resolvedOptions().timeZone`.
+   converted from form inputs on the client). **The zone is the app-wide one configured in Settings** (`app_settings.time_zone`,
+   US-008), read through `useAppTimeZone()` / `useWriteTimeZone()` — *not* `Intl.DateTimeFormat().resolvedOptions().timeZone`.
+
+   > **Amended by US-008.** This section previously mandated the recording *device's* zone. The owner travels and
+   > uses a VPN, so a device-derived zone silently changes what "today" means and splits a single day's records across
+   > two zones. Everything else here is unchanged: instants are still UTC, the zone is still stored per record, the
+   > client still does all formatting with an explicit zone, and the server still never formats. Only the *source* of
+   > the zone moved. The device zone survives as the fallback until the owner sets one, and `getDeviceTimeZone()` is
+   > called in exactly one place — the provider.
 3. **The server validates, never converts.** Server code (Server Components, Server Actions, data layers) never formats dates, never
    relies on its own time zone (Vercel runs in UTC), and never uses DB `now()` for user-meaningful times. `now()` is used only for
    `created_at`/`updated_at` and for sanity checks such as "not in the future".
@@ -251,7 +259,9 @@ There is no `tests/` directory — no automated test suite is maintained (see US
 | [US-003](stories/US-003-global-stopwatch.md) | Global stopwatch pattern | Ready |
 | [US-004](stories/US-004-running-tracker.md) | Running tracker | Ready (after US-003) |
 | [US-005](stories/US-005-mobile-redesign.md) | Mobile-first redesign (Wise-inspired UX, shadcn/Radix, PWA loading) | Implemented (T1–T13) — pending your 375px/real-device check |
-| [US-006](stories/US-006-changelog.md) | What's new (changelog) and the Settings screen | Ready |
+| [US-006](stories/US-006-changelog.md) | What's new (changelog) and the Settings screen | Done |
+| [US-007](stories/US-007-app-shell.md) | App shell rework — Home as the only root | Done |
+| [US-008](stories/US-008-app-time-zone.md) | App-wide time zone setting | Done |
 
 The stories from US-006 on are the **design-2 wave**. Their order, the decisions behind them, and
 the task breakdown live in [`design-2-roadmap.md`](design-2-roadmap.md); read it before picking one up.

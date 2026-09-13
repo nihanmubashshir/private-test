@@ -71,9 +71,13 @@ project unless given `--local`, so read what it prints before confirming.)
 8. **Validate all Server Action input with zod.**
 9. Check the **installed version's docs** before using Next.js, Supabase, or Tailwind APIs. Versions move; spec
    snippets describe intent.
-10. **Time handling (overview §6.2):** store UTC ISO instants and the client's IANA time zone in separate columns. The client
+10. **Time handling (overview §6.2):** store UTC ISO instants and an IANA time zone in separate columns. The client
     supplies both and does all conversion and formatting via `src/lib/time/` with an explicit zone. The server validates but never formats,
     and never uses its own time zone or `now()` for user-meaningful times.
+    **The zone is the app-wide one in Settings, never the device's** (US-008). Read it with
+    `useAppTimeZone()` / `useWriteTimeZone()` from `src/components/shell/app-time-zone.tsx`. Do not call
+    `getDeviceTimeZone()` outside that provider — the owner travels and uses a VPN, so a device-derived
+    zone changes what "today" means mid-trip.
 11. **Timed data** (anything started and stopped) uses the timed-entity template (overview §6.3) and plugs into the global stopwatch
     registry (US-003). Don't build a separate timer for it.
 
