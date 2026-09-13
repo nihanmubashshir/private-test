@@ -175,7 +175,7 @@ export function SessionScreen({ session, lastSets, workouts }: SessionScreenProp
 
   return (
     <div className="min-h-dvh">
-      <div className="sticky top-0 z-20 flex h-[calc(var(--spacing-app-bar)+env(safe-area-inset-top))] items-end gap-2 border-b border-neutral-800 bg-neutral-950 pb-1">
+      <div className="sticky top-0 z-20 flex h-[calc(var(--spacing-app-bar)+env(safe-area-inset-top))] items-end gap-2 border-b border-neutral-800 bg-neutral-950 px-4 pb-1">
         <button
           type="button"
           onClick={() => router.push("/")}
@@ -185,7 +185,7 @@ export function SessionScreen({ session, lastSets, workouts }: SessionScreenProp
           <ChevronDown className="size-5" strokeWidth={1.75} aria-hidden />
         </button>
         <p className="flex-1 truncate text-center text-control font-semibold text-neutral-50">{session.name}</p>
-        <div className="flex size-tap shrink-0 items-center justify-center">
+        <div className="flex h-tap shrink-0 items-center justify-center">
           <Button
             type="button"
             size="sm"

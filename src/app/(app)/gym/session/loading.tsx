@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function SessionLoading() {
   return (
     <div className="min-h-dvh">
-      <div className="sticky top-0 z-20 flex h-[calc(var(--spacing-app-bar)+env(safe-area-inset-top))] items-end gap-2 border-b border-neutral-800 bg-neutral-950 pb-1">
+      <div className="sticky top-0 z-20 flex h-[calc(var(--spacing-app-bar)+env(safe-area-inset-top))] items-end gap-2 border-b border-neutral-800 bg-neutral-950 px-4 pb-1">
         <div className="flex size-tap shrink-0 items-center justify-center">
           <Skeleton className="size-5 rounded-sm" />
         </div>
