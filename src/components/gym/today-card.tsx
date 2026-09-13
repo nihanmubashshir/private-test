@@ -122,7 +122,7 @@ export function TodayGymCard({
 
 function Header() {
   return (
-    <Link href="/gym/plans" className="-m-2 flex items-center gap-3 p-2 active:bg-surface-hover">
+    <Link href="/gym/sessions" className="-m-2 flex items-center gap-3 p-2 active:bg-surface-hover">
       <span aria-hidden className="flex size-10 shrink-0 items-center justify-center rounded-full bg-neutral-800">
         <Dumbbell className="size-5 text-neutral-50" strokeWidth={1.75} />
       </span>

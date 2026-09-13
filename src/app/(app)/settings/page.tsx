@@ -1,4 +1,4 @@
-import { CalendarDays, Dumbbell, Sparkles } from "lucide-react";
+import { CalendarDays, Dumbbell, History, Sparkles } from "lucide-react";
 import { requireFull } from "@/lib/auth/require-full";
 import { AppBar } from "@/components/shell/app-bar";
 import { SettingsGroup } from "@/components/settings/settings-group";
@@ -29,6 +29,7 @@ export default async function SettingsPage() {
         <SettingsGroup label="Gym" index={1}>
           <SettingsRow icon={CalendarDays} label="Plans" href="/gym/plans" />
           <SettingsRow icon={Dumbbell} label="Exercises" href="/gym/workouts" />
+          <SettingsRow icon={History} label="Past sessions" href="/gym/sessions" />
         </SettingsGroup>
 
         <SettingsGroup label="App" index={2}>

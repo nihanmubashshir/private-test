@@ -187,6 +187,9 @@ Components, variants, and tokens added by agents beyond the handoff. Add a row f
 
 | US-010 | `components/gym/*` | Exercise library, plan library, weekly editor, Home gym card | Week strip is horizontally scrollable pills (320px floor); reorder is up/down buttons, not drag, which would fight that scroll and the page's; a rest day is a quiet row, not a card |
 
+| US-011 | `components/gym/{session-screen,set-inputs,rest-timer,session-summary}.tsx` | The active session and its record | Set inputs generated from `tracks` via one spec table; steppers plus tap-to-keypad, never the OS keyboard; rest counts up; no back chevron on the session — Minimise instead, so leaving never reads as cancelling |
+| US-011 | `Keypad` takes `KeypadRules` | Reps, load, seconds and metres reuse one keypad | Integer-only rules render a dead spacer where the decimal key sits, so the 3×4 grid keeps its shape and `0` never moves |
+
 ## 9. shadcn/ui + Radix (added in US-005)
 
 shadcn/ui components are **copied source** in `src/components/ui/`, built on Radix primitives. They are a behavior and accessibility

@@ -25,6 +25,24 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.10.0",
+    date: "2026-09-13",
+    title: "Gym sessions",
+    changes: [
+      { kind: "added", text: "Start today's session from Home and have it timed from the first tap." },
+      {
+        kind: "added",
+        text: "Log each set with controls built from what that exercise tracks — reps, weight, duration or distance.",
+      },
+      { kind: "added", text: "Sets prefill from your last set, the plan target, or the last time you did it." },
+      { kind: "added", text: "A rest timer that starts itself after every set." },
+      { kind: "added", text: "A session summary with duration, sets, volume and what you did." },
+      { kind: "added", text: "Mark a set as a warmup and it stays out of your volume." },
+      { kind: "improved", text: "Minimise a running session and it keeps timing, with a bar to get back to it." },
+      { kind: "improved", text: "Sessions show up in recent activity next to your runs." },
+    ],
+  },
+  {
     version: "0.9.0",
     date: "2026-09-13",
     title: "Gym plans",
