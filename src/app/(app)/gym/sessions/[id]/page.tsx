@@ -14,7 +14,7 @@ export default async function SessionDetailPage({ params }: { params: Promise<{ 
   return (
     <div className="min-h-dvh">
       <ToastOnParam param="finished" message="Session complete" />
-      <AppBar title={session.name} backHref="/" />
+      <AppBar title={session.name} />
       <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
         <SessionSummary session={session} />
       </div>

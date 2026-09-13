@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function PlanEditorLoading() {
   return (
     <div className="min-h-dvh">
-      <AppBar title="Plan" backHref="/gym/plans" />
+      <AppBar title="Plan" />
       <div className="mx-auto flex w-full max-w-md flex-col gap-4 px-4 py-4">
         <div className="-mx-4 flex gap-2 px-4 pb-1">
           {Array.from({ length: 7 }).map((_, i) => (

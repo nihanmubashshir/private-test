@@ -10,7 +10,7 @@ export default async function PlansPage() {
 
   return (
     <div className="min-h-dvh">
-      <AppBar title="Plans" backHref="/" />
+      <AppBar title="Plans" />
       <div className="mx-auto flex w-full max-w-md flex-col gap-4 px-4 py-4">
         <PlanLibrary plans={plans} />
       </div>

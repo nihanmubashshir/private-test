@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import { requireFull } from "@/lib/auth/require-full";
 import { Toaster } from "@/components/ui/toaster";
 import { NavigationProgressProvider } from "@/components/shell/navigation-progress";
-import { NavigationDepthProvider } from "@/components/shell/navigation-depth";
 import { AppTimeZoneProvider } from "@/components/shell/app-time-zone";
 import { QueryProvider } from "@/components/shell/query-provider";
 import { getAppSettings } from "@/lib/settings/server";
@@ -30,21 +29,19 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   return (
     <QueryProvider>
       <NavigationProgressProvider>
-        <NavigationDepthProvider>
-          <AppTimeZoneProvider configured={timeZone}>
-            <div className="min-h-dvh" style={{ paddingBottom: "var(--mini-bar-height, 0px)" }}>
-              {children}
-              <Suspense fallback={null}>
-                <ActiveStopwatchSlot />
-              </Suspense>
-              {/* Inside the time-zone provider: which day is "today" for Start gym session needs it. */}
-              <Suspense fallback={null}>
-                <RadialMenuSlot />
-              </Suspense>
-            </div>
-            <Toaster position="bottom-center" />
-          </AppTimeZoneProvider>
-        </NavigationDepthProvider>
+        <AppTimeZoneProvider configured={timeZone}>
+          <div className="min-h-dvh" style={{ paddingBottom: "var(--mini-bar-height, 0px)" }}>
+            {children}
+            <Suspense fallback={null}>
+              <ActiveStopwatchSlot />
+            </Suspense>
+            {/* Inside the time-zone provider: which day is "today" for Start gym session needs it. */}
+            <Suspense fallback={null}>
+              <RadialMenuSlot />
+            </Suspense>
+          </div>
+          <Toaster position="bottom-center" />
+        </AppTimeZoneProvider>
       </NavigationProgressProvider>
     </QueryProvider>
   );

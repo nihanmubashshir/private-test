@@ -26,7 +26,7 @@ export default async function GymSessionsPage({
 
   return (
     <div className="min-h-dvh">
-      <AppBar title="Sessions" backHref="/" />
+      <AppBar title="Sessions" />
       <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
         {visible.length === 0 ? (
           <EmptyState

@@ -29,7 +29,7 @@ export default async function RunningPage({
   return (
     <div className="min-h-dvh">
       <ToastOnParam param="deleted" message="Run deleted" />
-      <AppBar title="Running" backHref="/" />
+      <AppBar title="Running" />
       <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
         <StopwatchControl kind="running" active={active} />
 

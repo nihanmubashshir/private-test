@@ -14,7 +14,7 @@ export default async function WhatsNewPage() {
 
   return (
     <div className="min-h-dvh">
-      <AppBar title="What's new" backHref="/settings" />
+      <AppBar title="What's new" />
       <div className="mx-auto flex w-full max-w-md flex-col gap-4 px-4 py-4">
         <p className="text-body-sm text-neutral-400">Everything that&apos;s shipped so far.</p>
         <ReleaseList />

@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function PlansLoading() {
   return (
     <div className="min-h-dvh">
-      <AppBar title="Plans" backHref="/" />
+      <AppBar title="Plans" />
       <div className="mx-auto flex w-full max-w-md flex-col gap-4 px-4 py-4">
         <div className="flex flex-col gap-3 rounded-lg border border-neutral-800 bg-neutral-900 p-4">
           <Skeleton className="h-6 w-32" />

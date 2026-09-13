@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function WhatsNewLoading() {
   return (
     <div className="min-h-dvh">
-      <AppBar title="What's new" backHref="/settings" />
+      <AppBar title="What's new" />
       <div className="mx-auto flex w-full max-w-md flex-col gap-4 px-4 py-4">
         <Skeleton className="h-5 w-56" />
         <div className="flex flex-col border-t border-neutral-800">

@@ -20,7 +20,7 @@ export default async function SettingsPage() {
 
   return (
     <div className="min-h-dvh">
-      <AppBar title="Settings" backHref="/" />
+      <AppBar title="Settings" />
       <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
         <SettingsGroup label="Preferences">
           <TimeZoneRow />

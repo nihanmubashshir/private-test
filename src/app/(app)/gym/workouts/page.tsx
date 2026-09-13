@@ -11,7 +11,7 @@ export default async function WorkoutsPage() {
 
   return (
     <div className="min-h-dvh">
-      <AppBar title="Exercises" backHref="/gym/plans" />
+      <AppBar title="Exercises" />
       <div className="mx-auto flex w-full max-w-md flex-col gap-4 px-4 py-4">
         <WorkoutLibrary workouts={workouts} />
       </div>

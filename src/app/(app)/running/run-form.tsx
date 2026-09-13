@@ -156,7 +156,7 @@ export function RunForm({ mode, run }: RunFormProps) {
 
   return (
     <div className="min-h-dvh">
-      <AppBar title={mode === "new" ? "Add run" : "Edit run"} mode="close" backHref={closeHref} onBeforeNavigate={handleClose} />
+      <AppBar title={mode === "new" ? "Add run" : "Edit run"} mode="close" closeHref={closeHref} onBeforeNavigate={handleClose} />
 
       <form action={formAction} className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
         <div className="flex flex-col items-center gap-1 py-2 text-center">

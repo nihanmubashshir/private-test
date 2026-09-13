@@ -5,7 +5,7 @@ import { AppBar } from "@/components/shell/app-bar";
 export default function RunningLoading() {
   return (
     <div className="min-h-dvh">
-      <AppBar title="Running" backHref="/" />
+      <AppBar title="Running" />
       <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
         <div className="flex flex-col gap-5 rounded-lg border border-neutral-800 bg-neutral-900 p-6">
           <Skeleton className="h-3.5 w-24" />

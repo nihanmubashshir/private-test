@@ -39,7 +39,7 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
       <ToastOnParam param="updated" message="Run updated" />
       <AppBar
         title="Run"
-        backHref="/running"
+       
         rightSlot={<RunDetailActions id={run.id} editHref={config.editHref(run.id)} />}
       />
       <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">

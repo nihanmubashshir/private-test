@@ -9,7 +9,7 @@ export default async function RequestsPage() {
 
   return (
     <div className="min-h-dvh">
-      <AppBar title="Requests" backHref="/settings" />
+      <AppBar title="Requests" />
       {/* No top padding: the add row is sticky and brings its own. */}
       <div className="mx-auto flex w-full max-w-md flex-col gap-2 px-4 pb-6">
         <RequestList requests={requests} />

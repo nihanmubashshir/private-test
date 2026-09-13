@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function SessionSummaryLoading() {
   return (
     <div className="min-h-dvh">
-      <AppBar title="Session" backHref="/" />
+      <AppBar title="Session" />
       <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
         <div className="flex flex-col gap-1">
           <Skeleton className="h-3.5 w-32" />

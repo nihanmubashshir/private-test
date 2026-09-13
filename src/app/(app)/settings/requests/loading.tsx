@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function RequestsLoading() {
   return (
     <div className="min-h-dvh">
-      <AppBar title="Requests" backHref="/settings" />
+      <AppBar title="Requests" />
       <div className="mx-auto flex w-full max-w-md flex-col gap-2 px-4 pb-6">
         <div className="-mx-4 flex flex-col gap-2 border-b border-neutral-800 px-4 py-3">
           <div className="flex gap-2">

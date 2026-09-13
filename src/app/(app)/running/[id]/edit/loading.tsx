@@ -5,7 +5,7 @@ import { AppBar } from "@/components/shell/app-bar";
 export default function EditRunLoading() {
   return (
     <div className="min-h-dvh">
-      <AppBar title="Edit run" backHref="/running" mode="close" />
+      <AppBar title="Edit run" closeHref="/running" mode="close" />
       <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
         <div className="flex flex-col items-center gap-2 py-2">
           <Skeleton className="h-3.5 w-16" />

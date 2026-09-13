@@ -25,6 +25,18 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.13.1",
+    date: "2026-09-13",
+    title: "One less button",
+    changes: [
+      {
+        kind: "improved",
+        text: "Removed the back arrow at the top of every screen. Hold the corner button and pick Home instead.",
+      },
+      { kind: "improved", text: "Swipe the day strip in a plan to move between days." },
+    ],
+  },
+  {
     version: "0.13.0",
     date: "2026-09-13",
     title: "Quick actions",

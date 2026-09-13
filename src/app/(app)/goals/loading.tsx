@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function GoalsLoading() {
   return (
     <div className="min-h-dvh">
-      <AppBar title="Goals" backHref="/" />
+      <AppBar title="Goals" />
       <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
         <div className="flex flex-col">
           <Skeleton className="mb-2 h-3 w-12" />

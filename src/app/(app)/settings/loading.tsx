@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function SettingsLoading() {
   return (
     <div className="min-h-dvh">
-      <AppBar title="Settings" backHref="/" />
+      <AppBar title="Settings" />
       <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
         <div className="flex flex-col gap-2">
           <Skeleton className="h-3 w-10" />

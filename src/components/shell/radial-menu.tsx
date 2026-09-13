@@ -334,9 +334,14 @@ export function RadialMenu({ planDays, gymRunning, lastWeightKg }: RadialMenuPro
                 onClick={close}
                 aria-hidden
               >
-                {/* The circle itself, so the wheel reads as a circle rather than six loose dots. */}
+                {/* The circle itself, so the wheel reads as a circle rather than six loose dots.
+                    Frosted glass fill: a blurred, translucent disc between the button and the
+                    nodes, so the page shows through softened rather than the wedge staying empty.
+                    Solid neutral fallback where `backdrop-filter` isn't supported (§9.1 tokens
+                    only — no arbitrary hex). Only opacity/scale animate, matching the rest of the
+                    wheel; the blur itself never animates. */}
                 <motion.div
-                  className="absolute rounded-full border border-neutral-800"
+                  className="absolute rounded-full border border-neutral-800 bg-neutral-900/70 supports-backdrop-filter:bg-neutral-900/30 supports-backdrop-filter:backdrop-blur-md"
                   style={{
                     width: RADIUS * 2,
                     height: RADIUS * 2,

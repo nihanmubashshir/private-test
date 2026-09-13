@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useCallback, useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import useEmblaCarousel from "embla-carousel-react";
 import { toast } from "sonner";
 import { ChevronDown, ChevronUp, Dumbbell, Plus, Trash2 } from "lucide-react";
 import {
@@ -55,9 +56,36 @@ export function PlanEditor({ plan, workouts }: PlanEditorProps) {
   const [, dayAction] = useActionState(updatePlanDay, INITIAL);
   const [targetState, targetAction, targetPending] = useActionState(updatePlanItem, INITIAL);
 
+  // Swipeable weekday strip (align: "start" so a partial 8th pill never peeks in at 320px).
+  const [emblaRef, emblaApi] = useEmblaCarousel({ align: "start", containScroll: "trimSnaps" });
+
+  const selectDay = useCallback(
+    (weekday: number) => {
+      setSelected(weekday);
+      const index = plan.days.findIndex((d) => d.weekday === weekday);
+      if (index >= 0) emblaApi?.scrollTo(index);
+    },
+    [emblaApi, plan.days],
+  );
+
+  // A swipe moves the carousel first; mirror its settled position into `selected`.
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => {
+      const weekday = plan.days[emblaApi.selectedScrollSnap()]?.weekday;
+      if (weekday !== undefined) setSelected(weekday);
+    };
+    emblaApi.on("select", onSelect);
+    return () => {
+      emblaApi.off("select", onSelect);
+    };
+  }, [emblaApi, plan.days]);
+
   // Open on today, which is the day the owner almost always wants.
   useEffect(() => {
-    if (timeZone) setSelected(weekdayInZone(timeZone));
+    if (timeZone) selectDay(weekdayInZone(timeZone));
+    // Only on mount/zone resolution — subsequent taps and swipes own `selected` from here.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeZone]);
 
   useEffect(() => {
@@ -149,28 +177,31 @@ export function PlanEditor({ plan, workouts }: PlanEditorProps) {
 
   return (
     <>
-      {/* Horizontally scrollable so seven pills never overflow at 320px (US-010 AC 17). */}
-      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1" role="tablist" aria-label="Weekday">
-        {plan.days.map((d) => (
-          <button
-            key={d.weekday}
-            type="button"
-            role="tab"
-            aria-selected={d.weekday === selected}
-            onClick={() => setSelected(d.weekday)}
-            className={cn(
-              "flex min-h-tap shrink-0 flex-col items-center justify-center rounded-full px-4 text-control",
-              d.weekday === selected ? "bg-neutral-800 text-neutral-50" : "text-neutral-400",
-              d.weekday === today && d.weekday !== selected && "ring-1 ring-accent-700",
-            )}
-          >
-            {WEEKDAY_LABELS[d.weekday]}
-            <span
-              className={cn("mt-0.5 size-1 rounded-full", !d.isRest ? "bg-accent-500" : "bg-transparent")}
-              aria-hidden
-            />
-          </button>
-        ))}
+      {/* Swipeable so seven pills never overflow at 320px (US-010 AC 17); Embla owns the drag,
+          taps still jump straight to a day. */}
+      <div className="-mx-4 overflow-hidden px-4 pb-1" ref={emblaRef}>
+        <div className="flex gap-2" role="tablist" aria-label="Weekday">
+          {plan.days.map((d) => (
+            <button
+              key={d.weekday}
+              type="button"
+              role="tab"
+              aria-selected={d.weekday === selected}
+              onClick={() => selectDay(d.weekday)}
+              className={cn(
+                "flex min-h-tap shrink-0 flex-col items-center justify-center rounded-full px-4 text-control",
+                d.weekday === selected ? "bg-neutral-800 text-neutral-50" : "text-neutral-400",
+                d.weekday === today && d.weekday !== selected && "ring-1 ring-accent-700",
+              )}
+            >
+              {WEEKDAY_LABELS[d.weekday]}
+              <span
+                className={cn("mt-0.5 size-1 rounded-full", !d.isRest ? "bg-accent-500" : "bg-transparent")}
+                aria-hidden
+              />
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Uncontrolled + commit on blur. Controlled-with-onChange fired a Server Action per

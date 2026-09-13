@@ -27,7 +27,7 @@ export default async function GoalsPage({
 
   return (
     <div className="min-h-dvh">
-      <AppBar title="Goals" backHref="/" />
+      <AppBar title="Goals" />
       <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
         <GoalsView
           goals={goals}

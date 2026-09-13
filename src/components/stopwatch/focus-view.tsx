@@ -138,7 +138,7 @@ export function FocusView({ kind, active }: FocusViewProps) {
     <div className="flex min-h-dvh flex-col">
       <AppBar
         title={config.name}
-        backHref={config.href}
+        closeHref={config.href}
         mode="close"
         rightSlot={
           optimisticActive ? (

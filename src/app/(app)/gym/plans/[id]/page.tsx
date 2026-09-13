@@ -14,7 +14,7 @@ export default async function PlanEditorPage({ params }: { params: Promise<{ id:
 
   return (
     <div className="min-h-dvh">
-      <AppBar title={plan.name} backHref="/gym/plans" />
+      <AppBar title={plan.name} />
       <div className="mx-auto flex w-full max-w-md flex-col gap-4 px-4 py-4">
         <PlanEditor plan={plan} workouts={workouts} />
       </div>
