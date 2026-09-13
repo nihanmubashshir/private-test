@@ -220,12 +220,17 @@ Add columns specific to the entity after `time_zone`. Drop the no-overlap constr
 ├── src/
 │   ├── proxy.ts                  # session refresh + route guard
 │   ├── app/
-│   │   ├── layout.tsx            # root layout, viewport, metadata
+│   │   ├── layout.tsx            # root layout, viewport, metadata, OfflineBanner
 │   │   ├── globals.css           # tailwind + @theme tokens
 │   │   ├── (auth)/               # login, setup-2fa, verify-2fa
-│   │   └── (app)/                # protected app (aal2 only): home, trackers (e.g. running/)
-│   ├── components/ui/            # design-system primitives (Button, Input, OtpInput, Alert, Badge, Sheet…)
-│   ├── components/stopwatch/     # global stopwatch UI (US-003)
+│   │   └── (app)/                # protected app (aal2 only)
+│   │       ├── layout.tsx        # requireFull, NavigationProgressProvider, Toaster
+│   │       ├── (tabs)/           # bottom-tab roots: home, activity/, account/ (US-005)
+│   │       └── (stack)/          # back/close screens: running/, stopwatch/[kind]/ (US-005)
+│   ├── components/ui/            # design-system primitives (Button, Input, OtpInput, Alert, Badge, ConfirmSheet, shadcn/Radix…)
+│   ├── components/shell/         # app chrome (US-005): TabBar, AppBar, LargeTitle, NavigationProgress, OfflineBanner…
+│   ├── components/trackers/      # tracker-agnostic screen pieces (US-005): TrackerCard, ActivityRow, ActivityList…
+│   ├── components/stopwatch/     # global stopwatch UI (US-003) + the focus view (US-005)
 │   └── lib/
 │       ├── supabase/             # server/browser/proxy clients, generated types
 │       ├── auth/                 # pure guard logic, auth helpers, requireFull
@@ -244,4 +249,4 @@ There is no `tests/` directory — no automated test suite is maintained (see US
 | [US-002](stories/US-002-password-reset.md) | Password reset by email | ⏸ Paused (do not implement) |
 | [US-003](stories/US-003-global-stopwatch.md) | Global stopwatch pattern | Ready |
 | [US-004](stories/US-004-running-tracker.md) | Running tracker | Ready (after US-003) |
-| [US-005](stories/US-005-mobile-redesign.md) | Mobile-first redesign (Wise-inspired UX, shadcn/Radix, PWA loading) | Ready |
+| [US-005](stories/US-005-mobile-redesign.md) | Mobile-first redesign (Wise-inspired UX, shadcn/Radix, PWA loading) | Implemented (T1–T13) — pending your 375px/real-device check |

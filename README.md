@@ -58,6 +58,16 @@ See [`docs/setup.md`](docs/setup.md) for lockout recovery (`pnpm owner:reset-pas
 There is no lint step and no automated test suite in this project (see US-001 §12 Deviations);
 `pnpm typecheck` is the only automated check.
 
+## UI
+
+The app is a bottom-tab PWA (US-005): **Home** (`/`, a tracker card per registry entry + recent
+activity), **Activity** (`/activity`, every completed session, grouped by day), and **Account**
+(`/account`, currently just Sign out — the full design is descoped, see the story's §14
+Deviations). Trackers themselves live under stack screens with a back/close bar, not tabs.
+
+Screenshots aren't checked in; the source of truth for what a screen should look like is
+`docs/design/` (tokens and component states) plus each story's own §6 (screen-by-screen layout).
+
 ## Trackers
 
 Every tracker follows the same pattern: a `timed-entity` table (start/stop sessions) that plugs
@@ -65,9 +75,11 @@ into the **global stopwatch** (`src/lib/stopwatch/`, US-003) — one consistent 
 UI and Server Action layer shared by every tracker, so a running session survives reloads,
 closing the app, and switching devices.
 
-- **Running** (US-004): `/running` — time a run with the stopwatch, or add one by hand at
-  `/running/new`; edit or delete at `/running/[id]`. The `/` home page shows a card per tracker
-  (currently just Running) linking into it.
+- **Running** (US-004, redesigned in US-005): `/running` — time a run with the stopwatch (or open
+  the full-screen focus view at `/stopwatch/running`), or add one by hand at `/running/new`. A
+  completed run's read-only detail is at `/running/[id]`; edit it at `/running/[id]/edit`, delete
+  from the detail screen's menu. The `/` home page shows a card per tracker (currently just
+  Running) linking into it.
 
 Adding a new tracker means: a migration from the timed-entity template
 (`docs/spec/00-overview.md` §6.3), regenerated types, one entry in
