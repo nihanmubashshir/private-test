@@ -11,7 +11,8 @@
     "owner:reset-password": "tsx --env-file=.env.local scripts/owner-reset-password.ts",
     "owner:reset-mfa": "tsx --env-file=.env.local scripts/owner-reset-mfa.ts",
     "db:reset": "supabase db reset",
-    "db:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts"
+    "db:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts",
+    "db:types:remote": "supabase gen types typescript --project-id qirqgpwkhyvfyjycglvm > src/lib/supabase/database.types.ts"
   },
   "dependencies": {
     "@date-fns/tz": "^1.5.0",

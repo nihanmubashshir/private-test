@@ -217,3 +217,18 @@ Mobile viewport (375px, then 320px) against the hosted project:
 | Q1 | Maximum run length for manual entries | 24h. Stopwatch runs can be longer, but runs over 12h get a `Check times` badge. |
 | Q2 | List size | 30 most recent, with `Show more` in steps of 30 (max 500). |
 | Q3 | Quick Start button on the home card? | No. The card links to `/running`, one tap away. |
+
+## 10. Deviations
+
+- **`database.types.ts` hand-edited, not regenerated.** The build environment has no Docker (no local stack for
+  `pnpm db:types`) and only a read-only connection to the hosted project (no `supabase login` session, and the
+  available Supabase tooling here can run read queries but not apply DDL or run the CLI's `gen types` against the
+  hosted project). The `runs` table's `Row`/`Insert`/`Update` types were written by hand to match
+  `supabase/migrations/20260913130000_runs.sql` exactly (mirroring the table template in overview §6.3, the same
+  shape as the already-registered columns). The operator should run `pnpm db:types:remote` once the migration is
+  applied, to confirm this matches what the CLI generates and pick up anything hand-editing missed (e.g. exact
+  `Relationships` entries, which were left as `[]`).
+- **Migration not applied by the agent.** Per the same read-only-connection constraint (and consistent with
+  US-001's and US-003's Deviations), `supabase/migrations/20260913130000_runs.sql` was written but not run. The
+  operator applies it via the hosted project's SQL Editor, then confirms (US-003 §5.1) that an `authenticated`
+  update still fires `private.set_updated_at()`.

@@ -15,10 +15,15 @@ export interface WallTime {
  * duration, and an ambiguous local time (a fall-back fold) to its first (earlier, pre-transition)
  * occurrence. Neither case throws.
  */
-export function toIso({ date, time, timeZone }: WallTime & { timeZone: string }): string {
+export function toIso({
+  date,
+  time,
+  timeZone,
+  seconds = 0,
+}: WallTime & { timeZone: string; seconds?: number }): string {
   const [year, month, day] = date.split("-").map(Number);
   const [hours, minutes] = time.split(":").map(Number);
-  const zoned = new TZDate(year, month - 1, day, hours, minutes, 0, timeZone);
+  const zoned = new TZDate(year, month - 1, day, hours, minutes, seconds, timeZone);
   return new Date(zoned.getTime()).toISOString();
 }
 

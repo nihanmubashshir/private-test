@@ -32,8 +32,7 @@ export interface StopwatchKindConfig {
 }
 
 export const stopwatchKinds = {
-  // Added by tracker stories. US-004 adds:
-  // running: { table: "runs", label: "run", activeLabel: "Running", href: "/running" },
+  running: { table: "runs", label: "run", activeLabel: "Running", href: "/running" },
 } satisfies Record<string, StopwatchKindConfig>;
 
 export type StopwatchKind = keyof typeof stopwatchKinds;

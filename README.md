@@ -50,9 +50,25 @@ See [`docs/setup.md`](docs/setup.md) for lockout recovery (`pnpm owner:reset-pas
 | `pnpm typecheck` | `tsc --noEmit` |
 | `supabase start` / `supabase stop` | Local Supabase (Docker) |
 | `pnpm db:reset` | Re-apply all migrations to the local DB |
-| `pnpm db:types` | Regenerate `src/lib/supabase/database.types.ts` |
+| `pnpm db:types` | Regenerate `src/lib/supabase/database.types.ts` from a local stack |
+| `pnpm db:types:remote` | Regenerate types from the hosted project instead (`supabase login` first) |
 | `pnpm owner:create` | Create the single owner account |
 | `pnpm owner:reset-password` / `pnpm owner:reset-mfa` | Operator lockout recovery |
 
 There is no lint step and no automated test suite in this project (see US-001 §12 Deviations);
 `pnpm typecheck` is the only automated check.
+
+## Trackers
+
+Every tracker follows the same pattern: a `timed-entity` table (start/stop sessions) that plugs
+into the **global stopwatch** (`src/lib/stopwatch/`, US-003) — one consistent start/stop/discard
+UI and Server Action layer shared by every tracker, so a running session survives reloads,
+closing the app, and switching devices.
+
+- **Running** (US-004): `/running` — time a run with the stopwatch, or add one by hand at
+  `/running/new`; edit or delete at `/running/[id]`. The `/` home page shows a card per tracker
+  (currently just Running) linking into it.
+
+Adding a new tracker means: a migration from the timed-entity template
+(`docs/spec/00-overview.md` §6.3), regenerated types, one entry in
+`src/lib/stopwatch/registry.ts`, and the tracker's own screens — no stopwatch code changes.

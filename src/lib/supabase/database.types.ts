@@ -14,7 +14,37 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      runs: {
+        Row: {
+          id: string
+          owner_id: string
+          started_at: string
+          ended_at: string | null
+          time_zone: string
+          duration_seconds: number | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          owner_id?: string
+          started_at: string
+          ended_at?: string | null
+          time_zone: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          owner_id?: string
+          started_at?: string
+          ended_at?: string | null
+          time_zone?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
