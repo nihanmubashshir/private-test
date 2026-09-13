@@ -1,3 +1,4 @@
+import { Footprints, type LucideIcon } from "lucide-react";
 import type { Database } from "@/lib/supabase/database.types";
 
 type PublicTables = Database["public"]["Tables"];
@@ -29,10 +30,32 @@ export interface StopwatchKindConfig {
   activeLabel: string;
   /** The tracker page, e.g. "/running". */
   href: string;
+  /** "Running" – the tracker card / row name on Home and Activity. */
+  name: string;
+  icon: LucideIcon;
+  /** The manual add-entry form, e.g. "/running/new". */
+  newHref: string;
+  /**
+   * The read-only detail screen for a completed session, e.g. "/running/{id}". Points at the
+   * combined view/edit form until US-005 T9 splits it into its own route.
+   */
+  detailHref: (id: string) => string;
+  /** The edit form, e.g. "/running/{id}/edit". Built in US-005 T9. */
+  editHref: (id: string) => string;
 }
 
 export const stopwatchKinds = {
-  running: { table: "runs", label: "run", activeLabel: "Running", href: "/running" },
+  running: {
+    table: "runs",
+    label: "run",
+    activeLabel: "Running",
+    href: "/running",
+    name: "Running",
+    icon: Footprints,
+    newHref: "/running/new",
+    detailHref: (id: string) => `/running/${id}`,
+    editHref: (id: string) => `/running/${id}/edit`,
+  },
 } satisfies Record<string, StopwatchKindConfig>;
 
 export type StopwatchKind = keyof typeof stopwatchKinds;

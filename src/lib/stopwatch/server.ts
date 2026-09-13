@@ -18,9 +18,11 @@ export interface ActiveStopwatch {
 }
 
 export interface CompletedSession {
+  kind: StopwatchKind;
   id: string;
   startedAt: string;
   endedAt: string;
+  timeZone: string;
   durationSeconds: number;
 }
 
@@ -48,6 +50,7 @@ interface CompletedRow {
   id: string;
   started_at: string;
   ended_at: string;
+  time_zone: string;
   duration_seconds: number;
 }
 
@@ -140,7 +143,7 @@ export async function stopStopwatch(
     .update({ ended_at: input.at.toISOString() })
     .eq("id", input.id)
     .is("ended_at", null)
-    .select("id, started_at, ended_at, duration_seconds")
+    .select("id, started_at, ended_at, time_zone, duration_seconds")
     .maybeSingle();
 
   if (error) {
@@ -157,9 +160,11 @@ export async function stopStopwatch(
   return {
     status: "stopped",
     session: {
+      kind,
       id: row.id,
       startedAt: row.started_at,
       endedAt: row.ended_at,
+      timeZone: row.time_zone,
       durationSeconds: row.duration_seconds,
     },
   };
@@ -178,4 +183,52 @@ export async function discardStopwatch(
     .maybeSingle();
 
   return data ? { status: "discarded" } : { status: "not_running" };
+}
+
+/**
+ * Completed sessions across every registered kind (or just one), newest first — the generic
+ * source for Home's "Recent activity" and the Activity tab (01-design-system.md §8). Existing
+ * per-kind query modules (e.g. src/lib/runs/queries.ts) stay for their own detail/edit pages.
+ */
+export async function listCompletedSessions(
+  supabase: Client,
+  options: { kind?: StopwatchKind; limit: number },
+): Promise<CompletedSession[]> {
+  const kinds = options.kind ? [options.kind] : (Object.keys(stopwatchKinds) as StopwatchKind[]);
+
+  const perKind = await Promise.all(
+    kinds.map(async (kind) => {
+      const { data, error } = await timedTable(supabase, kind)
+        .select("id, started_at, ended_at, time_zone, duration_seconds")
+        .not("ended_at", "is", null)
+        .order("started_at", { ascending: false })
+        .limit(options.limit);
+
+      if (error) throw error;
+
+      return ((data ?? []) as CompletedRow[]).map(
+        (row): CompletedSession => ({
+          kind,
+          id: row.id,
+          startedAt: row.started_at,
+          endedAt: row.ended_at,
+          timeZone: row.time_zone,
+          durationSeconds: row.duration_seconds,
+        }),
+      );
+    }),
+  );
+
+  return perKind
+    .flat()
+    .sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1))
+    .slice(0, options.limit);
+}
+
+export async function getLastCompletedSession(
+  supabase: Client,
+  kind: StopwatchKind,
+): Promise<CompletedSession | null> {
+  const sessions = await listCompletedSessions(supabase, { kind, limit: 1 });
+  return sessions[0] ?? null;
 }
