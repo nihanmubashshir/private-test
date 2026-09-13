@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { WeighIn } from "@/lib/weight/queries";
 import { WEIGHT_RANGES, showsTrendLine, type WeightRange } from "@/lib/weight/range";
@@ -116,6 +117,11 @@ export function WeightDetail({ range, inRange, all }: WeightDetailProps) {
 
       <Button variant="secondary" fullWidth onClick={() => setLogOpen(true)}>
         Log weight
+      </Button>
+
+      {/* Goals are added from the thing they measure (US-012 §5.4). */}
+      <Button asChild variant="ghost" fullWidth>
+        <Link href="/goals?new=weight">Add a goal</Link>
       </Button>
 
       <div className="flex flex-col">

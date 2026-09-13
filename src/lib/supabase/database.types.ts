@@ -63,8 +63,71 @@ export type Database = {
         }
         Relationships: []
       }
+      goals: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          kind: Database["public"]["Enums"]["goal_kind"]
+          label: string
+          owner_id: string
+          start_value: number | null
+          status: Database["public"]["Enums"]["goal_status"]
+          subject: Database["public"]["Enums"]["goal_subject"]
+          target_count: number | null
+          target_metric: string | null
+          target_value: number | null
+          updated_at: string
+          window_days: number | null
+          workout_id: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          kind: Database["public"]["Enums"]["goal_kind"]
+          label: string
+          owner_id?: string
+          start_value?: number | null
+          status?: Database["public"]["Enums"]["goal_status"]
+          subject: Database["public"]["Enums"]["goal_subject"]
+          target_count?: number | null
+          target_metric?: string | null
+          target_value?: number | null
+          updated_at?: string
+          window_days?: number | null
+          workout_id?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["goal_kind"]
+          label?: string
+          owner_id?: string
+          start_value?: number | null
+          status?: Database["public"]["Enums"]["goal_status"]
+          subject?: Database["public"]["Enums"]["goal_subject"]
+          target_count?: number | null
+          target_metric?: string | null
+          target_value?: number | null
+          updated_at?: string
+          window_days?: number | null
+          workout_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goals_workout_id_fkey"
+            columns: ["workout_id"]
+            isOneToOne: false
+            referencedRelation: "workouts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gym_sessions: {
         Row: {
+          added_workout_ids: string[]
           created_at: string
           duration_seconds: number | null
           ended_at: string | null
@@ -78,6 +141,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          added_workout_ids?: string[]
           created_at?: string
           duration_seconds?: number | null
           ended_at?: string | null
@@ -91,6 +155,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          added_workout_ids?: string[]
           created_at?: string
           duration_seconds?: number | null
           ended_at?: string | null
@@ -422,6 +487,9 @@ export type Database = {
       seed_gym_defaults: { Args: never; Returns: undefined }
     }
     Enums: {
+      goal_kind: "target" | "streak"
+      goal_status: "active" | "paused" | "completed"
+      goal_subject: "weight" | "running" | "gym" | "workout"
       tracked_field: "reps" | "weight" | "duration" | "distance"
     }
     CompositeTypes: {
@@ -553,6 +621,9 @@ export const Constants = {
   },
   public: {
     Enums: {
+      goal_kind: ["target", "streak"],
+      goal_status: ["active", "paused", "completed"],
+      goal_subject: ["weight", "running", "gym", "workout"],
       tracked_field: ["reps", "weight", "duration", "distance"],
     },
   },

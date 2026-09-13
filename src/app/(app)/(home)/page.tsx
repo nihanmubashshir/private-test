@@ -11,8 +11,11 @@ import { WeightCard } from "@/components/weight/weight-card";
 import { listWeighIns } from "@/lib/weight/queries";
 import { getActivePlan, seedGymDefaults } from "@/lib/gym/queries";
 import { TodayGymCard } from "@/components/gym/today-card";
+import { listGoals, loadGoalInputs } from "@/lib/goals/queries";
+import { GoalsSummary } from "@/components/goals/goals-summary";
 
 const RECENT_ACTIVITY_LIMIT = 5;
+const GOAL_SHOWCASE_MS = 7 * 86_400_000;
 /** The sparkline window (US-009 §5.1). One extra day so the week-ago comparison has a neighbour. */
 const SPARKLINE_DAYS = 31;
 
@@ -37,12 +40,27 @@ export default async function HomePage() {
   await seedGymDefaults(supabase);
   const activePlan = await getActivePlan(supabase);
 
+  // Completed goals stay on Home for a week, then live only in /goals (US-012 §4). An instant
+  // difference, not a calendar day, so it needs no zone.
+  const goals = await listGoals(supabase);
+  const homeGoals = goals.filter(
+    (goal) =>
+      goal.status === "active" ||
+      (goal.status === "completed" &&
+        goal.completedAt !== null &&
+        Date.now() - Date.parse(goal.completedAt) < GOAL_SHOWCASE_MS),
+  );
+  const goalInputs = await loadGoalInputs(supabase, homeGoals);
+
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
       <ToastOnParam param="missing" message="That page doesn't exist." tone="warning" />
       <ToastOnParam param="discarded" message="Session discarded" />
       <ToastOnParam param="deleted" message="Session deleted" />
       <LargeTitle title="Home" eyebrow={<TodayEyebrow />} rightSlot={<SettingsButton />} />
+
+      {/* Directly under the header, above the day's session (US-012 §5.1). */}
+      {homeGoals.length > 0 && <GoalsSummary goals={homeGoals} inputs={goalInputs} />}
 
       <div className="flex flex-col gap-4">
         {kinds.map((kind, index) => (
