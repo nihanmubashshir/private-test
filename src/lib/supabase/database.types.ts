@@ -63,6 +63,134 @@ export type Database = {
         }
         Relationships: []
       }
+      plan_days: {
+        Row: {
+          created_at: string
+          id: string
+          is_rest: boolean
+          name: string | null
+          owner_id: string
+          plan_id: string
+          updated_at: string
+          weekday: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_rest?: boolean
+          name?: string | null
+          owner_id?: string
+          plan_id: string
+          updated_at?: string
+          weekday: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_rest?: boolean
+          name?: string | null
+          owner_id?: string
+          plan_id?: string
+          updated_at?: string
+          weekday?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_days_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plan_items: {
+        Row: {
+          created_at: string
+          id: string
+          owner_id: string
+          plan_day_id: string
+          position: number
+          target_reps: number | null
+          target_sets: number | null
+          target_weight: number | null
+          updated_at: string
+          workout_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          owner_id?: string
+          plan_day_id: string
+          position: number
+          target_reps?: number | null
+          target_sets?: number | null
+          target_weight?: number | null
+          updated_at?: string
+          workout_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          owner_id?: string
+          plan_day_id?: string
+          position?: number
+          target_reps?: number | null
+          target_sets?: number | null
+          target_weight?: number | null
+          updated_at?: string
+          workout_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_items_plan_day_id_fkey"
+            columns: ["plan_day_id"]
+            isOneToOne: false
+            referencedRelation: "plan_days"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_items_workout_id_fkey"
+            columns: ["workout_id"]
+            isOneToOne: false
+            referencedRelation: "workouts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plans: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          owner_id?: string
+          updated_at?: string
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       runs: {
         Row: {
           created_at: string
@@ -129,15 +257,59 @@ export type Database = {
         }
         Relationships: []
       }
+      workouts: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          default_sets: number
+          group_name: string | null
+          id: string
+          name: string
+          notes: string | null
+          owner_id: string
+          tracks: Database["public"]["Enums"]["tracked_field"][]
+          updated_at: string
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          default_sets?: number
+          group_name?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          owner_id?: string
+          tracks: Database["public"]["Enums"]["tracked_field"][]
+          updated_at?: string
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          default_sets?: number
+          group_name?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          owner_id?: string
+          tracks?: Database["public"]["Enums"]["tracked_field"][]
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      activate_plan: { Args: { target: string }; Returns: undefined }
+      create_plan: {
+        Args: { activate?: boolean; plan_name: string }
+        Returns: string
+      }
+      seed_gym_defaults: { Args: never; Returns: undefined }
     }
     Enums: {
-      [_ in never]: never
+      tracked_field: "reps" | "weight" | "duration" | "distance"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -267,6 +439,8 @@ export const Constants = {
     Enums: {},
   },
   public: {
-    Enums: {},
+    Enums: {
+      tracked_field: ["reps", "weight", "duration", "distance"],
+    },
   },
 } as const
