@@ -266,6 +266,7 @@ There is no `tests/` directory — no automated test suite is maintained (see US
 | [US-010](stories/US-010-gym-plans.md) | Workout library and gym plans | Done |
 | [US-011](stories/US-011-gym-session.md) | Gym session — timed, per-exercise logging | Done |
 | [US-012](stories/US-012-goals.md) | Goals — target and streak | Done |
+| [US-013](stories/US-013-feature-requests.md) | Feature request log | Done |
 
 The stories from US-006 on are the **design-2 wave**. Their order, the decisions behind them, and
 the task breakdown live in [`design-2-roadmap.md`](design-2-roadmap.md); read it before picking one up.

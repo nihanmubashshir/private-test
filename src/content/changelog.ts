@@ -25,6 +25,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.12.0",
+    date: "2026-09-13",
+    title: "Requests",
+    changes: [
+      { kind: "added", text: "A place in Settings to jot down what you want the app to do next." },
+      { kind: "added", text: "Mark a request done, reopen it, edit it in place, or delete it." },
+      { kind: "improved", text: "Adding, finishing and deleting happen instantly, with a Retry if the save fails." },
+    ],
+  },
+  {
     version: "0.11.0",
     date: "2026-09-13",
     title: "Goals",

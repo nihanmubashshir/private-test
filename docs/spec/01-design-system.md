@@ -193,6 +193,8 @@ Components, variants, and tokens added by agents beyond the handoff. Add a row f
 | US-012 | `components/goals/goal-progress.tsx` | A goal's bar (target) or day strip (streak) | **Never gold** (§10.2): `neutral-300` fill on `neutral-800`, `success-400` once reached. The bar animates `transform: scaleX`, not `width`, which would force layout per frame. Today, not yet qualified, is ring-outlined — the day isn't over |
 | US-012 | `components/gym/workout-picker.tsx` | Search-and-tap exercise list shared by the plan editor and the live session | Replaced the plan editor's private picker when the session needed the same list |
 
+| US-013 | `components/requests/request-list.tsx` | The feature request log | Add row sticky under the app bar (`top: var(--spacing-app-bar) + safe-area`); round checkbox with a 44px target; done rows struck through at 70% opacity inside a collapsed `<details>`; every write optimistic via `useOptimistic`, with a Retry toast on failure |
+
 ## 9. shadcn/ui + Radix (added in US-005)
 
 shadcn/ui components are **copied source** in `src/components/ui/`, built on Radix primitives. They are a behavior and accessibility
