@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireFull } from "@/lib/auth/require-full";
 import { isoInstant, timeZone, SKEW_TOLERANCE_MS } from "@/lib/time/validate";
+import { MIN_KG, MAX_KG } from "@/lib/weight/limits";
 
 export interface WeightActionResult {
   ok: boolean;
@@ -14,9 +15,6 @@ export interface WeightActionResult {
 
 const GENERIC_ERROR = "Couldn't save that reading. Try again.";
 const NOT_FOUND_MESSAGE = "This reading no longer exists.";
-
-export const MIN_KG = 20;
-export const MAX_KG = 400;
 
 /**
  * One decimal place is what the scale shows and what the keypad allows; the column stores two so

@@ -8,28 +8,31 @@ import { PullToRefresh } from "@/components/shell/pull-to-refresh";
 import { ToastOnParam } from "@/components/shell/toast-on-param";
 import { TrackerCard } from "@/components/trackers/tracker-card";
 import { RecentActivity } from "@/components/trackers/recent-activity";
+import { WeightCard } from "@/components/weight/weight-card";
+import { listWeighIns } from "@/lib/weight/queries";
 
 const RECENT_ACTIVITY_LIMIT = 5;
+/** The sparkline window (US-009 §5.1). One extra day so the week-ago comparison has a neighbour. */
+const SPARKLINE_DAYS = 31;
 
 export default async function HomePage() {
   const supabase = await requireFull();
   const kinds = Object.keys(stopwatchKinds) as StopwatchKind[];
 
-  const [actives, recent, lastByKind] = await Promise.all([
+  const since = new Date(Date.now() - SPARKLINE_DAYS * 86_400_000).toISOString();
+
+  const [actives, recent, lastByKind, weighIns] = await Promise.all([
     getActiveStopwatches(supabase),
     listCompletedSessions(supabase, { limit: RECENT_ACTIVITY_LIMIT }),
     Promise.all(kinds.map((kind) => listCompletedSessions(supabase, { kind, limit: 1 }))),
+    listWeighIns(supabase, { since }),
   ]);
 
   return (
     <PullToRefresh>
       <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
         <ToastOnParam param="missing" message="That page doesn't exist." tone="warning" />
-        <LargeTitle
-          title="Home"
-          eyebrow={<TodayEyebrow />}
-          rightSlot={<SettingsButton />}
-        />
+        <LargeTitle title="Home" eyebrow={<TodayEyebrow />} rightSlot={<SettingsButton />} />
 
         <div className="flex flex-col gap-4">
           {kinds.map((kind, index) => (
@@ -41,6 +44,8 @@ export default async function HomePage() {
               primaryAction={index === 0}
             />
           ))}
+
+          <WeightCard latest={weighIns[0] ?? null} recent={weighIns} />
         </div>
 
         {recent.length > 0 && (
