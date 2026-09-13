@@ -11,7 +11,7 @@ import {
   updatePlanItem,
   type GymActionResult,
 } from "@/app/(app)/gym/actions";
-import { WEEKDAY_LABELS, describeTargets, weekdayFromDate, type Plan, type Workout } from "@/lib/gym/types";
+import { WEEKDAY_LABELS, describeTargets, weekdayInZone, type Plan, type Workout } from "@/lib/gym/types";
 import { estimateMinutes } from "@/lib/gym/summary";
 import { useAppTimeZone } from "@/components/shell/app-time-zone";
 import { EntrySheet } from "@/components/ui/entry-sheet";
@@ -46,7 +46,7 @@ export function PlanEditor({ plan, workouts }: PlanEditorProps) {
 
   // Open on today, which is the day the owner almost always wants.
   useEffect(() => {
-    if (timeZone) setSelected(weekdayFromDate(new Date()));
+    if (timeZone) setSelected(weekdayInZone(timeZone));
   }, [timeZone]);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export function PlanEditor({ plan, workouts }: PlanEditorProps) {
   const day = plan.days.find((d) => d.weekday === selected) ?? plan.days[0];
   if (!day) return null;
 
-  const today = timeZone ? weekdayFromDate(new Date()) : -1;
+  const today = timeZone ? weekdayInZone(timeZone) : -1;
   const plannedSets = day.items.reduce((total, item) => total + (item.targetSets ?? 0), 0);
   const minutes = estimateMinutes(plannedSets);
 

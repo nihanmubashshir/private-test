@@ -29,6 +29,8 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: "2026-09-13",
     title: "Requests",
     changes: [
+      { kind: "fixed", text: "The gym card on Home now has a Start session button on planned days — it was missing." },
+      { kind: "fixed", text: "A session's start time is when you tap Start, not when Home was opened." },
       { kind: "added", text: "A place in Settings to jot down what you want the app to do next." },
       { kind: "added", text: "Mark a request done, reopen it, edit it in place, or delete it." },
       { kind: "improved", text: "Adding, finishing and deleting happen instantly, with a Retry if the save fails." },

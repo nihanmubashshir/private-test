@@ -1,4 +1,5 @@
 import type { Database } from "@/lib/supabase/database.types";
+import { dateKey } from "@/lib/time/format";
 
 export type TrackedField = Database["public"]["Enums"]["tracked_field"];
 
@@ -54,11 +55,17 @@ export interface Plan {
 export const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 /**
- * `Date.getDay()` is Sunday-first; `plan_days.weekday` is Monday-first (ISO), because the week
- * strip reads Mon–Sun. Converting in one place keeps the off-by-one from spreading.
+ * Today's weekday in `timeZone`, Monday-first (0 = Monday … 6 = Sunday) to match
+ * `plan_days.weekday`, which is ISO order because the week strip reads Mon–Sun.
+ *
+ * Replaces `weekdayFromDate()`, which read `Date.getDay()` — the *device's* zone. With the app zone
+ * set in Settings (US-008), that put the gym card on the wrong day for anyone travelling, which is
+ * the exact case the setting exists for. The calendar date is resolved in the app zone first, then
+ * its day of the week is read in UTC, where a bare date has no offset left to shift it.
  */
-export function weekdayFromDate(date: Date): number {
-  return (date.getDay() + 6) % 7;
+export function weekdayInZone(timeZone: string, now: Date = new Date()): number {
+  const [year, month, day] = dateKey(now.toISOString(), timeZone).split("-").map(Number);
+  return (new Date(Date.UTC(year, month - 1, day)).getUTCDay() + 6) % 7;
 }
 
 /** `3 × 8 · 100 kg`, omitting whatever is not set. */
