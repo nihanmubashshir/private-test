@@ -51,32 +51,68 @@ After any migration:
 pnpm db types --local     # or: pnpm db types   (hosted)
 ```
 
-## Hosted Supabase project checklist
+## Starting a new hosted Supabase project
 
-Apply these in the hosted project's dashboard (Authentication → Settings, unless noted). They mirror
-`supabase/config.toml`, which only applies to the local CLI stack.
+Do these in order. Steps 1–3 are the dashboard; everything after runs from a terminal.
 
-- [ ] **Signups disabled.** Authentication → Settings → "Allow new users to sign up" is **off**, for
-  both the general and the email provider settings.
-- [ ] **Email confirmations off.** The owner account is created pre-confirmed by
-  `pnpm owner:create`; there is no signup flow that needs a confirmation email.
-- [ ] **TOTP MFA enabled.** Authentication → Settings → "Multi-factor authentication" → TOTP
-  (Authenticator app) enroll and verify are both **on**.
-- [ ] **Minimum password length: 12.** Authentication → Settings → Password → "Minimum password
-  length" is `12`.
-- [ ] **Rate limits.** Authentication → Rate Limits: sign-in/sign-up attempts and OTP/token
-  verifications are lowered from the defaults (e.g. `10` per 5 minutes), matching
-  `supabase/config.toml`.
-- [ ] **Site URL.** Authentication → URL Configuration → Site URL is set to the production domain
-  (not `localhost`).
-- [ ] **Migrations applied.** `pnpm db status` shows every local migration as applied. See
-  [Running migrations](#running-migrations).
-- [ ] **Environment variables** set wherever the app is hosted: `NEXT_PUBLIC_SUPABASE_URL`,
-  `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_APP_NAME`. `SUPABASE_SECRET_KEY` and
-  `SUPABASE_DB_URL` are needed only wherever the operator scripts run (a terminal with access to the
-  hosted project), never in the deployed app's own environment.
-- [ ] **`pnpm owner:create`** run once, from a terminal with `SUPABASE_SECRET_KEY` set to the hosted
-  project's secret key, to create the single owner account.
+1. **Create the project.** Note the project ref (the subdomain in its URL,
+   `https://<ref>.supabase.co`) and the database password you set — the password is shown once.
+2. **Auth settings** (Authentication → Settings). These are not covered by migrations, because
+   `supabase/config.toml` only drives the local CLI stack:
+   - "Allow new users to sign up" **off**, for both the general and the email provider settings.
+   - Email confirmations **off** — the owner account is created pre-confirmed, and there is no
+     signup flow that needs one.
+   - Multi-factor authentication → TOTP (Authenticator app): enroll and verify both **on**.
+   - Password → minimum length `12`.
+   - Rate Limits → lower sign-in attempts and OTP/token verifications from the defaults
+     (e.g. `10` per 5 minutes), matching `supabase/config.toml`.
+3. **Site URL** (Authentication → URL Configuration) → the production domain once deployed. Set it
+   to `http://localhost:3000` in the meantime.
+4. **Fill `.env.local`** from `.env.example`:
+   - `NEXT_PUBLIC_SUPABASE_URL` — `https://<ref>.supabase.co`
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` — Project Settings → API Keys
+   - `SUPABASE_SECRET_KEY` — same page. Scripts only; never goes in the deployed app's environment.
+   - `SUPABASE_DB_URL` — Project Settings → Database → Connection string → URI (session pooler),
+     with `[YOUR-PASSWORD]` replaced. Percent-encode special characters in the password (`@` → `%40`).
+5. **Apply the schema**, check it, and generate types:
+   ```bash
+   pnpm db status      # expect: every migration listed as local-only
+   pnpm db push
+   pnpm db verify      # RLS + owner policy + aal2 policy on every table
+   pnpm db types
+   pnpm typecheck
+   ```
+6. **Create the owner account**, then sign in and enroll TOTP:
+   ```bash
+   pnpm owner:create --email you@example.com
+   pnpm dev
+   ```
+7. **Point the Supabase MCP server at the new project**, if you use it — `.mcp.json` pins
+   `project_ref` in its URL, and it is set to `read_only=true`, so an agent can read the schema but
+   not change it. Migrations are the only way schema should change anyway.
+8. **Deployment environment variables** (Vercel): `NEXT_PUBLIC_SUPABASE_URL`,
+   `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_APP_NAME`. Not `SUPABASE_SECRET_KEY` and not
+   `SUPABASE_DB_URL` — both are operator-terminal only.
+
+A fresh project needs no `pnpm db baseline`. Baselining exists only for a database whose schema was
+applied by hand outside the migration system.
+
+## Hosted project checklist
+
+A tick-list for auditing a project that already exists — the ordered walkthrough for a new one is
+[above](#starting-a-new-hosted-supabase-project).
+
+- [ ] Signups disabled, for both the general and the email provider settings
+- [ ] Email confirmations off
+- [ ] TOTP MFA: enroll and verify both on
+- [ ] Minimum password length 12
+- [ ] Rate limits lowered from the defaults, matching `supabase/config.toml`
+- [ ] Site URL is the production domain, not `localhost`
+- [ ] `pnpm db status` shows every migration applied
+- [ ] `pnpm db verify` passes
+- [ ] `pnpm owner:create` has been run once
+- [ ] Deployed environment has the three `NEXT_PUBLIC_*` vars and **neither** `SUPABASE_SECRET_KEY`
+      nor `SUPABASE_DB_URL`
 
 ## Running migrations
 
@@ -98,6 +134,7 @@ string is the only credential, and it lives in `.env.local`.
 | `pnpm db push --dry-run` | Prints what would be applied, changes nothing |
 | `pnpm db push` | Applies pending migrations (prompts before touching the hosted database) |
 | `pnpm db types` | Regenerates `src/lib/supabase/database.types.ts` |
+| `pnpm db verify` | Checks every public table has RLS, an owner policy and a restrictive aal2 policy, and that nothing is granted to `anon` |
 | `pnpm db baseline` | Marks every local migration as applied **without running it** — see below |
 | `pnpm db reset --local` | Drops the local database and re-applies everything. Local only; refuses to run against hosted |
 
@@ -106,6 +143,7 @@ string is the only credential, and it lives in `.env.local`.
 ```bash
 pnpm db new weight_tracker      # write the SQL in the file it creates
 pnpm db push --local            # try it locally first
+pnpm db verify --local          # RLS + policies on the new table
 pnpm db types --local           # regenerate types
 pnpm typecheck
 pnpm db push                    # then the hosted project

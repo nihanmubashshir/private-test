@@ -22,10 +22,13 @@ const CLI = (() => {
   return existsSync(local) ? local : "supabase";
 })();
 
-type Target = { flags: string[]; label: string };
+/** The CLI stack's fixed local connection string (supabase/config.toml, [db] port). */
+const LOCAL_DB_URL = "postgresql://postgres:postgres@127.0.0.1:54322/postgres";
+
+type Target = { flags: string[]; label: string; dbUrl: string };
 
 function resolveTarget(local: boolean): Target {
-  if (local) return { flags: ["--local"], label: "local" };
+  if (local) return { flags: ["--local"], label: "local", dbUrl: LOCAL_DB_URL };
 
   const dbUrl = process.env.SUPABASE_DB_URL;
   if (!dbUrl) {
@@ -43,7 +46,7 @@ function resolveTarget(local: boolean): Target {
     process.exit(1);
   }
 
-  return { flags: ["--db-url", dbUrl], label: hostOf(dbUrl) };
+  return { flags: ["--db-url", dbUrl], label: hostOf(dbUrl), dbUrl };
 }
 
 /** The host alone, so a connection string is never echoed to the terminal or a log. */
@@ -72,6 +75,93 @@ function localVersions(): string[] {
     .sort();
 }
 
+/** Runs one query through psql and returns its rows as `|`-separated fields. */
+function query(dbUrl: string, sql: string): string[][] {
+  const result = spawnSync("psql", [dbUrl, "-At", "-F", "|", "-c", sql], {
+    encoding: "utf8",
+    shell: false,
+  });
+  if (result.error) {
+    console.error(
+      [
+        `Could not run psql: ${result.error.message}`,
+        "verify shells out to psql, which is not bundled with this project. Install the postgresql",
+        "client package, or run the checks by hand against the SQL in scripts/db.ts.",
+      ].join("\n"),
+    );
+    process.exit(1);
+  }
+  if (result.status !== 0) {
+    process.stderr.write(result.stderr ?? "");
+    process.exit(result.status ?? 1);
+  }
+  return result.stdout
+    .split("\n")
+    .filter((line) => line.trim() !== "")
+    .map((line) => line.split("|"));
+}
+
+/**
+ * Enforces the table template in overview §6: RLS on, an owner policy, a restrictive aal2 policy,
+ * and nothing granted to anon. Cheap to run, and the failure mode it catches — a table shipped
+ * without its aal2 policy — is invisible until it is exploited.
+ */
+function verify(target: Target): number {
+  const { dbUrl } = target;
+
+  const tables = query(
+    dbUrl,
+    `select t.tablename,
+            c.relrowsecurity,
+            coalesce(bool_or(p.permissive = 'PERMISSIVE'), false),
+            coalesce(bool_or(p.permissive = 'RESTRICTIVE' and p.qual ilike '%aal2%'), false)
+     from pg_tables t
+     join pg_namespace n on n.nspname = t.schemaname
+     join pg_class c on c.relname = t.tablename and c.relnamespace = n.oid
+     left join pg_policies p on p.schemaname = t.schemaname and p.tablename = t.tablename
+     where t.schemaname = 'public'
+     group by t.tablename, c.relrowsecurity
+     order by t.tablename;`,
+  );
+
+  const anonGrants = query(
+    dbUrl,
+    `select distinct table_name from information_schema.role_table_grants
+     where table_schema = 'public' and grantee = 'anon' order by table_name;`,
+  );
+
+  if (tables.length === 0) {
+    console.log("No tables in the public schema yet. Nothing to verify.");
+    return 0;
+  }
+
+  const problems: string[] = [];
+  for (const [name, rls, owner, aal2] of tables) {
+    const missing: string[] = [];
+    if (rls !== "t") missing.push("RLS not enabled");
+    if (owner !== "t") missing.push("no owner policy");
+    if (aal2 !== "t") missing.push("no restrictive aal2 policy");
+    const status = missing.length === 0 ? "ok" : missing.join(", ");
+    console.log(`  ${missing.length === 0 ? "✓" : "✗"} ${name.padEnd(28)} ${status}`);
+    if (missing.length > 0) problems.push(`${name}: ${missing.join(", ")}`);
+  }
+
+  for (const [name] of anonGrants) {
+    console.log(`  ✗ ${name.padEnd(28)} granted to anon`);
+    problems.push(`${name}: granted to anon`);
+  }
+
+  console.log("");
+  if (problems.length > 0) {
+    console.error(
+      `${problems.length} problem(s). Every table needs the template in docs/spec/00-overview.md §6.`,
+    );
+    return 1;
+  }
+  console.log(`${tables.length} table(s) verified.`);
+  return 0;
+}
+
 function usage(): never {
   console.log(
     [
@@ -84,6 +174,7 @@ function usage(): never {
       "  push --dry-run      Print what push would apply, without applying it",
       "  baseline            Mark every local migration as already applied, without running it",
       "  types               Regenerate src/lib/supabase/database.types.ts from the target database",
+      "  verify              Check every public table has RLS, an owner policy and an aal2 policy",
       "  reset               Drop and re-apply every migration (local only, destructive)",
       "",
       "Target: the hosted project via SUPABASE_DB_URL by default, or --local for the CLI stack.",
@@ -166,6 +257,9 @@ async function main() {
       }
       process.exit(supabase(["migration", "repair", "--status", "applied", ...versions, ...target.flags]));
     }
+
+    case "verify":
+      process.exit(verify(target));
 
     case "types": {
       const result = spawnSync(CLI, ["gen", "types", "typescript", ...target.flags], {

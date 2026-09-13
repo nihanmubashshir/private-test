@@ -52,6 +52,7 @@ See [`docs/setup.md`](docs/setup.md) for lockout recovery (`pnpm owner:reset-pas
 | `pnpm db new <name>` | Create a migration in `supabase/migrations/` |
 | `pnpm db push` | Apply pending migrations (hosted by default; `--local` for the Docker stack) |
 | `pnpm db types` | Regenerate `src/lib/supabase/database.types.ts` |
+| `pnpm db verify` | Check RLS and policies on every table |
 | `pnpm db reset --local` | Drop and re-apply every migration locally (destructive) |
 | `pnpm exec supabase start` / `stop` | Local Supabase (Docker) |
 | `pnpm owner:create` | Create the single owner account |

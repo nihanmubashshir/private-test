@@ -39,6 +39,7 @@ URL, per the `docs/setup.md` hosted checklist.
 | `pnpm db new <name>` | Create a migration in `supabase/migrations/` |
 | `pnpm db push` | Apply pending migrations (hosted by default, `--local` for the Docker stack) |
 | `pnpm db types` | Regenerate `src/lib/supabase/database.types.ts` |
+| `pnpm db verify` | Check every public table has RLS, an owner policy and an aal2 policy (overview §6) |
 | `pnpm db reset --local` | Drop and re-apply every migration locally (destructive, local only) |
 | `pnpm exec supabase start` / `stop` | Local Supabase (Docker). The CLI is a devDependency — do not install it globally |
 | `pnpm owner:create --email <email>` | Create the single owner account (password is prompted, never passed as a flag) |
