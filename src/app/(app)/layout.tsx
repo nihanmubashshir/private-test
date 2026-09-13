@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { requireFull } from "@/lib/auth/require-full";
 import { Toaster } from "@/components/ui/toaster";
 import { NavigationProgressProvider } from "@/components/shell/navigation-progress";
+import { NavigationDepthProvider } from "@/components/shell/navigation-depth";
 import { ActiveStopwatchSlot } from "@/components/stopwatch/active-stopwatch-slot";
 
 /**
@@ -23,13 +24,15 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <NavigationProgressProvider>
-      <div className="min-h-dvh" style={{ paddingBottom: "var(--mini-bar-height, 0px)" }}>
-        {children}
-        <Suspense fallback={null}>
-          <ActiveStopwatchSlot />
-        </Suspense>
-      </div>
-      <Toaster position="bottom-center" />
+      <NavigationDepthProvider>
+        <div className="min-h-dvh" style={{ paddingBottom: "var(--mini-bar-height, 0px)" }}>
+          {children}
+          <Suspense fallback={null}>
+            <ActiveStopwatchSlot />
+          </Suspense>
+        </div>
+        <Toaster position="bottom-center" />
+      </NavigationDepthProvider>
     </NavigationProgressProvider>
   );
 }

@@ -42,9 +42,15 @@ export const CHANGELOG: ChangelogEntry[] = [
       { kind: "added", text: "A bottom tab bar, and full-screen screens that push and close." },
       { kind: "added", text: "A full-screen stopwatch view for the moment of running." },
       { kind: "added", text: "Pull to refresh on Home, Activity and the running tracker." },
-      { kind: "added", text: "Toasts for anything that succeeded, and confirmation sheets before anything destructive." },
+      {
+        kind: "added",
+        text: "Toasts for anything that succeeded, and confirmation sheets before anything destructive.",
+      },
       { kind: "improved", text: "Every screen now loads as a skeleton shaped like the real thing, so nothing jumps." },
-      { kind: "improved", text: "Safe areas are respected, so no content hides under the status bar or the home indicator." },
+      {
+        kind: "improved",
+        text: "Safe areas are respected, so no content hides under the status bar or the home indicator.",
+      },
       { kind: "improved", text: "A banner tells you when you're offline, and when you're back." },
     ],
   },
@@ -66,7 +72,10 @@ export const CHANGELOG: ChangelogEntry[] = [
     changes: [
       { kind: "added", text: "One stopwatch the whole app shares, so any tracker can be timed the same way." },
       { kind: "added", text: "A bar that stays on screen while something is still running." },
-      { kind: "improved", text: "Elapsed time is worked out from the start time, so it stays right after you close the app." },
+      {
+        kind: "improved",
+        text: "Elapsed time is worked out from the start time, so it stays right after you close the app.",
+      },
     ],
   },
   {

@@ -18,10 +18,7 @@ export interface SettingsRowProps {
  */
 export function SettingsRow({ icon: Icon, label, value, trailing, href }: SettingsRowProps) {
   return (
-    <Link
-      href={href}
-      className="flex min-h-14 items-center gap-3 px-4 py-3 active:bg-surface-hover"
-    >
+    <Link href={href} className="flex min-h-14 items-center gap-3 px-4 py-3 active:bg-surface-hover">
       <span aria-hidden className="flex size-10 shrink-0 items-center justify-center rounded-full bg-neutral-800">
         <Icon className="size-5 text-neutral-50" strokeWidth={1.75} />
       </span>

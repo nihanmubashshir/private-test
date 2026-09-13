@@ -2,12 +2,17 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCanGoBack } from "@/components/shell/navigation-depth";
 import { ChevronLeft, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface AppBarProps {
   title: string;
-  /** A fixed parent route — never history.back(), which can exit the PWA when there's no history. */
+  /**
+   * The parent route. Used directly when this session has no in-app history to go back to —
+   * a deep link, or a cold start — since `history.back()` there would close the PWA.
+   */
   backHref: string;
   mode?: "back" | "close";
   rightSlot?: ReactNode;
@@ -21,6 +26,8 @@ export interface AppBarProps {
 /** Stack-screen top bar (01-design-system.md §5.4). */
 export function AppBar({ title, backHref, mode = "back", rightSlot, onBeforeNavigate }: AppBarProps) {
   const [scrolled, setScrolled] = useState(false);
+  const canGoBack = useCanGoBack();
+  const router = useRouter();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 0);
@@ -31,7 +38,8 @@ export function AppBar({ title, backHref, mode = "back", rightSlot, onBeforeNavi
 
   const Icon = mode === "close" ? X : ChevronLeft;
   const label = mode === "close" ? "Close" : "Back";
-  const iconButtonClass = "flex h-tap w-tap shrink-0 items-center justify-center text-neutral-50 active:text-neutral-300";
+  const iconButtonClass =
+    "flex h-tap w-tap shrink-0 items-center justify-center text-neutral-50 active:text-neutral-300";
 
   return (
     <div
@@ -40,8 +48,13 @@ export function AppBar({ title, backHref, mode = "back", rightSlot, onBeforeNavi
         scrolled && "border-b border-neutral-800",
       )}
     >
-      {onBeforeNavigate ? (
-        <button type="button" onClick={onBeforeNavigate} aria-label={label} className={iconButtonClass}>
+      {onBeforeNavigate || canGoBack ? (
+        <button
+          type="button"
+          onClick={onBeforeNavigate ?? (() => router.back())}
+          aria-label={label}
+          className={iconButtonClass}
+        >
           <Icon className="size-5" strokeWidth={1.75} aria-hidden />
         </button>
       ) : (
