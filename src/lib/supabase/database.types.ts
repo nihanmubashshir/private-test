@@ -336,6 +336,42 @@ export type Database = {
         }
         Relationships: []
       }
+      prayers: {
+        Row: {
+          created_at: string
+          id: string
+          owner_id: string
+          prayed_at: string
+          prayer_date: string
+          status: Database["public"]["Enums"]["prayer_status"]
+          time_zone: string
+          updated_at: string
+          waqt: Database["public"]["Enums"]["waqt"]
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          owner_id?: string
+          prayed_at: string
+          prayer_date: string
+          status: Database["public"]["Enums"]["prayer_status"]
+          time_zone: string
+          updated_at?: string
+          waqt: Database["public"]["Enums"]["waqt"]
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          owner_id?: string
+          prayed_at?: string
+          prayer_date?: string
+          status?: Database["public"]["Enums"]["prayer_status"]
+          time_zone?: string
+          updated_at?: string
+          waqt?: Database["public"]["Enums"]["waqt"]
+        }
+        Relationships: []
+      }
       runs: {
         Row: {
           created_at: string
@@ -519,8 +555,10 @@ export type Database = {
     Enums: {
       goal_kind: "target" | "streak"
       goal_status: "active" | "paused" | "completed"
-      goal_subject: "weight" | "running" | "gym" | "workout"
+      goal_subject: "weight" | "running" | "gym" | "workout" | "prayer"
+      prayer_status: "mosque" | "home" | "qadha"
       tracked_field: "reps" | "weight" | "duration" | "distance"
+      waqt: "fajr" | "dhuhr" | "asr" | "maghrib" | "isha"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -653,8 +691,10 @@ export const Constants = {
     Enums: {
       goal_kind: ["target", "streak"],
       goal_status: ["active", "paused", "completed"],
-      goal_subject: ["weight", "running", "gym", "workout"],
+      goal_subject: ["weight", "running", "gym", "workout", "prayer"],
+      prayer_status: ["mosque", "home", "qadha"],
       tracked_field: ["reps", "weight", "duration", "distance"],
+      waqt: ["fajr", "dhuhr", "asr", "maghrib", "isha"],
     },
   },
 } as const
