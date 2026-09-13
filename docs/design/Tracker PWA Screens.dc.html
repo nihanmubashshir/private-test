@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  body { margin: 0; background: #050506; color: #f6f6f7; font-family: Manrope, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  a { color: #c9a349; text-decoration: none; }
+  a:hover { color: #dcbc72; }
+  @keyframes shimmer { 0% { opacity: .55 } 50% { opacity: 1 } 100% { opacity: .55 } }
+</style>
+</helmet>
+
+<div style="padding: 40px 40px 120px; display: flex; flex-direction: column; gap: 8px;">
+
+  <div style="display: flex; flex-direction: column; gap: 14px; max-width: 760px; margin-bottom: 24px;">
+    <div style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #c9a349;">PWA screens · turn 1 · US-002 → US-006</div>
+    <h1 style="margin: 0; font-size: 38px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.05;">Tracker, redesigned for the home screen</h1>
+    <p style="margin: 0; font-size: 16px; line-height: 1.65; color: #b0b3ba; text-wrap: pretty;">No tab bar, no Activity screen. Home is the root; everything else pushes over it and every input is a sheet. Frames are 390×844 in standalone mode. Each frame carries an id — reference it in chat (<b style="color: #f6f6f7; font-weight: 600;">B2</b>, <b style="color: #f6f6f7; font-weight: 600;">C4</b>) and I'll change just that one.</p>
+  </div>
+
+  <!-- ============================== A · HOME ============================== -->
+  <div style="display: flex; flex-direction: column; gap: 18px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; border-top: 1px solid #1c1d21; padding-top: 14px;">
+      <div style="font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">A — Home and its states</div>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 28px;">
+
+      <!-- A1 Home default -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 390px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: #08090a; background: #c9a349; padding: 3px 7px; border-radius: 5px;">A1</span>
+          <span style="font-size: 14px; font-weight: 600;">Home</span>
+          <span style="font-size: 13px; color: #63676f;">gym day, loaded</span>
+        </div>
+        <div style="width: 390px; height: 844px; background: #08090a; border: 1px solid #1c1d21; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 30px 60px -20px rgba(0,0,0,.9); position: relative;">
+          <div style="height: 44px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-family: 'DM Mono', monospace; font-size: 12px; color: #f6f6f7;">
+            <span>9:41</span>
+            <span style="display: flex; gap: 5px; align-items: center; opacity: .85;"><span style="width: 16px; height: 9px; border: 1px solid #f6f6f7; border-radius: 2px; display: inline-block;"></span></span>
+          </div>
+          <div style="flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 22px; padding: 8px 0 0;">
+            <div style="padding: 0 20px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;">
+              <div>
+                <div style="font-size: 13px; color: #868a93;">Sunday 13 September</div>
+                <div style="font-size: 32px; font-weight: 600; letter-spacing: -0.03em; margin-top: 1px;">Home</div>
+              </div>
+              <div style="position: relative; flex: none;">
+                <div style="width: 40px; height: 40px; border-radius: 99px; border: 1px solid #2a2c31; background: #101114; display: flex; align-items: center; justify-content: center; color: #b0b3ba;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="10" r="3"></circle><path d="M6.4 19a6 6 0 0 1 11.2 0"></path></svg>
+                </div>
+                <span style="position: absolute; top: -1px; right: -1px; width: 9px; height: 9px; border-radius: 99px; background: #c9a349; border: 2px solid #08090a;"></span>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 2px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px 8px;">
+                <span style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">Goals</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-top: 1px solid #16171b;">
+                <div style="width: 32px; height: 32px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #868a93; flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg></div>
+                <div style="flex: 1; min-width: 0;">
+                  <div style="font-size: 15px; font-weight: 600;">Deadlift 400kg</div>
+                  <div style="height: 5px; border-radius: 99px; background: #1c1d21; margin-top: 7px; overflow: hidden;"><div style="width: 78%; height: 100%; background: #c9a349; border-radius: 99px;"></div></div>
+                </div>
+                <div style="font-family: 'DM Mono', monospace; font-size: 13px; color: #b0b3ba; flex: none; text-align: right;">312<span style="color: #63676f;"> / 400</span></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-top: 1px solid #16171b; border-bottom: 1px solid #16171b;">
+                <div style="width: 32px; height: 32px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #868a93; flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg></div>
+                <div style="flex: 1; min-width: 0;">
+                  <div style="font-size: 15px; font-weight: 600;">Gym 5 days this week</div>
+                  <div style="display: flex; gap: 3px; margin-top: 7px;">
+                    <span style="flex: 1; height: 5px; border-radius: 99px; background: #c9a349;"></span>
+                    <span style="flex: 1; height: 5px; border-radius: 99px; background: #c9a349;"></span>
+                    <span style="flex: 1; height: 5px; border-radius: 99px; background: #c9a349;"></span>
+                    <span style="flex: 1; height: 5px; border-radius: 99px; background: #1c1d21;"></span>
+                    <span style="flex: 1; height: 5px; border-radius: 99px; background: #1c1d21; border: 1px solid #7d621f;"></span>
+                  </div>
+                </div>
+                <div style="font-family: 'DM Mono', monospace; font-size: 13px; color: #b0b3ba; flex: none;">3<span style="color: #63676f;"> / 5</span></div>
+              </div>
+            </div>
+
+            <div style="padding: 0 20px; display: flex; flex-direction: column; gap: 14px;">
+              <div style="background: #101114; border: 1px solid #1c1d21; border-radius: 18px; padding: 18px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <div style="width: 40px; height: 40px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #dcbc72; flex: none;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg>
+                  </div>
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 17px; font-weight: 600;">Push A</div>
+                    <div style="font-size: 13px; color: #868a93; margin-top: 2px;">5 exercises · about 45 min</div>
+                  </div>
+                  <div style="color: #63676f; flex: none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6l6 6-6 6"></path></svg></div>
+                </div>
+                <button style="margin-top: 16px; width: 100%; min-height: 48px; border: 0; border-radius: 12px; background: #c9a349; color: #17120a; font-family: Manrope, sans-serif; font-size: 16px; font-weight: 600;">Start session</button>
+              </div>
+
+              <div style="background: #101114; border: 1px solid #1c1d21; border-radius: 18px; padding: 18px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <div style="width: 40px; height: 40px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #b0b3ba; flex: none;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="4"></rect><path d="M7.5 9.5a6 6 0 0 1 9 0"></path><path d="M12 13l3-3"></path></svg>
+                  </div>
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 15px; font-weight: 600; color: #b0b3ba;">Weight</div>
+                  </div>
+                  <div style="color: #63676f; flex: none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6l6 6-6 6"></path></svg></div>
+                </div>
+                <div style="display: flex; align-items: baseline; gap: 7px; margin-top: 12px;">
+                  <span style="font-family: 'DM Mono', monospace; font-size: 40px; font-weight: 500; letter-spacing: -0.02em; line-height: 1;">82.4</span>
+                  <span style="font-size: 16px; color: #868a93;">kg</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                  <span style="font-size: 13px; color: #b0b3ba;">↓ 0.6 kg this week</span>
+                  <span style="width: 3px; height: 3px; border-radius: 99px; background: #3c3f45;"></span>
+                  <span style="font-size: 13px; color: #63676f;">Today, 07:12</span>
+                </div>
+                <svg viewBox="0 0 314 48" style="width: 100%; height: 48px; margin-top: 12px; display: block; overflow: visible;">
+                  <polyline points="2,10 24,17 46,6 68,22 90,26 112,14 134,30 156,24 178,34 200,28 222,38 244,31 266,42 288,35 310,30" fill="none" stroke="#c9a349" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"></polyline>
+                  <circle cx="310" cy="30" r="3" fill="#c9a349"></circle>
+                </svg>
+                <button style="margin-top: 14px; width: 100%; min-height: 44px; border: 1px solid #2a2c31; border-radius: 12px; background: transparent; color: #f6f6f7; font-family: Manrope, sans-serif; font-size: 15px; font-weight: 600;">Log weight</button>
+              </div>
+
+              <div style="background: #101114; border: 1px solid #1c1d21; border-radius: 18px; padding: 16px 18px; display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #b0b3ba; flex: none;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="14.5" cy="4.5" r="2"></circle><path d="M11 21l2.2-5.2L10 12.6l.8-4.6 3 2 3 1"></path><path d="M7.4 11.6l3.4-1.2"></path><path d="M13.2 16.4l3 1 1 3.6"></path></svg>
+                </div>
+                <div style="flex: 1; min-width: 0;">
+                  <div style="font-size: 15px; font-weight: 600;">Running</div>
+                  <div style="font-size: 13px; color: #868a93; margin-top: 1px;">Last run · Today · <span style="font-family: 'DM Mono', monospace;">38s</span></div>
+                </div>
+                <div style="color: #63676f; flex: none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6l6 6-6 6"></path></svg></div>
+              </div>
+            </div>
+          </div>
+          <div style="position: absolute; right: 20px; bottom: 30px; width: 52px; height: 52px; border-radius: 99px; background: #101114; border: 1px solid #2a2c31; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 24px -8px rgba(0,0,0,.8); z-index: 2;"><span style="width: 8px; height: 8px; border-radius: 99px; background: #c9a349;"></span></div>
+          <div style="height: 22px; flex: none; display: flex; align-items: center; justify-content: center;"><span style="width: 120px; height: 4px; border-radius: 99px; background: #2a2c31;"></span></div>
+        </div>
+      </div>
+
+      <!-- A2 Home skeleton -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 390px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: #08090a; background: #c9a349; padding: 3px 7px; border-radius: 5px;">A2</span>
+          <span style="font-size: 14px; font-weight: 600;">Home · first paint</span>
+          <span style="font-size: 13px; color: #63676f;">shell + skeletons, no spinner</span>
+        </div>
+        <div style="width: 390px; height: 844px; background: #08090a; border: 1px solid #1c1d21; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 30px 60px -20px rgba(0,0,0,.9);">
+          <div style="height: 44px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-family: 'DM Mono', monospace; font-size: 12px; color: #f6f6f7;"><span>9:41</span><span style="width: 16px; height: 9px; border: 1px solid #f6f6f7; border-radius: 2px; opacity: .85;"></span></div>
+          <div style="height: 2px; flex: none; background: linear-gradient(90deg, #c9a349 0%, #c9a349 38%, transparent 38%);"></div>
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 22px; padding: 8px 0 0;">
+            <div style="padding: 0 20px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;">
+              <div>
+                <div style="font-size: 13px; color: #868a93;">Sunday 13 September</div>
+                <div style="font-size: 32px; font-weight: 600; letter-spacing: -0.03em; margin-top: 1px;">Home</div>
+              </div>
+              <div style="width: 40px; height: 40px; border-radius: 99px; border: 1px solid #2a2c31; background: #101114; flex: none;"></div>
+            </div>
+            <div style="padding: 0 20px; display: flex; flex-direction: column; gap: 14px;">
+              <div style="background: #101114; border: 1px solid #1c1d21; border-radius: 18px; padding: 18px; animation: shimmer 1.4s ease-in-out infinite;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <div style="width: 40px; height: 40px; border-radius: 99px; background: #1f2126; flex: none;"></div>
+                  <div style="flex: 1; display: flex; flex-direction: column; gap: 7px;">
+                    <div style="height: 15px; width: 45%; border-radius: 5px; background: #1f2126;"></div>
+                    <div style="height: 12px; width: 68%; border-radius: 5px; background: #1a1c20;"></div>
+                  </div>
+                </div>
+                <div style="margin-top: 16px; height: 48px; border-radius: 12px; background: #1a1c20;"></div>
+              </div>
+              <div style="background: #101114; border: 1px solid #1c1d21; border-radius: 18px; padding: 18px; animation: shimmer 1.4s ease-in-out .15s infinite;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <div style="width: 40px; height: 40px; border-radius: 99px; background: #1f2126; flex: none;"></div>
+                  <div style="height: 14px; width: 30%; border-radius: 5px; background: #1f2126;"></div>
+                </div>
+                <div style="height: 38px; width: 52%; border-radius: 7px; background: #1f2126; margin-top: 14px;"></div>
+                <div style="height: 12px; width: 70%; border-radius: 5px; background: #1a1c20; margin-top: 10px;"></div>
+                <div style="height: 48px; border-radius: 8px; background: #1a1c20; margin-top: 12px;"></div>
+                <div style="margin-top: 14px; height: 44px; border-radius: 12px; background: #1a1c20;"></div>
+              </div>
+              <div style="background: #101114; border: 1px solid #1c1d21; border-radius: 18px; padding: 16px 18px; display: flex; align-items: center; gap: 12px; animation: shimmer 1.4s ease-in-out .3s infinite;">
+                <div style="width: 40px; height: 40px; border-radius: 99px; background: #1f2126; flex: none;"></div>
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 7px;">
+                  <div style="height: 14px; width: 38%; border-radius: 5px; background: #1f2126;"></div>
+                  <div style="height: 12px; width: 60%; border-radius: 5px; background: #1a1c20;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="height: 22px; flex: none; display: flex; align-items: center; justify-content: center;"><span style="width: 120px; height: 4px; border-radius: 99px; background: #2a2c31;"></span></div>
+        </div>
+      </div>
+
+      <!-- A3 Home live session -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 390px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: #08090a; background: #c9a349; padding: 3px 7px; border-radius: 5px;">A3</span>
+          <span style="font-size: 14px; font-weight: 600;">Home · session running</span>
+          <span style="font-size: 13px; color: #63676f;">offline</span>
+        </div>
+        <div style="width: 390px; height: 844px; background: #08090a; border: 1px solid #1c1d21; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; position: relative; box-shadow: 0 30px 60px -20px rgba(0,0,0,.9);">
+          <div style="height: 44px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-family: 'DM Mono', monospace; font-size: 12px; color: #f6f6f7;"><span>19:02</span><span style="width: 16px; height: 9px; border: 1px solid #f6f6f7; border-radius: 2px; opacity: .85;"></span></div>
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 20px; padding: 8px 0 0;">
+            <div style="padding: 0 20px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;">
+              <div>
+                <div style="font-size: 13px; color: #868a93;">Sunday 13 September</div>
+                <div style="font-size: 32px; font-weight: 600; letter-spacing: -0.03em; margin-top: 1px;">Home</div>
+              </div>
+              <div style="width: 40px; height: 40px; border-radius: 99px; border: 1px solid #2a2c31; background: #101114; display: flex; align-items: center; justify-content: center; color: #b0b3ba; flex: none;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="10" r="3"></circle><path d="M6.4 19a6 6 0 0 1 11.2 0"></path></svg>
+              </div>
+            </div>
+
+            <div style="margin: 0 20px; background: #16171b; border: 1px solid #2a2c31; border-radius: 12px; padding: 11px 14px; display: flex; align-items: center; gap: 10px;">
+              <span style="width: 7px; height: 7px; border-radius: 99px; background: #868a93; flex: none;"></span>
+              <span style="font-size: 13px; color: #b0b3ba;">Offline</span>
+            </div>
+
+            <div style="padding: 0 20px; display: flex; flex-direction: column; gap: 14px;">
+              <div style="background: #101114; border: 1px solid #2a2c31; border-radius: 18px; padding: 18px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <div style="width: 40px; height: 40px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #dcbc72; flex: none;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg>
+                  </div>
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 17px; font-weight: 600;">Push A</div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 3px;">
+                      <span style="width: 7px; height: 7px; border-radius: 99px; background: #3ecf8e; flex: none;"></span>
+                      <span style="font-family: 'DM Mono', monospace; font-size: 15px; color: #f6f6f7;">24:18</span>
+                      <span style="font-size: 13px; color: #868a93;">· 3 of 5 done</span>
+                    </div>
+                  </div>
+                </div>
+                <button style="margin-top: 16px; width: 100%; min-height: 48px; border: 0; border-radius: 12px; background: #c9a349; color: #17120a; font-family: Manrope, sans-serif; font-size: 16px; font-weight: 600;">Resume</button>
+              </div>
+
+              <div style="background: #101114; border: 1px solid #1c1d21; border-radius: 18px; padding: 18px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <div style="width: 40px; height: 40px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #b0b3ba; flex: none;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="4"></rect><path d="M7.5 9.5a6 6 0 0 1 9 0"></path><path d="M12 13l3-3"></path></svg>
+                  </div>
+                  <div style="flex: 1; font-size: 15px; font-weight: 600; color: #b0b3ba;">Weight</div>
+                </div>
+                <div style="display: flex; align-items: baseline; gap: 7px; margin-top: 12px;">
+                  <span style="font-family: 'DM Mono', monospace; font-size: 40px; font-weight: 500; letter-spacing: -0.02em; line-height: 1;">82.4</span>
+                  <span style="font-size: 16px; color: #868a93;">kg</span>
+                </div>
+                <div style="font-size: 13px; color: #63676f; margin-top: 8px;">Today, 07:12</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="position: absolute; left: 14px; right: 14px; bottom: 30px; background: #16171b; border: 1px solid #2a2c31; border-radius: 16px; padding: 12px 12px 12px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 18px 36px -12px rgba(0,0,0,.9);">
+            <span style="width: 8px; height: 8px; border-radius: 99px; background: #3ecf8e; flex: none;"></span>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-family: 'DM Mono', monospace; font-size: 17px; line-height: 1.2;">24:18</div>
+              <div style="font-size: 12px; color: #868a93; margin-top: 1px;">Push A · Bench Press</div>
+            </div>
+            <button style="min-height: 40px; padding: 0 16px; border-radius: 10px; border: 0; background: #c9a349; color: #17120a; font-family: Manrope, sans-serif; font-size: 14px; font-weight: 600; flex: none;">Open</button>
+          </div>
+          <div style="position: absolute; right: 20px; bottom: 30px; width: 52px; height: 52px; border-radius: 99px; background: #101114; border: 1px solid #2a2c31; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 24px -8px rgba(0,0,0,.8); z-index: 2;"><span style="width: 8px; height: 8px; border-radius: 99px; background: #c9a349;"></span></div>
+          <div style="height: 22px; flex: none; display: flex; align-items: center; justify-content: center;"><span style="width: 120px; height: 4px; border-radius: 99px; background: #2a2c31;"></span></div>
+        </div>
+      </div>
+
+      <!-- A4 Home rest / empty -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 390px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: #08090a; background: #c9a349; padding: 3px 7px; border-radius: 5px;">A4</span>
+          <span style="font-size: 14px; font-weight: 600;">Home · rest day, nothing logged</span>
+        </div>
+        <div style="width: 390px; height: 844px; background: #08090a; border: 1px solid #1c1d21; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 30px 60px -20px rgba(0,0,0,.9); position: relative;">
+          <div style="height: 44px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-family: 'DM Mono', monospace; font-size: 12px; color: #f6f6f7;"><span>7:04</span><span style="width: 16px; height: 9px; border: 1px solid #f6f6f7; border-radius: 2px; opacity: .85;"></span></div>
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 22px; padding: 8px 0 0;">
+            <div style="padding: 0 20px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;">
+              <div>
+                <div style="font-size: 13px; color: #868a93;">Monday 14 September</div>
+                <div style="font-size: 32px; font-weight: 600; letter-spacing: -0.03em; margin-top: 1px;">Home</div>
+              </div>
+              <div style="width: 40px; height: 40px; border-radius: 99px; border: 1px solid #2a2c31; background: #101114; display: flex; align-items: center; justify-content: center; color: #b0b3ba; flex: none;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="10" r="3"></circle><path d="M6.4 19a6 6 0 0 1 11.2 0"></path></svg>
+              </div>
+            </div>
+
+            <div style="padding: 0 20px; display: flex; align-items: center; gap: 12px;">
+              <div style="width: 32px; height: 32px; border-radius: 99px; background: #16171b; display: flex; align-items: center; justify-content: center; color: #63676f; flex: none;">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg>
+              </div>
+              <div style="flex: 1; font-size: 15px; color: #868a93;">Rest day</div>
+              <span style="font-size: 14px; color: #63676f;">Start anyway</span>
+            </div>
+
+            <div style="padding: 0 20px; display: flex; flex-direction: column; gap: 14px;">
+              <div style="background: #101114; border: 1px solid #1c1d21; border-radius: 18px; padding: 18px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <div style="width: 40px; height: 40px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #b0b3ba; flex: none;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="4"></rect><path d="M7.5 9.5a6 6 0 0 1 9 0"></path><path d="M12 13l3-3"></path></svg>
+                  </div>
+                  <div style="flex: 1; font-size: 15px; font-weight: 600; color: #b0b3ba;">Weight</div>
+                  <div style="color: #63676f; flex: none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6l6 6-6 6"></path></svg></div>
+                </div>
+                <div style="display: flex; align-items: baseline; gap: 7px; margin-top: 12px;">
+                  <span style="font-family: 'DM Mono', monospace; font-size: 40px; font-weight: 500; letter-spacing: -0.02em; line-height: 1; color: #3c3f45;">82.4</span>
+                  <span style="font-size: 16px; color: #63676f;">kg</span>
+                </div>
+                <div style="font-size: 13px; color: #63676f; margin-top: 8px;">Yesterday, 07:12 · not logged today</div>
+                <button style="margin-top: 14px; width: 100%; min-height: 48px; border: 0; border-radius: 12px; background: #c9a349; color: #17120a; font-family: Manrope, sans-serif; font-size: 16px; font-weight: 600;">Log weight</button>
+              </div>
+              <div style="background: #101114; border: 1px solid #1c1d21; border-radius: 18px; padding: 16px 18px; display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #b0b3ba; flex: none;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="14.5" cy="4.5" r="2"></circle><path d="M11 21l2.2-5.2L10 12.6l.8-4.6 3 2 3 1"></path><path d="M7.4 11.6l3.4-1.2"></path><path d="M13.2 16.4l3 1 1 3.6"></path></svg>
+                </div>
+                <div style="flex: 1; min-width: 0;">
+                  <div style="font-size: 15px; font-weight: 600;">Running</div>
+                  <div style="font-size: 13px; color: #868a93; margin-top: 1px;">Last run · Yesterday · <span style="font-family: 'DM Mono', monospace;">38s</span></div>
+                </div>
+                <div style="color: #63676f; flex: none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6l6 6-6 6"></path></svg></div>
+              </div>
+            </div>
+
+          </div>
+          <div style="position: absolute; right: 20px; bottom: 30px; width: 52px; height: 52px; border-radius: 99px; background: #101114; border: 1px solid #2a2c31; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 24px -8px rgba(0,0,0,.8); z-index: 2;"><span style="width: 8px; height: 8px; border-radius: 99px; background: #c9a349;"></span></div>
+          <div style="height: 22px; flex: none; display: flex; align-items: center; justify-content: center;"><span style="width: 120px; height: 4px; border-radius: 99px; background: #2a2c31;"></span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================== B · WEIGHT ============================== -->
+  <div style="display: flex; flex-direction: column; gap: 18px; margin-top: 48px;">
+    <div style="border-top: 1px solid #1c1d21; padding-top: 14px; font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">B — Weight · US-003</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 28px;">
+
+      <!-- B1 log weight sheet -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 390px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: #08090a; background: #c9a349; padding: 3px 7px; border-radius: 5px;">B1</span>
+          <span style="font-size: 14px; font-weight: 600;">Log weight sheet</span>
+          <span style="font-size: 13px; color: #63676f;">custom keypad, no OS keyboard</span>
+        </div>
+        <div style="width: 390px; height: 844px; background: #08090a; border: 1px solid #1c1d21; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; position: relative; box-shadow: 0 30px 60px -20px rgba(0,0,0,.9);">
+          <div style="position: absolute; inset: 0; background: rgba(0,0,0,.62);"></div>
+          <div style="position: relative; background: #101114; border-top: 1px solid #2a2c31; border-radius: 22px 22px 0 0; padding: 14px 20px 30px; display: flex; flex-direction: column; gap: 18px;">
+            <div style="width: 36px; height: 4px; border-radius: 99px; background: #2a2c31; align-self: center;"></div>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-size: 17px; font-weight: 600;">Log weight</span>
+              <span style="font-size: 15px; color: #868a93;">Cancel</span>
+            </div>
+            <div style="display: flex; align-items: baseline; justify-content: center; gap: 8px; padding: 6px 0 2px;">
+              <span style="font-family: 'DM Mono', monospace; font-size: 52px; font-weight: 500; letter-spacing: -0.03em; line-height: 1;">82.1</span>
+              <span style="width: 2px; height: 42px; background: #c9a349; align-self: center; margin-left: -2px;"></span>
+              <span style="font-size: 20px; color: #868a93;">kg</span>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 0; border-top: 1px solid #1c1d21; border-bottom: 1px solid #1c1d21;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#868a93" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5V12l3 1.8"></path></svg>
+              <span style="font-size: 15px; color: #f6f6f7;">Today, 07:12</span>
+              <span style="font-size: 13px; color: #c9a349;">Change</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+              <button style="height: 58px; border-radius: 12px; border: 1px solid #1c1d21; background: #16171b; color: #f6f6f7; font-family: 'DM Mono', monospace; font-size: 24px;">1</button>
+              <button style="height: 58px; border-radius: 12px; border: 1px solid #1c1d21; background: #16171b; color: #f6f6f7; font-family: 'DM Mono', monospace; font-size: 24px;">2</button>
+              <button style="height: 58px; border-radius: 12px; border: 1px solid #1c1d21; background: #16171b; color: #f6f6f7; font-family: 'DM Mono', monospace; font-size: 24px;">3</button>
+              <button style="height: 58px; border-radius: 12px; border: 1px solid #1c1d21; background: #16171b; color: #f6f6f7; font-family: 'DM Mono', monospace; font-size: 24px;">4</button>
+              <button style="height: 58px; border-radius: 12px; border: 1px solid #2a2c31; background: #1f2126; color: #f6f6f7; font-family: 'DM Mono', monospace; font-size: 24px;">5</button>
+              <button style="height: 58px; border-radius: 12px; border: 1px solid #1c1d21; background: #16171b; color: #f6f6f7; font-family: 'DM Mono', monospace; font-size: 24px;">6</button>
+              <button style="height: 58px; border-radius: 12px; border: 1px solid #1c1d21; background: #16171b; color: #f6f6f7; font-family: 'DM Mono', monospace; font-size: 24px;">7</button>
+              <button style="height: 58px; border-radius: 12px; border: 1px solid #1c1d21; background: #16171b; color: #f6f6f7; font-family: 'DM Mono', monospace; font-size: 24px;">8</button>
+              <button style="height: 58px; border-radius: 12px; border: 1px solid #1c1d21; background: #16171b; color: #f6f6f7; font-family: 'DM Mono', monospace; font-size: 24px;">9</button>
+              <button style="height: 58px; border-radius: 12px; border: 1px solid #1c1d21; background: #16171b; color: #f6f6f7; font-family: 'DM Mono', monospace; font-size: 24px;">.</button>
+              <button style="height: 58px; border-radius: 12px; border: 1px solid #1c1d21; background: #16171b; color: #f6f6f7; font-family: 'DM Mono', monospace; font-size: 24px;">0</button>
+              <button style="height: 58px; border-radius: 12px; border: 1px solid #1c1d21; background: #16171b; color: #b0b3ba; display: flex; align-items: center; justify-content: center;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M20 6H9l-5 6 5 6h11a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1z"></path><path d="M15 10l-4 4M11 10l4 4"></path></svg>
+              </button>
+            </div>
+            <button style="width: 100%; min-height: 52px; border: 0; border-radius: 12px; background: #c9a349; color: #17120a; font-family: Manrope, sans-serif; font-size: 17px; font-weight: 600;">Save</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- B2 weight detail -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 390px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: #08090a; background: #c9a349; padding: 3px 7px; border-radius: 5px;">B2</span>
+          <span style="font-size: 14px; font-weight: 600;">Weight detail</span>
+          <span style="font-size: 13px; color: #63676f;">trajectory + readings</span>
+        </div>
+        <div style="width: 390px; height: 844px; background: #08090a; border: 1px solid #1c1d21; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 30px 60px -20px rgba(0,0,0,.9); position: relative;">
+          <div style="height: 44px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-family: 'DM Mono', monospace; font-size: 12px; color: #f6f6f7;"><span>9:41</span><span style="width: 16px; height: 9px; border: 1px solid #f6f6f7; border-radius: 2px; opacity: .85;"></span></div>
+          <div style="height: 52px; flex: none; display: flex; align-items: center; padding: 0 8px 0 12px; border-bottom: 1px solid #16171b;">
+            <button style="width: 44px; height: 44px; border: 0; background: transparent; color: #f6f6f7; display: flex; align-items: center; justify-content: center; border-radius: 10px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+            <div style="flex: 1; text-align: center; font-size: 16px; font-weight: 600;">Weight</div>
+            <div style="width: 44px;"></div>
+          </div>
+          <div style="flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 20px; padding: 20px 0 0;">
+            <div style="padding: 0 20px; display: flex; align-items: baseline; gap: 8px;">
+              <span style="font-family: 'DM Mono', monospace; font-size: 44px; font-weight: 500; letter-spacing: -0.03em; line-height: 1;">82.4</span>
+              <span style="font-size: 17px; color: #868a93;">kg</span>
+              <span style="flex: 1;"></span>
+              <span style="font-size: 13px; color: #63676f;">Today, 07:12</span>
+            </div>
+
+            <div style="margin: 0 20px; display: flex; gap: 4px; background: #101114; border: 1px solid #1c1d21; border-radius: 12px; padding: 4px;">
+              <div style="flex: 1; height: 34px; border-radius: 8px; background: #2a2c31; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600;">1M</div>
+              <div style="flex: 1; height: 34px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #868a93;">3M</div>
+              <div style="flex: 1; height: 34px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #868a93;">6M</div>
+              <div style="flex: 1; height: 34px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #868a93;">1Y</div>
+              <div style="flex: 1; height: 34px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #868a93;">All</div>
+            </div>
+
+            <div style="padding: 0 20px;">
+              <svg viewBox="0 0 330 200" style="width: 100%; height: 200px; display: block;">
+                <line x1="12" y1="17" x2="318" y2="17" stroke="#1c1d21" stroke-width="1"></line>
+                <line x1="12" y1="63" x2="318" y2="63" stroke="#1c1d21" stroke-width="1"></line>
+                <line x1="12" y1="108" x2="318" y2="108" stroke="#1c1d21" stroke-width="1"></line>
+                <line x1="12" y1="154" x2="318" y2="154" stroke="#1c1d21" stroke-width="1"></line>
+                <text x="14" y="13" fill="#63676f" font-family="DM Mono, monospace" font-size="10">83.5</text>
+                <text x="14" y="59" fill="#63676f" font-family="DM Mono, monospace" font-size="10">83.0</text>
+                <text x="14" y="104" fill="#63676f" font-family="DM Mono, monospace" font-size="10">82.5</text>
+                <text x="14" y="150" fill="#63676f" font-family="DM Mono, monospace" font-size="10">82.0</text>
+                <polyline points="75,62 107,72 139,82 170,92 202,105 234,113 265,122 297,128 318,130" fill="none" stroke="#3c3f45" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"></polyline>
+                <polyline points="12,35 23,54 33,26 44,63 54,72 65,44 75,81 86,72 96,99 107,81 118,63 128,90 139,108 149,99 160,117 170,90 181,108 191,126 202,108 213,135 223,117 234,99 244,126 255,144 265,126 276,108 286,135 297,154 307,135 318,117" fill="none" stroke="#c9a349" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></polyline>
+                <line x1="255" y1="8" x2="255" y2="172" stroke="#3c3f45" stroke-width="1"></line>
+                <circle cx="255" cy="144" r="3.5" fill="#c9a349" stroke="#08090a" stroke-width="1.5"></circle>
+                <rect x="213" y="164" width="84" height="26" rx="7" fill="#1f2126" stroke="#2a2c31"></rect>
+                <text x="223" y="181" fill="#f6f6f7" font-family="DM Mono, monospace" font-size="11">82.1 · 6 Sep</text>
+              </svg>
+            </div>
+
+            <div style="margin: 0 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #1c1d21; border: 1px solid #1c1d21; border-radius: 12px; overflow: hidden;">
+              <div style="background: #101114; padding: 12px 14px;"><div style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #63676f;">Change</div><div style="font-family: 'DM Mono', monospace; font-size: 17px; margin-top: 6px;">−0.9</div><div style="font-size: 11px; color: #63676f; margin-top: 2px;">30 days</div></div>
+              <div style="background: #101114; padding: 12px 14px;"><div style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #63676f;">Lowest</div><div style="font-family: 'DM Mono', monospace; font-size: 17px; margin-top: 6px;">82.0</div><div style="font-size: 11px; color: #63676f; margin-top: 2px;">10 Sep</div></div>
+              <div style="background: #101114; padding: 12px 14px;"><div style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #63676f;">Highest</div><div style="font-family: 'DM Mono', monospace; font-size: 17px; margin-top: 6px;">83.4</div><div style="font-size: 11px; color: #63676f; margin-top: 2px;">17 Aug</div></div>
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+              <div style="padding: 0 20px 8px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">September</div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-top: 1px solid #16171b;">
+                <div style="flex: 1;"><div style="font-size: 15px;">Today</div><div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #63676f; margin-top: 1px;">07:12</div></div>
+                <div style="text-align: right;"><div style="font-family: 'DM Mono', monospace; font-size: 16px;">82.4</div><div style="font-family: 'DM Mono', monospace; font-size: 11px; color: #63676f; margin-top: 1px;">+0.2</div></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-top: 1px solid #16171b;">
+                <div style="flex: 1;"><div style="font-size: 15px;">Yesterday</div><div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #63676f; margin-top: 1px;">07:40</div></div>
+                <div style="text-align: right;"><div style="font-family: 'DM Mono', monospace; font-size: 16px;">82.2</div><div style="font-family: 'DM Mono', monospace; font-size: 11px; color: #63676f; margin-top: 1px;">+0.2</div></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-top: 1px solid #16171b;">
+                <div style="flex: 1;"><div style="font-size: 15px;">Fri 11 Sep</div><div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #63676f; margin-top: 1px;">07:05</div></div>
+                <div style="text-align: right;"><div style="font-family: 'DM Mono', monospace; font-size: 16px;">82.0</div><div style="font-family: 'DM Mono', monospace; font-size: 11px; color: #63676f; margin-top: 1px;">−0.2</div></div>
+              </div>
+            </div>
+          </div>
+          <div style="flex: none; padding: 12px 20px 10px; border-top: 1px solid #16171b; background: #08090a;">
+            <button style="width: 100%; min-height: 48px; border: 1px solid #2a2c31; border-radius: 12px; background: transparent; color: #f6f6f7; font-family: Manrope, sans-serif; font-size: 16px; font-weight: 600;">Log weight</button>
+          </div>
+          <div style="position: absolute; right: 20px; bottom: 30px; width: 52px; height: 52px; border-radius: 99px; background: #101114; border: 1px solid #2a2c31; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 24px -8px rgba(0,0,0,.8); z-index: 2;"><span style="width: 8px; height: 8px; border-radius: 99px; background: #c9a349;"></span></div>
+          <div style="height: 22px; flex: none; display: flex; align-items: center; justify-content: center;"><span style="width: 120px; height: 4px; border-radius: 99px; background: #2a2c31;"></span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================== C · GYM ============================== -->
+  <div style="display: flex; flex-direction: column; gap: 18px; margin-top: 48px;">
+    <div style="border-top: 1px solid #1c1d21; padding-top: 14px; font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">C — Gym · US-005 and US-006</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 28px;">
+
+      <!-- C1 plan library -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 390px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: #08090a; background: #c9a349; padding: 3px 7px; border-radius: 5px;">C1</span>
+          <span style="font-size: 14px; font-weight: 600;">Plans</span>
+          <span style="font-size: 13px; color: #63676f;">one active</span>
+        </div>
+        <div style="width: 390px; height: 844px; background: #08090a; border: 1px solid #1c1d21; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 30px 60px -20px rgba(0,0,0,.9); position: relative;">
+          <div style="height: 44px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-family: 'DM Mono', monospace; font-size: 12px; color: #f6f6f7;"><span>9:41</span><span style="width: 16px; height: 9px; border: 1px solid #f6f6f7; border-radius: 2px; opacity: .85;"></span></div>
+          <div style="height: 52px; flex: none; display: flex; align-items: center; padding: 0 8px 0 12px; border-bottom: 1px solid #16171b;">
+            <button style="width: 44px; height: 44px; border: 0; background: transparent; color: #f6f6f7; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+            <div style="flex: 1; text-align: center; font-size: 16px; font-weight: 600;">Plans</div>
+            <div style="width: 44px;"></div>
+          </div>
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 24px; padding: 20px 0 0;">
+            <div style="padding: 0 20px;">
+              <div style="background: #101114; border: 1px solid #2a2c31; border-radius: 18px; padding: 18px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <span style="font-size: 20px; font-weight: 600; letter-spacing: -0.015em;">Push / Pull / Legs</span>
+                  <span style="font-size: 11px; font-weight: 600; color: #dcbc72; background: #211a0b; border: 1px solid #7d621f; border-radius: 99px; padding: 3px 9px;">Active</span>
+                </div>
+                <div style="font-size: 13px; color: #868a93; margin-top: 6px;">4 sessions · 3 rest days · 22 exercises</div>
+                <div style="display: flex; gap: 5px; margin-top: 14px;">
+                  <span style="flex: 1; height: 30px; border-radius: 7px; background: #1f2126; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 11px; color: #f6f6f7;">M</span>
+                  <span style="flex: 1; height: 30px; border-radius: 7px; background: #16171b; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 11px; color: #474a52;">T</span>
+                  <span style="flex: 1; height: 30px; border-radius: 7px; background: #1f2126; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 11px; color: #f6f6f7;">W</span>
+                  <span style="flex: 1; height: 30px; border-radius: 7px; background: #16171b; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 11px; color: #474a52;">T</span>
+                  <span style="flex: 1; height: 30px; border-radius: 7px; background: #1f2126; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 11px; color: #f6f6f7;">F</span>
+                  <span style="flex: 1; height: 30px; border-radius: 7px; background: #16171b; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 11px; color: #474a52;">S</span>
+                  <span style="flex: 1; height: 30px; border-radius: 7px; background: #211a0b; border: 1px solid #7d621f; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 11px; color: #dcbc72;">S</span>
+                </div>
+                <button style="margin-top: 16px; width: 100%; min-height: 44px; border: 1px solid #2a2c31; border-radius: 12px; background: transparent; color: #f6f6f7; font-family: Manrope, sans-serif; font-size: 15px; font-weight: 600;">Edit plan</button>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+              <div style="padding: 0 20px 8px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">Other plans</div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-top: 1px solid #16171b;">
+                <div style="flex: 1; min-width: 0;"><div style="font-size: 16px; font-weight: 600;">Winter strength</div><div style="font-size: 13px; color: #868a93; margin-top: 2px;">3 sessions · 18 exercises</div></div>
+                <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #63676f; flex: none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="5" cy="12" r=".7"></circle><circle cx="12" cy="12" r=".7"></circle><circle cx="19" cy="12" r=".7"></circle></svg></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-top: 1px solid #16171b;">
+                <div style="flex: 1; min-width: 0;"><div style="font-size: 16px; font-weight: 600;">Holiday minimal</div><div style="font-size: 13px; color: #868a93; margin-top: 2px;">2 sessions · 6 exercises</div></div>
+                <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #63676f; flex: none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="5" cy="12" r=".7"></circle><circle cx="12" cy="12" r=".7"></circle><circle cx="19" cy="12" r=".7"></circle></svg></div>
+              </div>
+              <div style="border-top: 1px solid #16171b;"></div>
+            </div>
+
+            <div style="padding: 0 20px;">
+              <button style="width: 100%; min-height: 48px; border: 1px solid #2a2c31; border-radius: 12px; background: transparent; color: #f6f6f7; font-family: Manrope, sans-serif; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New plan
+              </button>
+            </div>
+
+            <div style="margin: 0 20px; background: #16171b; border: 1px solid #2a2c31; border-radius: 14px; padding: 13px 15px; display: flex; align-items: center; gap: 11px;">
+              <span style="width: 8px; height: 8px; border-radius: 99px; background: #3ecf8e; flex: none;"></span>
+              <span style="flex: 1; font-size: 14px;">Push / Pull / Legs is now active</span>
+              <span style="font-size: 13px; color: #868a93;">Undo</span>
+            </div>
+          </div>
+          <div style="position: absolute; right: 20px; bottom: 30px; width: 52px; height: 52px; border-radius: 99px; background: #101114; border: 1px solid #2a2c31; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 24px -8px rgba(0,0,0,.8); z-index: 2;"><span style="width: 8px; height: 8px; border-radius: 99px; background: #c9a349;"></span></div>
+          <div style="height: 22px; flex: none; display: flex; align-items: center; justify-content: center;"><span style="width: 120px; height: 4px; border-radius: 99px; background: #2a2c31;"></span></div>
+        </div>
+      </div>
+
+      <!-- C2 plan editor -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 390px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: #08090a; background: #c9a349; padding: 3px 7px; border-radius: 5px;">C2</span>
+          <span style="font-size: 14px; font-weight: 600;">Plan editor</span>
+          <span style="font-size: 13px; color: #63676f;">no save button</span>
+        </div>
+        <div style="width: 390px; height: 844px; background: #08090a; border: 1px solid #1c1d21; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 30px 60px -20px rgba(0,0,0,.9); position: relative;">
+          <div style="height: 44px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-family: 'DM Mono', monospace; font-size: 12px; color: #f6f6f7;"><span>9:41</span><span style="width: 16px; height: 9px; border: 1px solid #f6f6f7; border-radius: 2px; opacity: .85;"></span></div>
+          <div style="height: 52px; flex: none; display: flex; align-items: center; padding: 0 4px 0 12px; border-bottom: 1px solid #16171b;">
+            <button style="width: 44px; height: 44px; border: 0; background: transparent; color: #f6f6f7; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+            <div style="flex: 1; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;">
+              <span style="font-size: 16px; font-weight: 600;">Push / Pull / Legs</span>
+            </div>
+            <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #b0b3ba;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="5" cy="12" r=".7"></circle><circle cx="12" cy="12" r=".7"></circle><circle cx="19" cy="12" r=".7"></circle></svg></div>
+          </div>
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 18px; padding: 16px 0 0; overflow: hidden;">
+            <div style="display: flex; gap: 7px; padding: 0 20px;">
+              <div style="flex: 1; height: 52px; border-radius: 12px; background: #c9a349; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;"><span style="font-size: 11px; font-weight: 600; color: #17120a;">Mon</span><span style="width: 4px; height: 4px; border-radius: 99px; background: #17120a;"></span></div>
+              <div style="flex: 1; height: 52px; border-radius: 12px; background: #101114; border: 1px solid #1c1d21; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;"><span style="font-size: 11px; color: #868a93;">Tue</span><span style="width: 4px; height: 4px;"></span></div>
+              <div style="flex: 1; height: 52px; border-radius: 12px; background: #101114; border: 1px solid #1c1d21; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;"><span style="font-size: 11px; color: #f6f6f7;">Wed</span><span style="width: 4px; height: 4px; border-radius: 99px; background: #c9a349;"></span></div>
+              <div style="flex: 1; height: 52px; border-radius: 12px; background: #101114; border: 1px solid #1c1d21; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;"><span style="font-size: 11px; color: #868a93;">Thu</span><span style="width: 4px; height: 4px;"></span></div>
+              <div style="flex: 1; height: 52px; border-radius: 12px; background: #101114; border: 1px solid #1c1d21; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;"><span style="font-size: 11px; color: #f6f6f7;">Fri</span><span style="width: 4px; height: 4px; border-radius: 99px; background: #c9a349;"></span></div>
+              <div style="flex: 1; height: 52px; border-radius: 12px; background: #101114; border: 1px solid #1c1d21; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;"><span style="font-size: 11px; color: #868a93;">Sat</span><span style="width: 4px; height: 4px;"></span></div>
+              <div style="flex: 1; height: 52px; border-radius: 12px; background: #101114; border: 1px solid #7d621f; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;"><span style="font-size: 11px; color: #f6f6f7;">Sun</span><span style="width: 4px; height: 4px; border-radius: 99px; background: #c9a349;"></span></div>
+            </div>
+
+            <div style="padding: 0 20px; display: flex; align-items: center; gap: 12px;">
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 24px; font-weight: 600; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px;">Push A <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#63676f" stroke-width="1.8" stroke-linecap="round"><path d="M4 20h4l10-10-4-4L4 16v4z"></path></svg></div>
+                <div style="font-size: 13px; color: #868a93; margin-top: 2px;">5 exercises · 15 sets planned</div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 9px; flex: none;">
+                <span style="font-size: 13px; color: #868a93;">Rest</span>
+                <div style="width: 42px; height: 26px; border-radius: 99px; background: #1c1d21; border: 1px solid #2a2c31; display: flex; align-items: center; padding: 2px;"><span style="width: 20px; height: 20px; border-radius: 99px; background: #474a52;"></span></div>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+              <div style="display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-top: 1px solid #16171b;">
+                <div style="width: 32px; height: 32px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #868a93; flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg></div>
+                <div style="flex: 1; min-width: 0;"><div style="font-size: 16px; font-weight: 600;">Bench Press</div><div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #868a93; margin-top: 2px;">4 × 8 · 80 kg</div></div>
+                <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #474a52; flex: none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9h16M4 15h16"></path></svg></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-top: 1px solid #16171b;">
+                <div style="width: 32px; height: 32px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #868a93; flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg></div>
+                <div style="flex: 1; min-width: 0;"><div style="font-size: 16px; font-weight: 600;">Incline DB Press</div><div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #868a93; margin-top: 2px;">3 × 10 · 26 kg</div></div>
+                <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #474a52; flex: none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9h16M4 15h16"></path></svg></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-top: 1px solid #16171b;">
+                <div style="width: 32px; height: 32px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #868a93; flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg></div>
+                <div style="flex: 1; min-width: 0;"><div style="font-size: 16px; font-weight: 600;">Overhead Press</div><div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #868a93; margin-top: 2px;">3 × 8 · 45 kg</div></div>
+                <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #474a52; flex: none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9h16M4 15h16"></path></svg></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0; border-top: 1px solid #16171b; background: #2a1113; padding-left: 20px;">
+                <div style="flex: 1; padding: 13px 0; opacity: .5;"><div style="font-size: 16px; font-weight: 600;">Lateral Raise</div><div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #868a93; margin-top: 2px;">3 × 12 · 12 kg</div></div>
+                <div style="width: 92px; align-self: stretch; display: flex; align-items: center; justify-content: center; color: #f2555a; font-size: 14px; font-weight: 600; border-left: 1px solid #7a2328;">Remove</div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-top: 1px solid #16171b; border-bottom: 1px solid #16171b;">
+                <div style="width: 32px; height: 32px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #868a93; flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg></div>
+                <div style="flex: 1; min-width: 0;"><div style="font-size: 16px; font-weight: 600;">Triceps Pushdown</div><div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #868a93; margin-top: 2px;">3 × 12 · 30 kg</div></div>
+                <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #474a52; flex: none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9h16M4 15h16"></path></svg></div>
+              </div>
+            </div>
+
+            <div style="padding: 0 20px; display: flex; flex-direction: column; gap: 12px;">
+              <button style="width: 100%; min-height: 48px; border: 1px solid #2a2c31; border-radius: 12px; background: transparent; color: #f6f6f7; font-family: Manrope, sans-serif; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add exercise</button>
+              <div style="text-align: center; font-size: 14px; color: #868a93;">Copy from another day…</div>
+            </div>
+          </div>
+          <div style="position: absolute; right: 20px; bottom: 30px; width: 52px; height: 52px; border-radius: 99px; background: #101114; border: 1px solid #2a2c31; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 24px -8px rgba(0,0,0,.8); z-index: 2;"><span style="width: 8px; height: 8px; border-radius: 99px; background: #c9a349;"></span></div>
+          <div style="height: 22px; flex: none; display: flex; align-items: center; justify-content: center;"><span style="width: 120px; height: 4px; border-radius: 99px; background: #2a2c31;"></span></div>
+        </div>
+      </div>
+
+      <!-- C3 exercise picker -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 390px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: #08090a; background: #c9a349; padding: 3px 7px; border-radius: 5px;">C3</span>
+          <span style="font-size: 14px; font-weight: 600;">Exercise picker sheet</span>
+        </div>
+        <div style="width: 390px; height: 844px; background: #08090a; border: 1px solid #1c1d21; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; position: relative; box-shadow: 0 30px 60px -20px rgba(0,0,0,.9);">
+          <div style="position: absolute; inset: 0; background: rgba(0,0,0,.62);"></div>
+          <div style="position: relative; background: #101114; border-top: 1px solid #2a2c31; border-radius: 22px 22px 0 0; height: 718px; display: flex; flex-direction: column;">
+            <div style="flex: none; padding: 14px 20px 0; display: flex; flex-direction: column; gap: 16px;">
+              <div style="width: 36px; height: 4px; border-radius: 99px; background: #2a2c31; align-self: center;"></div>
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 17px; font-weight: 600;">Add exercise</span>
+                <span style="font-size: 15px; color: #c9a349; font-weight: 600;">Done</span>
+              </div>
+              <div style="min-height: 46px; border: 1px solid #2a2c31; border-radius: 12px; background: #16171b; display: flex; align-items: center; gap: 10px; padding: 0 14px;">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#63676f" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4 4"></path></svg>
+                <span style="font-size: 16px; color: #63676f;">Search exercises</span>
+              </div>
+            </div>
+            <div style="flex: 1; overflow: hidden; display: flex; flex-direction: column; margin-top: 16px;">
+              <div style="padding: 0 20px 8px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">Chest</div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-top: 1px solid #16171b; opacity: .45;">
+                <div style="width: 32px; height: 32px; border-radius: 99px; background: #1c1d21; flex: none;"></div>
+                <div style="flex: 1;"><div style="font-size: 16px; font-weight: 600;">Bench Press</div><div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #868a93; margin-top: 1px;">reps · weight</div></div>
+                <span style="font-size: 12px; font-weight: 600; color: #868a93; border: 1px solid #2a2c31; border-radius: 99px; padding: 4px 10px; flex: none;">Added</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-top: 1px solid #16171b;">
+                <div style="width: 32px; height: 32px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #868a93; flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg></div>
+                <div style="flex: 1;"><div style="font-size: 16px; font-weight: 600;">Cable Fly</div><div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #868a93; margin-top: 1px;">reps · weight</div></div>
+                <div style="width: 32px; height: 32px; border-radius: 99px; border: 1px solid #2a2c31; display: flex; align-items: center; justify-content: center; color: #f6f6f7; flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-top: 1px solid #16171b;">
+                <div style="width: 32px; height: 32px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #868a93; flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg></div>
+                <div style="flex: 1;"><div style="font-size: 16px; font-weight: 600;">Dips</div><div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #868a93; margin-top: 1px;">reps</div></div>
+                <div style="width: 32px; height: 32px; border-radius: 99px; border: 1px solid #2a2c31; display: flex; align-items: center; justify-content: center; color: #f6f6f7; flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+              </div>
+              <div style="padding: 18px 20px 8px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">Core</div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-top: 1px solid #16171b;">
+                <div style="width: 32px; height: 32px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #868a93; flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l3 1.6"></path></svg></div>
+                <div style="flex: 1;"><div style="font-size: 16px; font-weight: 600;">Plank</div><div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #868a93; margin-top: 1px;">duration</div></div>
+                <div style="width: 32px; height: 32px; border-radius: 99px; border: 1px solid #2a2c31; display: flex; align-items: center; justify-content: center; color: #f6f6f7; flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-top: 1px solid #16171b;">
+                <div style="width: 32px; height: 32px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #868a93; flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg></div>
+                <div style="flex: 1;"><div style="font-size: 16px; font-weight: 600;">Farmer's Carry</div><div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #868a93; margin-top: 1px;">distance · weight</div></div>
+                <div style="width: 32px; height: 32px; border-radius: 99px; border: 1px solid #2a2c31; display: flex; align-items: center; justify-content: center; color: #f6f6f7; flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+              </div>
+            </div>
+            <div style="flex: none; padding: 12px 20px 30px; border-top: 1px solid #1c1d21;">
+              <button style="width: 100%; min-height: 48px; border: 1px solid #2a2c31; border-radius: 12px; background: transparent; color: #f6f6f7; font-family: Manrope, sans-serif; font-size: 16px; font-weight: 600;">Create new exercise</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- C4 active session -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 390px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: #08090a; background: #c9a349; padding: 3px 7px; border-radius: 5px;">C4</span>
+          <span style="font-size: 14px; font-weight: 600;">Active session</span>
+          <span style="font-size: 13px; color: #63676f;">no back chevron, only Minimise</span>
+        </div>
+        <div style="width: 390px; height: 844px; background: #08090a; border: 1px solid #1c1d21; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; position: relative; box-shadow: 0 30px 60px -20px rgba(0,0,0,.9);">
+          <div style="height: 44px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-family: 'DM Mono', monospace; font-size: 12px; color: #f6f6f7;"><span>19:02</span><span style="width: 16px; height: 9px; border: 1px solid #f6f6f7; border-radius: 2px; opacity: .85;"></span></div>
+          <div style="height: 52px; flex: none; display: flex; align-items: center; padding: 0 12px; border-bottom: 1px solid #16171b;">
+            <button style="width: 44px; height: 44px; border: 0; background: transparent; color: #b0b3ba; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+            <div style="flex: 1; text-align: center; font-size: 16px; font-weight: 600;">Push A</div>
+            <button style="min-height: 36px; padding: 0 14px; border-radius: 10px; border: 0; background: #c9a349; color: #17120a; font-family: Manrope, sans-serif; font-size: 14px; font-weight: 600;">Finish</button>
+          </div>
+          <div style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
+            <div style="padding: 22px 20px 18px; display: flex; flex-direction: column; gap: 12px; border-bottom: 1px solid #16171b;">
+              <div style="display: flex; align-items: center; gap: 11px;">
+                <span style="width: 9px; height: 9px; border-radius: 99px; background: #3ecf8e; flex: none;"></span>
+                <span style="font-family: 'DM Mono', monospace; font-size: 42px; font-weight: 500; letter-spacing: -0.03em; line-height: 1;">24:18</span>
+                <span style="flex: 1;"></span>
+                <span style="font-size: 13px; color: #63676f;">Started 18:38</span>
+              </div>
+              <div style="display: flex; gap: 4px;">
+                <span style="flex: 1; height: 3px; border-radius: 99px; background: #c9a349;"></span>
+                <span style="flex: 1; height: 3px; border-radius: 99px; background: #c9a349;"></span>
+                <span style="flex: 1; height: 3px; border-radius: 99px; background: #c9a349;"></span>
+                <span style="flex: 1; height: 3px; border-radius: 99px; background: #2a2c31;"></span>
+                <span style="flex: 1; height: 3px; border-radius: 99px; background: #2a2c31;"></span>
+              </div>
+              <div style="font-family: 'DM Mono', monospace; font-size: 13px; color: #868a93;">8 sets · 2,240 kg</div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #16171b;">
+              <div style="width: 32px; height: 32px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #868a93; flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg></div>
+              <div style="flex: 1; font-size: 16px; font-weight: 600; color: #b0b3ba;">Bench Press</div>
+              <span style="font-family: 'DM Mono', monospace; font-size: 14px; color: #3ecf8e; flex: none;">4 / 4</span>
+            </div>
+
+            <div style="background: #101114; border-bottom: 1px solid #16171b;">
+              <div style="display: flex; align-items: center; gap: 12px; padding: 14px 20px 10px;">
+                <div style="width: 32px; height: 32px; border-radius: 99px; background: #211a0b; border: 1px solid #7d621f; display: flex; align-items: center; justify-content: center; color: #dcbc72; flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg></div>
+                <div style="flex: 1; min-width: 0;">
+                  <div style="font-size: 17px; font-weight: 600;">Incline DB Press</div>
+                  <div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #868a93; margin-top: 2px;">Last: 3 × 10 · 24 kg, 6 days ago</div>
+                </div>
+                <div style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; color: #63676f; flex: none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="5" cy="12" r=".7"></circle><circle cx="12" cy="12" r=".7"></circle><circle cx="19" cy="12" r=".7"></circle></svg></div>
+              </div>
+              <div style="padding: 0 20px;">
+                <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-top: 1px solid #16171b;">
+                  <span style="font-family: 'DM Mono', monospace; font-size: 12px; color: #63676f; width: 16px; flex: none;">1</span>
+                  <span style="flex: 1; font-family: 'DM Mono', monospace; font-size: 15px;">10 × 26 kg</span>
+                  <span style="font-size: 10px; font-weight: 600; color: #dcbc72; background: #211a0b; border: 1px solid #7d621f; border-radius: 99px; padding: 2px 7px;">PR</span>
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#3ecf8e" stroke-width="2" stroke-linecap="round" style="flex: none;"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-top: 1px solid #16171b;">
+                  <span style="font-family: 'DM Mono', monospace; font-size: 12px; color: #63676f; width: 16px; flex: none;">2</span>
+                  <span style="flex: 1; font-family: 'DM Mono', monospace; font-size: 15px;">9 × 26 kg</span>
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#3ecf8e" stroke-width="2" stroke-linecap="round" style="flex: none;"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+                </div>
+              </div>
+              <div style="padding: 14px 20px 18px; display: flex; flex-direction: column; gap: 12px; border-top: 1px solid #16171b; margin-top: 4px;">
+                <div style="display: flex; gap: 10px;">
+                  <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                    <span style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #63676f;">Reps</span>
+                    <div style="height: 52px; border: 1px solid #2a2c31; border-radius: 12px; background: #16171b; display: flex; align-items: center;">
+                      <span style="width: 42px; text-align: center; font-family: 'DM Mono', monospace; font-size: 20px; color: #b0b3ba;">−</span>
+                      <span style="flex: 1; text-align: center; font-family: 'DM Mono', monospace; font-size: 20px;">9</span>
+                      <span style="width: 42px; text-align: center; font-family: 'DM Mono', monospace; font-size: 20px; color: #b0b3ba;">+</span>
+                    </div>
+                  </div>
+                  <div style="flex: 1.25; display: flex; flex-direction: column; gap: 6px;">
+                    <span style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #63676f;">Weight · kg</span>
+                    <div style="height: 52px; border: 1px solid #2a2c31; border-radius: 12px; background: #16171b; display: flex; align-items: center;">
+                      <span style="width: 42px; text-align: center; font-family: 'DM Mono', monospace; font-size: 20px; color: #b0b3ba;">−</span>
+                      <span style="flex: 1; text-align: center; font-family: 'DM Mono', monospace; font-size: 20px;">26</span>
+                      <span style="width: 42px; text-align: center; font-family: 'DM Mono', monospace; font-size: 20px; color: #b0b3ba;">+</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                  <button style="flex: 1; min-height: 52px; border: 0; border-radius: 12px; background: #c9a349; color: #17120a; font-family: Manrope, sans-serif; font-size: 17px; font-weight: 600;">Log set 3</button>
+                  <div style="min-height: 52px; padding: 0 14px; border: 1px solid #2a2c31; border-radius: 12px; display: flex; align-items: center; font-size: 13px; color: #868a93; flex: none;">Warmup</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #16171b;">
+              <div style="width: 32px; height: 32px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #868a93; flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg></div>
+              <div style="flex: 1; font-size: 16px; font-weight: 600;">Overhead Press</div>
+              <span style="font-family: 'DM Mono', monospace; font-size: 13px; color: #63676f; flex: none;">3 × 8 · 45 kg</span>
+            </div>
+          </div>
+
+          <div style="position: absolute; left: 14px; right: 14px; bottom: 30px; background: #16171b; border: 1px solid #2a2c31; border-radius: 14px; padding: 10px 12px 10px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 18px 36px -12px rgba(0,0,0,.9);">
+            <span style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #63676f; flex: none;">Rest</span>
+            <span style="font-family: 'DM Mono', monospace; font-size: 18px; flex: none;">1:04</span>
+            <span style="flex: 1;"></span>
+            <span style="min-height: 34px; padding: 0 12px; border: 1px solid #2a2c31; border-radius: 9px; display: flex; align-items: center; font-family: 'DM Mono', monospace; font-size: 13px; color: #b0b3ba;">+30s</span>
+            <span style="min-height: 34px; padding: 0 12px; display: flex; align-items: center; font-size: 14px; font-weight: 600; color: #868a93;">Skip</span>
+          </div>
+          <div style="height: 22px; flex: none; display: flex; align-items: center; justify-content: center;"><span style="width: 120px; height: 4px; border-radius: 99px; background: #2a2c31;"></span></div>
+        </div>
+      </div>
+
+      <!-- C5 summary -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 390px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: #08090a; background: #c9a349; padding: 3px 7px; border-radius: 5px;">C5</span>
+          <span style="font-size: 14px; font-weight: 600;">Session summary</span>
+        </div>
+        <div style="width: 390px; height: 844px; background: #08090a; border: 1px solid #1c1d21; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 30px 60px -20px rgba(0,0,0,.9); position: relative;">
+          <div style="height: 44px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-family: 'DM Mono', monospace; font-size: 12px; color: #f6f6f7;"><span>19:31</span><span style="width: 16px; height: 9px; border: 1px solid #f6f6f7; border-radius: 2px; opacity: .85;"></span></div>
+          <div style="flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 22px; padding: 28px 0 0;">
+            <div style="padding: 0 20px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="width: 26px; height: 26px; border-radius: 99px; background: #0f2419; border: 1px solid #1e6b46; display: flex; align-items: center; justify-content: center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3ecf8e" stroke-width="2.4" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>
+                <span style="font-size: 13px; color: #868a93;">Session complete</span>
+              </div>
+              <div style="font-size: 30px; font-weight: 600; letter-spacing: -0.025em; margin-top: 10px;">Push A</div>
+              <div style="font-size: 13px; color: #63676f; margin-top: 3px;">Today · 18:38 – 19:31</div>
+            </div>
+
+            <div style="margin: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #1c1d21; border: 1px solid #1c1d21; border-radius: 16px; overflow: hidden;">
+              <div style="background: #101114; padding: 16px 18px;"><div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">Duration</div><div style="font-family: 'DM Mono', monospace; font-size: 26px; margin-top: 8px; letter-spacing: -0.02em;">52:14</div></div>
+              <div style="background: #101114; padding: 16px 18px;"><div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">Sets</div><div style="font-family: 'DM Mono', monospace; font-size: 26px; margin-top: 8px; letter-spacing: -0.02em;">14</div></div>
+              <div style="background: #101114; padding: 16px 18px;"><div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">Volume</div><div style="font-family: 'DM Mono', monospace; font-size: 26px; margin-top: 8px; letter-spacing: -0.02em;">4,180<span style="font-size: 14px; color: #868a93;"> kg</span></div></div>
+              <div style="background: #101114; padding: 16px 18px;"><div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">Exercises</div><div style="font-family: 'DM Mono', monospace; font-size: 26px; margin-top: 8px; letter-spacing: -0.02em;">5<span style="font-size: 14px; color: #868a93;"> / 5</span></div></div>
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+              <div style="padding: 0 20px 8px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">Exercises</div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-top: 1px solid #16171b;">
+                <div style="flex: 1;"><div style="font-size: 15px; font-weight: 600;">Bench Press</div><div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #868a93; margin-top: 2px;">4 sets · best 8 × 80 kg</div></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-top: 1px solid #16171b;">
+                <div style="flex: 1;"><div style="font-size: 15px; font-weight: 600;">Incline DB Press</div><div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #868a93; margin-top: 2px;">3 sets · best 10 × 26 kg</div></div>
+                <span style="font-size: 10px; font-weight: 600; color: #dcbc72; background: #211a0b; border: 1px solid #7d621f; border-radius: 99px; padding: 3px 8px; flex: none;">PR</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-top: 1px solid #16171b;">
+                <div style="flex: 1;"><div style="font-size: 15px; font-weight: 600;">Overhead Press</div><div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #868a93; margin-top: 2px;">3 sets · best 8 × 45 kg</div></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-top: 1px solid #16171b; border-bottom: 1px solid #16171b;">
+                <div style="flex: 1;"><div style="font-size: 15px; font-weight: 600;">Triceps Pushdown</div><div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #868a93; margin-top: 2px;">4 sets · best 12 × 32.5 kg</div></div>
+              </div>
+            </div>
+
+          </div>
+          <div style="flex: none; padding: 12px 20px 10px;">
+            <button style="width: 100%; min-height: 52px; border: 0; border-radius: 12px; background: #c9a349; color: #17120a; font-family: Manrope, sans-serif; font-size: 17px; font-weight: 600;">Done</button>
+          </div>
+          <div style="position: absolute; right: 20px; bottom: 30px; width: 52px; height: 52px; border-radius: 99px; background: #101114; border: 1px solid #2a2c31; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 24px -8px rgba(0,0,0,.8); z-index: 2;"><span style="width: 8px; height: 8px; border-radius: 99px; background: #c9a349;"></span></div>
+          <div style="height: 22px; flex: none; display: flex; align-items: center; justify-content: center;"><span style="width: 120px; height: 4px; border-radius: 99px; background: #2a2c31;"></span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================== D · SETTINGS ============================== -->
+  <div style="display: flex; flex-direction: column; gap: 18px; margin-top: 48px;">
+    <div style="border-top: 1px solid #1c1d21; padding-top: 14px; font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">D — Settings, changelog, running tracker</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 28px;">
+
+      <!-- D1 settings -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 390px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: #08090a; background: #c9a349; padding: 3px 7px; border-radius: 5px;">D1</span>
+          <span style="font-size: 14px; font-weight: 600;">Settings</span>
+          <span style="font-size: 13px; color: #63676f;">where the old Account tab went</span>
+        </div>
+        <div style="width: 390px; height: 844px; background: #08090a; border: 1px solid #1c1d21; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 30px 60px -20px rgba(0,0,0,.9); position: relative;">
+          <div style="height: 44px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-family: 'DM Mono', monospace; font-size: 12px; color: #f6f6f7;"><span>9:41</span><span style="width: 16px; height: 9px; border: 1px solid #f6f6f7; border-radius: 2px; opacity: .85;"></span></div>
+          <div style="height: 52px; flex: none; display: flex; align-items: center; padding: 0 8px 0 12px; border-bottom: 1px solid #16171b;">
+            <button style="width: 44px; height: 44px; border: 0; background: transparent; color: #f6f6f7; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+            <div style="flex: 1; text-align: center; font-size: 16px; font-weight: 600;">Settings</div>
+            <div style="width: 44px;"></div>
+          </div>
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 26px; padding: 22px 0 0;">
+            <div style="padding: 0 20px; display: flex; align-items: center; gap: 14px;">
+              <div style="width: 52px; height: 52px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #868a93; flex: none;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="10" r="3.2"></circle><path d="M5.5 19.5a6.6 6.6 0 0 1 13 0"></path></svg></div>
+              <div style="min-width: 0;">
+                <div style="font-family: 'DM Mono', monospace; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">owner-3f9a1c2e</div>
+                <div style="display: flex; align-items: center; gap: 6px; margin-top: 5px;">
+                  <span style="font-size: 11px; font-weight: 600; color: #3ecf8e; background: #0f2419; border: 1px solid #1e6b46; border-radius: 99px; padding: 2px 8px;">TOTP on</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+              <div style="padding: 0 20px 8px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">Gym</div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-top: 1px solid #16171b;"><div style="flex: 1; font-size: 16px;">Plans</div><span style="font-size: 14px; color: #868a93;">3</span><div style="color: #474a52;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6l6 6-6 6"></path></svg></div></div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-top: 1px solid #16171b;"><div style="flex: 1; font-size: 16px;">Exercise library</div><span style="font-size: 14px; color: #868a93;">28</span><div style="color: #474a52;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6l6 6-6 6"></path></svg></div></div>
+              <div style="border-top: 1px solid #16171b;"></div>
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+              <div style="padding: 0 20px 8px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">Preferences</div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-top: 1px solid #16171b;"><div style="flex: 1; font-size: 16px;">Units</div><span style="font-family: 'DM Mono', monospace; font-size: 14px; color: #868a93;">kg · km</span><div style="color: #474a52;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6l6 6-6 6"></path></svg></div></div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-top: 1px solid #16171b;"><div style="flex: 1; font-size: 16px;">Time zone</div><span style="font-size: 14px; color: #868a93;">Europe/London</span><div style="color: #474a52;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6l6 6-6 6"></path></svg></div></div>
+              <div style="border-top: 1px solid #16171b;"></div>
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+              <div style="padding: 0 20px 8px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">App</div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-top: 1px solid #16171b;">
+                <div style="flex: 1; font-size: 16px;">What's new</div>
+                <span style="width: 7px; height: 7px; border-radius: 99px; background: #c9a349;"></span>
+                <span style="font-family: 'DM Mono', monospace; font-size: 13px; color: #868a93;">0.4.0</span>
+                <div style="color: #474a52;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6l6 6-6 6"></path></svg></div>
+              </div>
+              <div style="border-top: 1px solid #16171b;"></div>
+            </div>
+
+            <div style="padding: 0 20px;">
+              <button style="width: 100%; min-height: 48px; border: 1px solid #7a2328; border-radius: 12px; background: #2a1113; color: #f2555a; font-family: Manrope, sans-serif; font-size: 16px; font-weight: 600;">Sign out</button>
+            </div>
+          </div>
+          <div style="position: absolute; right: 20px; bottom: 30px; width: 52px; height: 52px; border-radius: 99px; background: #101114; border: 1px solid #2a2c31; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 24px -8px rgba(0,0,0,.8); z-index: 2;"><span style="width: 8px; height: 8px; border-radius: 99px; background: #c9a349;"></span></div>
+          <div style="height: 22px; flex: none; display: flex; align-items: center; justify-content: center;"><span style="width: 120px; height: 4px; border-radius: 99px; background: #2a2c31;"></span></div>
+        </div>
+      </div>
+
+      <!-- D2 changelog -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 390px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: #08090a; background: #c9a349; padding: 3px 7px; border-radius: 5px;">D2</span>
+          <span style="font-size: 14px; font-weight: 600;">What's new</span>
+          <span style="font-size: 13px; color: #63676f;">native details/summary</span>
+        </div>
+        <div style="width: 390px; height: 844px; background: #08090a; border: 1px solid #1c1d21; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 30px 60px -20px rgba(0,0,0,.9); position: relative;">
+          <div style="height: 44px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-family: 'DM Mono', monospace; font-size: 12px; color: #f6f6f7;"><span>9:41</span><span style="width: 16px; height: 9px; border: 1px solid #f6f6f7; border-radius: 2px; opacity: .85;"></span></div>
+          <div style="height: 52px; flex: none; display: flex; align-items: center; padding: 0 8px 0 12px; border-bottom: 1px solid #16171b;">
+            <button style="width: 44px; height: 44px; border: 0; background: transparent; color: #f6f6f7; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+            <div style="flex: 1; text-align: center; font-size: 16px; font-weight: 600;">What's new</div>
+            <div style="width: 44px;"></div>
+          </div>
+          <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+            <div style="padding: 20px 20px 16px; font-size: 14px; color: #868a93;">Everything that's shipped so far.</div>
+
+            <div style="border-top: 1px solid #16171b; padding: 14px 20px 18px; background: #0c0d0f;">
+              <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <div style="flex: 1; min-width: 0;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 16px; font-weight: 600;">Weight tracking</span>
+                    <span style="font-size: 10px; font-weight: 600; color: #17120a; background: #c9a349; border-radius: 99px; padding: 2px 7px;">NEW</span>
+                  </div>
+                  <div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #63676f; margin-top: 3px;">0.4.0</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; flex: none; padding-top: 2px;">
+                  <span style="font-size: 13px; color: #868a93;">13 Sep</span>
+                  <span style="color: #63676f; transform: rotate(180deg);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span>
+                </div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px;">
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><span style="font-size: 11px; font-weight: 600; color: #dcbc72; background: #211a0b; border: 1px solid #7d621f; border-radius: 99px; padding: 2px 8px; flex: none;">added</span><span style="font-size: 14px; line-height: 1.55; color: #b0b3ba;">Log your weight to one decimal with a keypad built for it.</span></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><span style="font-size: 11px; font-weight: 600; color: #dcbc72; background: #211a0b; border: 1px solid #7d621f; border-radius: 99px; padding: 2px 8px; flex: none;">added</span><span style="font-size: 14px; line-height: 1.55; color: #b0b3ba;">A trajectory chart with a 7-day average, on ranges from a month to all time.</span></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><span style="font-size: 11px; font-weight: 600; color: #b0b3ba; background: #1c1d21; border: 1px solid #2a2c31; border-radius: 99px; padding: 2px 8px; flex: none;">improved</span><span style="font-size: 14px; line-height: 1.55; color: #b0b3ba;">Home now leads with today rather than an empty list.</span></div>
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid #16171b; padding: 16px 20px; display: flex; align-items: flex-start; gap: 12px;">
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 16px; font-weight: 600;">Gym plans and sessions</div>
+                <div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #63676f; margin-top: 3px;">0.3.0</div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px; flex: none; padding-top: 2px;">
+                <span style="font-size: 13px; color: #868a93;">6 Sep</span>
+                <span style="color: #63676f;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span>
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid #16171b; padding: 16px 20px; display: flex; align-items: flex-start; gap: 12px;">
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 16px; font-weight: 600;">No more tab bar</div>
+                <div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #63676f; margin-top: 3px;">0.2.0</div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px; flex: none; padding-top: 2px;">
+                <span style="font-size: 13px; color: #868a93;">29 Aug</span>
+                <span style="color: #63676f;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span>
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid #16171b; padding: 16px 20px; display: flex; align-items: flex-start; gap: 12px;">
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 16px; font-weight: 600;">Sign-in and two-factor</div>
+                <div style="font-family: 'DM Mono', monospace; font-size: 12px; color: #63676f; margin-top: 3px;">0.1.0</div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px; flex: none; padding-top: 2px;">
+                <span style="font-size: 13px; color: #868a93;">22 Aug</span>
+                <span style="color: #63676f;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span>
+              </div>
+            </div>
+            <div style="border-top: 1px solid #16171b;"></div>
+          </div>
+          <div style="position: absolute; right: 20px; bottom: 30px; width: 52px; height: 52px; border-radius: 99px; background: #101114; border: 1px solid #2a2c31; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 24px -8px rgba(0,0,0,.8); z-index: 2;"><span style="width: 8px; height: 8px; border-radius: 99px; background: #c9a349;"></span></div>
+          <div style="height: 22px; flex: none; display: flex; align-items: center; justify-content: center;"><span style="width: 120px; height: 4px; border-radius: 99px; background: #2a2c31;"></span></div>
+        </div>
+      </div>
+
+      <!-- D3 running tracker -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 390px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: #08090a; background: #c9a349; padding: 3px 7px; border-radius: 5px;">D3</span>
+          <span style="font-size: 14px; font-weight: 600;">Running tracker</span>
+          <span style="font-size: 13px; color: #63676f;">log rows fixed</span>
+        </div>
+        <div style="width: 390px; height: 844px; background: #08090a; border: 1px solid #1c1d21; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 30px 60px -20px rgba(0,0,0,.9); position: relative;">
+          <div style="height: 44px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-family: 'DM Mono', monospace; font-size: 12px; color: #f6f6f7;"><span>9:41</span><span style="width: 16px; height: 9px; border: 1px solid #f6f6f7; border-radius: 2px; opacity: .85;"></span></div>
+          <div style="height: 52px; flex: none; display: flex; align-items: center; padding: 0 8px 0 12px; border-bottom: 1px solid #16171b;">
+            <button style="width: 44px; height: 44px; border: 0; background: transparent; color: #f6f6f7; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+            <div style="flex: 1; text-align: center; font-size: 16px; font-weight: 600;">Running</div>
+            <div style="width: 44px;"></div>
+          </div>
+          <div style="flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 22px; padding: 26px 0 0;">
+            <div style="padding: 0 20px; display: flex; flex-direction: column; gap: 18px;">
+              <div style="display: flex; align-items: baseline; gap: 10px;">
+                <span style="font-family: 'DM Mono', monospace; font-size: 44px; font-weight: 500; letter-spacing: -0.03em; line-height: 1; color: #3c3f45;">0:00</span>
+                <span style="flex: 1;"></span>
+                <span style="font-size: 13px; color: #63676f;">Ready</span>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <button style="flex: 1; min-height: 52px; border: 0; border-radius: 12px; background: #c9a349; color: #17120a; font-family: Manrope, sans-serif; font-size: 17px; font-weight: 600;">Start run</button>
+                <button style="min-height: 52px; padding: 0 18px; border: 1px solid #2a2c31; border-radius: 12px; background: transparent; color: #f6f6f7; font-family: Manrope, sans-serif; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 7px;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add</button>
+              </div>
+            </div>
+
+            <div style="margin: 0 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: #1c1d21; border: 1px solid #1c1d21; border-radius: 12px; overflow: hidden;">
+              <div style="background: #101114; padding: 12px 14px;"><div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #63676f;">This week</div><div style="font-family: 'DM Mono', monospace; font-size: 17px; margin-top: 6px;">4</div></div>
+              <div style="background: #101114; padding: 12px 14px;"><div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #63676f;">Total time</div><div style="font-family: 'DM Mono', monospace; font-size: 17px; margin-top: 6px;">2:41</div></div>
+              <div style="background: #101114; padding: 12px 14px;"><div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #63676f;">Longest</div><div style="font-family: 'DM Mono', monospace; font-size: 17px; margin-top: 6px;">59s</div></div>
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px 8px;">
+                <span style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">Today</span>
+                <span style="font-family: 'DM Mono', monospace; font-size: 12px; color: #63676f;">59s total</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 14px; padding: 13px 20px; border-top: 1px solid #16171b;">
+                <span style="font-family: 'DM Mono', monospace; font-size: 14px; color: #868a93; width: 46px; flex: none;">14:28</span>
+                <span style="flex: 1; font-size: 15px;">Run</span>
+                <span style="font-family: 'DM Mono', monospace; font-size: 16px; flex: none;">38s</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 14px; padding: 13px 20px; border-top: 1px solid #16171b;">
+                <span style="font-family: 'DM Mono', monospace; font-size: 14px; color: #868a93; width: 46px; flex: none;">14:07</span>
+                <span style="flex: 1; font-size: 15px;">Run</span>
+                <span style="font-family: 'DM Mono', monospace; font-size: 16px; flex: none;">2s</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 14px; padding: 13px 20px; border-top: 1px solid #16171b;">
+                <span style="font-family: 'DM Mono', monospace; font-size: 14px; color: #868a93; width: 46px; flex: none;">13:26</span>
+                <span style="flex: 1; font-size: 15px;">Run <span style="font-size: 12px; color: #63676f;">· added manually</span></span>
+                <span style="font-family: 'DM Mono', monospace; font-size: 16px; flex: none;">19s</span>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 8px; border-top: 1px solid #16171b;">
+                <span style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">Fri 11 Sep</span>
+                <span style="font-family: 'DM Mono', monospace; font-size: 12px; color: #63676f;">1:42 total</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 14px; padding: 13px 20px; border-top: 1px solid #16171b;">
+                <span style="font-family: 'DM Mono', monospace; font-size: 14px; color: #868a93; width: 46px; flex: none;">07:15</span>
+                <span style="flex: 1; font-size: 15px;">Run</span>
+                <span style="font-family: 'DM Mono', monospace; font-size: 16px; flex: none;">1:42</span>
+              </div>
+              <div style="border-top: 1px solid #16171b;"></div>
+            </div>
+          </div>
+          <div style="position: absolute; right: 20px; bottom: 30px; width: 52px; height: 52px; border-radius: 99px; background: #101114; border: 1px solid #2a2c31; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 24px -8px rgba(0,0,0,.8); z-index: 2;"><span style="width: 8px; height: 8px; border-radius: 99px; background: #c9a349;"></span></div>
+          <div style="height: 22px; flex: none; display: flex; align-items: center; justify-content: center;"><span style="width: 120px; height: 4px; border-radius: 99px; background: #2a2c31;"></span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================== E · GOALS + RADIAL MENU ============================== -->
+  <div style="display: flex; flex-direction: column; gap: 18px; margin-top: 48px;">
+    <div style="display: flex; flex-direction: column; gap: 6px; border-top: 1px solid #1c1d21; padding-top: 14px;">
+      <div style="font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">E — Goals · US-007, and the radial menu · US-009</div>
+      <div style="font-size: 13px; color: #63676f; max-width: 640px;">Goals now live directly on Home (see A1) and the radial button is baked into every main screen as persistent chrome. This section covers just the new pieces: the goal detail sheet, the open ring, and the requests list.</div>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 28px;">
+
+      <!-- E2 goal detail sheet -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 390px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: #08090a; background: #c9a349; padding: 3px 7px; border-radius: 5px;">E2</span>
+          <span style="font-size: 14px; font-weight: 600;">Goal detail sheet</span>
+          <span style="font-size: 13px; color: #63676f;">target kind, progress derived from sets</span>
+        </div>
+        <div style="width: 390px; height: 844px; background: #08090a; border: 1px solid #1c1d21; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; position: relative; box-shadow: 0 30px 60px -20px rgba(0,0,0,.9);">
+          <div style="position: absolute; inset: 0; background: rgba(0,0,0,.62);"></div>
+          <div style="position: relative; background: #101114; border-top: 1px solid #2a2c31; border-radius: 22px 22px 0 0; padding: 14px 20px 30px; display: flex; flex-direction: column; gap: 22px;">
+            <div style="width: 36px; height: 4px; border-radius: 99px; background: #2a2c31; align-self: center;"></div>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-size: 17px; font-weight: 600;">Deadlift 400kg</span>
+              <span style="font-size: 15px; color: #c9a349; font-weight: 600;">Done</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div style="display: flex; align-items: baseline; gap: 8px;">
+                <span style="font-family: 'DM Mono', monospace; font-size: 34px; font-weight: 500;">312</span>
+                <span style="font-size: 15px; color: #63676f;">/ 400 kg</span>
+                <span style="flex: 1;"></span>
+                <span style="font-family: 'DM Mono', monospace; font-size: 14px; color: #dcbc72;">78%</span>
+              </div>
+              <div style="height: 10px; border-radius: 99px; background: #1c1d21; overflow: hidden;"><div style="width: 78%; height: 100%; background: linear-gradient(90deg, #a8862f, #c9a349); border-radius: 99px;"></div></div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #16171b; border: 1px solid #2a2c31; border-radius: 12px;">
+              <div style="width: 28px; height: 28px; border-radius: 99px; background: #1c1d21; display: flex; align-items: center; justify-content: center; color: #868a93; flex: none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg></div>
+              <span style="flex: 1; font-size: 14px; color: #b0b3ba;">Deadlift</span>
+              <span style="font-size: 12px; color: #63676f;">Subject</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <span style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #63676f;">Target · kg</span>
+              <div style="min-height: 48px; border: 1px solid #2a2c31; border-radius: 10px; background: #16171b; display: flex; align-items: center; padding: 0 14px; font-family: 'DM Mono', monospace; font-size: 18px;">400</div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+              <button style="flex: 1; min-height: 48px; border: 1px solid #2a2c31; border-radius: 12px; background: transparent; color: #f6f6f7; font-family: Manrope, sans-serif; font-size: 15px; font-weight: 600;">Pause</button>
+              <button style="flex: 1; min-height: 48px; border: 1px solid #7a2328; border-radius: 12px; background: #2a1113; color: #f2555a; font-family: Manrope, sans-serif; font-size: 15px; font-weight: 600;">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- E3 radial menu open -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 390px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: #08090a; background: #c9a349; padding: 3px 7px; border-radius: 5px;">E3</span>
+          <span style="font-size: 14px; font-weight: 600;">Radial menu · open</span>
+          <span style="font-size: 13px; color: #63676f;">true ring, centered on the button</span>
+        </div>
+        <div style="width: 390px; height: 844px; background: #08090a; border: 1px solid #1c1d21; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; position: relative; box-shadow: 0 30px 60px -20px rgba(0,0,0,.9);">
+          <div style="height: 44px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-family: 'DM Mono', monospace; font-size: 12px; color: #f6f6f7; opacity: .3;"><span>9:41</span><span style="width: 16px; height: 9px; border: 1px solid #f6f6f7; border-radius: 2px;"></span></div>
+          <div style="flex: 1; padding: 0 20px; opacity: .25;">
+            <div style="font-size: 13px; color: #868a93;">Sunday 13 September</div>
+            <div style="font-size: 32px; font-weight: 600; letter-spacing: -0.03em; margin-top: 1px;">Home</div>
+          </div>
+          <div style="position: absolute; inset: 0; background: rgba(0,0,0,.55);"></div>
+
+          <div style="position: absolute; right: -126px; bottom: -116px; width: 356px; height: 356px; border-radius: 99px; background: conic-gradient(from 0deg, #c9a349 0deg 70deg, #08090a 70deg 74deg, #16171b 74deg 142deg, #08090a 142deg 146deg, #16171b 146deg 214deg, #08090a 214deg 218deg, #16171b 218deg 286deg, #08090a 286deg 290deg, #16171b 290deg 358deg, #08090a 358deg 360deg); box-shadow: 0 20px 50px -10px rgba(0,0,0,.8);">
+
+            <div style="position: absolute; left: 237.5px; top: 62.9px; width: 28px; height: 28px; margin: -14px; display: flex; align-items: center; justify-content: center; color: #17120a;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg></div>
+            <div style="position: absolute; left: 175px; top: 12px; font-size: 11px; font-weight: 600; color: #f6f6f7; background: #17120a; border-radius: 6px; padding: 3px 8px; white-space: nowrap;">Start session</div>
+
+            <div style="position: absolute; left: 282.9px; top: 202.6px; width: 28px; height: 28px; margin: -14px; display: flex; align-items: center; justify-content: center; color: #b0b3ba;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="4"></rect><path d="M7.5 9.5a6 6 0 0 1 9 0"></path><path d="M12 13l3-3"></path></svg></div>
+
+            <div style="position: absolute; left: 164px; top: 289px; width: 28px; height: 28px; margin: -14px; display: flex; align-items: center; justify-content: center; color: #b0b3ba;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+
+            <div style="position: absolute; left: 45.1px; top: 202.6px; width: 28px; height: 28px; margin: -14px; display: flex; align-items: center; justify-content: center; color: #b0b3ba;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 9v6M20 9v6M9 4l3 3-3 3M9 14l3 3-3 3"></path></svg></div>
+
+            <div style="position: absolute; left: 90.5px; top: 62.9px; width: 28px; height: 28px; margin: -14px; display: flex; align-items: center; justify-content: center; color: #b0b3ba;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><path d="M12 3v2.5M12 18.5V21M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M3 12h2.5M18.5 12H21M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"></path></svg></div>
+
+            <div style="position: absolute; left: 106px; top: 106px; width: 144px; height: 144px; border-radius: 99px; background: #16171b; border: 1px solid #c9a349; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 0 0 6px rgba(201,163,73,0.12);">
+              <span style="width: 9px; height: 9px; border-radius: 99px; background: #c9a349;"></span>
+              <span style="font-size: 12px; color: #868a93; margin-top: 2px;">Release to Home</span>
+            </div>
+          </div>
+
+          <div style="height: 22px; flex: none; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1;"><span style="width: 120px; height: 4px; border-radius: 99px; background: #2a2c31;"></span></div>
+        </div>
+      </div>
+
+      <!-- E4 feature request capture (from the wheel) -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 390px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: #08090a; background: #c9a349; padding: 3px 7px; border-radius: 5px;">E4</span>
+          <span style="font-size: 14px; font-weight: 600;">Add feature request</span>
+          <span style="font-size: 13px; color: #63676f;">lighter capture sheet, from the wheel</span>
+        </div>
+        <div style="width: 390px; height: 844px; background: #08090a; border: 1px solid #1c1d21; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; position: relative; box-shadow: 0 30px 60px -20px rgba(0,0,0,.9);">
+          <div style="position: absolute; inset: 0; background: rgba(0,0,0,.62);"></div>
+          <div style="position: relative; background: #101114; border-top: 1px solid #2a2c31; border-radius: 22px 22px 0 0; padding: 14px 20px 30px; display: flex; flex-direction: column; gap: 18px;">
+            <div style="width: 36px; height: 4px; border-radius: 99px; background: #2a2c31; align-self: center;"></div>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-size: 17px; font-weight: 600;">Add feature request</span>
+              <span style="font-size: 15px; color: #868a93;">Cancel</span>
+            </div>
+            <div style="min-height: 52px; border: 1px solid #2a2c31; border-radius: 12px; background: #16171b; display: flex; align-items: center; padding: 0 14px; font-size: 16px; color: #f6f6f7;">Add a rest-timer target<span style="width: 2px; height: 20px; background: #c9a349; margin-left: 2px;"></span></div>
+            <button style="width: 100%; min-height: 52px; border: 0; border-radius: 12px; background: #c9a349; color: #17120a; font-family: Manrope, sans-serif; font-size: 17px; font-weight: 600;">Save</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- E5 requests list -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 390px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: #08090a; background: #c9a349; padding: 3px 7px; border-radius: 5px;">E5</span>
+          <span style="font-size: 14px; font-weight: 600;">Requests</span>
+          <span style="font-size: 13px; color: #63676f;">US-008 · full list, from Settings</span>
+        </div>
+        <div style="width: 390px; height: 844px; background: #08090a; border: 1px solid #1c1d21; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 30px 60px -20px rgba(0,0,0,.9);">
+          <div style="height: 44px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-family: 'DM Mono', monospace; font-size: 12px; color: #f6f6f7;"><span>9:41</span><span style="width: 16px; height: 9px; border: 1px solid #f6f6f7; border-radius: 2px; opacity: .85;"></span></div>
+          <div style="height: 52px; flex: none; display: flex; align-items: center; padding: 0 8px 0 12px; border-bottom: 1px solid #16171b;">
+            <button style="width: 44px; height: 44px; border: 0; background: transparent; color: #f6f6f7; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+            <div style="flex: 1; text-align: center; font-size: 16px; font-weight: 600;">Requests</div>
+            <div style="width: 44px;"></div>
+          </div>
+          <div style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
+            <div style="padding: 16px 20px; flex: none;">
+              <div style="min-height: 46px; border: 1px solid #2a2c31; border-radius: 12px; background: #16171b; display: flex; align-items: center; padding: 0 14px; font-size: 15px; color: #63676f;">What should the app do?</div>
+            </div>
+            <div style="display: flex; flex-direction: column;">
+              <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 20px; border-top: 1px solid #16171b;">
+                <span style="width: 20px; height: 20px; border-radius: 6px; border: 1px solid #474a52; margin-top: 2px; flex: none;"></span>
+                <span style="flex: 1; font-size: 15px;">Add a rest-timer target instead of counting up</span>
+              </div>
+              <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 20px; border-top: 1px solid #16171b;">
+                <span style="width: 20px; height: 20px; border-radius: 6px; border: 1px solid #474a52; margin-top: 2px; flex: none;"></span>
+                <span style="flex: 1; font-size: 15px;">Export weight history as CSV</span>
+              </div>
+              <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 20px; border-top: 1px solid #16171b;">
+                <span style="width: 20px; height: 20px; border-radius: 6px; border: 1px solid #474a52; margin-top: 2px; flex: none;"></span>
+                <span style="flex: 1; font-size: 15px;">Dark-mode QR contrast check</span>
+              </div>
+              <div style="padding: 18px 20px 8px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">Done (2)</div>
+              <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 20px; border-top: 1px solid #16171b; opacity: .55;">
+                <span style="width: 20px; height: 20px; border-radius: 6px; background: #1e6b46; border: 1px solid #1e6b46; display: flex; align-items: center; justify-content: center; margin-top: 2px; flex: none;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f6f6f7" stroke-width="3" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>
+                <span style="flex: 1; font-size: 15px; text-decoration: line-through;">Show a QR quiet zone on white</span>
+              </div>
+              <div style="border-top: 1px solid #16171b;"></div>
+            </div>
+          </div>
+          <div style="height: 22px; flex: none; display: flex; align-items: center; justify-content: center;"><span style="width: 120px; height: 4px; border-radius: 99px; background: #2a2c31;"></span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+  <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 56px; max-width: 860px;">
+    <div style="border-top: 1px solid #1c1d21; padding-top: 14px; font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #63676f;">Decisions worth arguing with</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
+      <div style="border: 1px solid #1c1d21; border-radius: 12px; padding: 16px; background: #0c0d0f;"><div style="font-size: 15px; font-weight: 600; margin-bottom: 7px;">Gym leads, weight follows</div><div style="font-size: 13px; line-height: 1.6; color: #868a93;">On a training day the session is the only thing you came for, so it sits above the weight card. On a rest day (<a href="#" style="color: #c9a349;">A4</a>) it collapses to one line and weight inherits the primary button.</div></div>
+      <div style="border: 1px solid #1c1d21; border-radius: 12px; padding: 16px; background: #0c0d0f;"><div style="font-size: 15px; font-weight: 600; margin-bottom: 7px;">One primary per screen</div><div style="font-size: 13px; line-height: 1.6; color: #868a93;">Gold fills exactly one button per frame. When the session is live it moves to Resume and the weight card drops to a bare number.</div></div>
+      <div style="border: 1px solid #1c1d21; border-radius: 12px; padding: 16px; background: #0c0d0f;"><div style="font-size: 15px; font-weight: 600; margin-bottom: 7px;">Log rows lost the fake range</div><div style="font-size: 13px; line-height: 1.6; color: #868a93;">A 38s run no longer reads <span style="font-family: 'DM Mono', monospace;">14:28 – 14:28</span>. One start time, the duration right-aligned, day totals in the group header.</div></div>
+      <div style="border: 1px solid #1c1d21; border-radius: 12px; padding: 16px; background: #0c0d0f;"><div style="font-size: 15px; font-weight: 600; margin-bottom: 7px;">Stopwatch recedes when idle</div><div style="font-size: 13px; line-height: 1.6; color: #868a93;">In <a href="#" style="color: #c9a349;">D3</a> the idle <span style="font-family: 'DM Mono', monospace;">0:00</span> is the same size but grey — the gold Start button is the focal point, not the placeholder.</div></div>
+      <div style="border: 1px solid #1c1d21; border-radius: 12px; padding: 16px; background: #0c0d0f;"><div style="font-size: 15px; font-weight: 600; margin-bottom: 7px;">Session screen can't be escaped by accident</div><div style="font-size: 13px; line-height: 1.6; color: #868a93;">No back chevron in <a href="#" style="color: #c9a349;">C4</a> — a chevron-down Minimise instead, which keeps the clock running and drops the pill onto Home.</div></div>
+      <div style="border: 1px solid #1c1d21; border-radius: 12px; padding: 16px; background: #0c0d0f;"><div style="font-size: 15px; font-weight: 600; margin-bottom: 7px;">Direction is never coloured</div><div style="font-size: 13px; line-height: 1.6; color: #868a93;">Weight up or down both render in neutral grey. Green means live, gold means action, red means destructive. Nothing judges the number.</div></div>
+    </div>
+  </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showNotes&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Doc&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    return { showNotes: this.props.showNotes ?? true };
+  }
+}
+</script>
+</body>
+</html>
