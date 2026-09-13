@@ -99,6 +99,18 @@
       background-position: -200% 0;
     }
   }
+  /* List and section entrance (US-007 §9). CSS, not Motion: it runs without JS, off the
+     compositor, and needs no hydration — so a list is never briefly invisible on a slow phone. */
+  @keyframes enter-up {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 }
 
 /* shadcn/ui semantic variables (01-design-system.md §9.2), mapped to our tokens. No .dark block: we're dark only. */

@@ -2,10 +2,13 @@ import type { ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
 import type { ChangelogEntry } from "@/content/changelog";
 import { formatReleaseDate } from "@/lib/changelog";
+import { enterDelay } from "@/lib/motion";
 import { ChangeBadge } from "@/components/changelog/change-badge";
 
 export interface ReleaseAccordionProps {
   entry: ChangelogEntry;
+  /** Position in the list, for the staggered entrance. */
+  index?: number;
   /** The newest release is expanded on load (US-006 §5.2). */
   defaultOpen?: boolean;
   /** The `NEW` badge, injected after hydration since "unseen" is client state (US-006 §6). */
@@ -19,9 +22,13 @@ export interface ReleaseAccordionProps {
  * and comes keyboard- and screen-reader-accessible for free. Several may be open at once, which is
  * the native behaviour when no `name` groups them.
  */
-export function ReleaseAccordion({ entry, defaultOpen, badge }: ReleaseAccordionProps) {
+export function ReleaseAccordion({ entry, index = 0, defaultOpen, badge }: ReleaseAccordionProps) {
   return (
-    <details className="group border-b border-neutral-800" open={defaultOpen}>
+    <details
+      className="group border-b border-neutral-800 motion-safe:animate-[enter-up_260ms_var(--ease-out-soft)_both]"
+      style={{ animationDelay: enterDelay(index) }}
+      open={defaultOpen}
+    >
       <summary className="flex min-h-14 cursor-pointer list-none items-center gap-3 py-3 active:bg-surface-hover [&::-webkit-details-marker]:hidden">
         <span className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span className="flex items-center gap-2">

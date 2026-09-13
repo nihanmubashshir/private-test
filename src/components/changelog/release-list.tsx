@@ -29,6 +29,7 @@ export function ReleaseList() {
         <ReleaseAccordion
           key={entry.version}
           entry={entry}
+          index={index}
           defaultOpen={index === 0}
           badge={
             isUnseen(entry.version, lastSeen) ? (

@@ -172,6 +172,10 @@ Components, variants, and tokens added by agents beyond the handoff. Add a row f
 | US-006 | `components/changelog/{release-accordion,change-badge,release-list,unseen-dot,use-unseen}.tsx` | The What's new screen | Native `<details>`/`<summary>`, so it opens with no JS and is accessible without a Radix dependency; chevron `group-open:rotate-180` over 160ms, `motion-reduce` exempt. `ChangeBadge` is a 22px/11px pill (`added` accent, `improved` neutral, `fixed` success) — smaller than `ui/badge.tsx`, which is 26px and sized for row values |
 | US-006 | Unseen dot | Marks unread releases on the Home gear and the Settings row | 6px `accent-500`. The slot is always in the layout and only opacity changes, so the row cannot reflow when the count resolves after hydration |
 
+| US-007 | `src/app/{not-found,error,global-error}.tsx`, `(app)/not-found.tsx`, `components/shell/error-screen.tsx` | The app's own 404 and crash handling — an installed PWA has no browser chrome to escape a white default page with | Not-found redirects Home with a warning toast (owner decision); the error screen follows the empty-state anatomy with Try again + Go home and the `digest` in mono. Next 16 names the retry prop `retry`, not `reset` |
+| US-007 | `motion` (Framer Motion) + `src/lib/motion.ts` | Gesture-driven and orchestrated animation | `EASE_OUT_SOFT` mirrors `--ease-out-soft`; `transitions.micro/sheet/push` at 160/180/220ms; `transitions.drag` is a spring. See the CSS-vs-Motion rule in §9.1 |
+| US-007 | `enter-up` keyframe + `enterDelay()` | Staggered list and section entrances | `opacity 0 → 1`, `translateY(6px) → 0`, 260ms `--ease-out-soft` `both`, delay `index × 40ms` capped at 240ms. CSS rather than Motion so a list is never briefly invisible when JS is slow or absent |
+
 ## 9. shadcn/ui + Radix (added in US-005)
 
 shadcn/ui components are **copied source** in `src/components/ui/`, built on Radix primitives. They are a behavior and accessibility
@@ -183,7 +187,12 @@ foundation. **Their look always comes from our tokens and the README**, never fr
 - Do **not** add shadcn's `sheet` (side panel). Bottom sheets use `drawer`, desktop dialogs use `dialog`, and `confirm-sheet` combines them.
 - Prefer native inputs on mobile: `<input type="date|time">` over Calendar/Popover pickers, and native `<select>` over Radix Select,
   unless a story says otherwise.
-- The only UI dependencies are Radix, `cva`, `clsx`, `tailwind-merge`, `lucide-react`, `vaul`, `sonner`, and `tw-animate-css`. Ask before adding another.
+- The only UI dependencies are Radix, `cva`, `clsx`, `tailwind-merge`, `lucide-react`, `vaul`, `sonner`, `tw-animate-css`, and **`motion`** (Framer Motion, added in US-007 on owner instruction). Ask before adding another.
+- **CSS for state, Motion for gesture.** A hover, a pressed state, a rotating chevron, a list fading
+  in — all CSS, because those run with no JS, off the main thread, and cost nothing on a mid-range
+  phone. Reach for `motion` only where the animation follows a finger or has to be orchestrated:
+  the radial wheel, sheet drag-to-dismiss, shared-element pushes. Shared durations and easing live
+  in `src/lib/motion.ts`; never animate a property that forces layout.
 
 ### 9.2 Semantic variable mapping (`:root` only, no `.dark` block)
 
