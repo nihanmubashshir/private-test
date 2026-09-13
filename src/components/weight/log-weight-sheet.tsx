@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { createWeighIn, updateWeighIn, type WeightActionResult } from "@/app/(app)/weight/actions";
 import { MIN_KG, MAX_KG } from "@/lib/weight/limits";
@@ -38,19 +38,26 @@ export function LogWeightSheet({ open, onClose, lastValueKg, editing }: LogWeigh
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [showNote, setShowNote] = useState(false);
+  const [rangeError, setRangeError] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [state, formAction, pending] = useActionState(editing ? updateWeighIn : createWeighIn, INITIAL);
 
-  // Reset to a clean sheet (or the reading being edited) every time it opens.
+  // Reset when the sheet *opens*, not on every render while it is open. Anything that re-runs
+  // this mid-session wipes what the owner has typed — which is exactly what an unmemoised
+  // `writeTimeZone` in the dependency array used to do, one keypress at a time.
+  const wasOpen = useRef(false);
   useEffect(() => {
-    if (!open) return;
-    const zone = appTimeZone ?? writeTimeZone();
-    const wall = fromIso(editing?.measuredAt ?? new Date().toISOString(), zone);
-    setValue(editing ? String(editing.valueKg) : "");
-    setDate(wall.date);
-    setTime(wall.time);
-    setNote(editing?.note ?? "");
-    setShowNote(Boolean(editing?.note));
+    if (open && !wasOpen.current) {
+      const zone = appTimeZone ?? writeTimeZone();
+      const wall = fromIso(editing?.measuredAt ?? new Date().toISOString(), zone);
+      setValue(editing ? String(editing.valueKg) : "");
+      setDate(wall.date);
+      setTime(wall.time);
+      setNote(editing?.note ?? "");
+      setShowNote(Boolean(editing?.note));
+      setRangeError(null);
+    }
+    wasOpen.current = open;
   }, [open, editing, appTimeZone, writeTimeZone]);
 
   // The action returns an id only on a successful write, which is what distinguishes a real
@@ -61,16 +68,34 @@ export function LogWeightSheet({ open, onClose, lastValueKg, editing }: LogWeigh
     onClose();
   }, [state, open, editing, onClose]);
 
-  const parsed = parseValue(value);
-  const outOfRange = parsed !== null && (parsed < MIN_KG || parsed > MAX_KG);
-  const canSave = isComplete(value) && !outOfRange;
+  // Range is checked when Save is pressed, never while typing: on the way to "82" the value
+  // passes through "8", and flashing "must be at least 20 kg" at someone mid-entry reads as the
+  // keypad rejecting the keypress.
+  const canSave = isComplete(value);
+
+  const validate = (): boolean => {
+    const parsed = parseValue(value);
+    if (parsed === null) return false;
+    if (parsed < MIN_KG || parsed > MAX_KG) {
+      setRangeError(`Weight must be between ${MIN_KG} and ${MAX_KG} kg.`);
+      return false;
+    }
+    setRangeError(null);
+    return true;
+  };
 
   const zone = appTimeZone ?? "";
   const measuredAt = date && time && zone ? toIso({ date, time, timeZone: zone }) : "";
 
   return (
     <EntrySheet open={open} onClose={onClose} title={editing ? "Edit reading" : "Log weight"}>
-      <form action={formAction} className="flex flex-col gap-4">
+      <form
+        action={(formData) => {
+          if (!validate()) return;
+          formAction(formData);
+        }}
+        className="flex flex-col gap-4"
+      >
         {editing && <input type="hidden" name="id" value={editing.id} />}
         <input type="hidden" name="measuredAt" value={measuredAt} />
         <input type="hidden" name="timeZone" value={zone} />
@@ -87,12 +112,6 @@ export function LogWeightSheet({ open, onClose, lastValueKg, editing }: LogWeigh
           )}
           <span className="text-control text-neutral-400">kg</span>
         </div>
-
-        {outOfRange && (
-          <p className="text-center text-body-sm text-warning-400">
-            Weight must be between {MIN_KG} and {MAX_KG} kg.
-          </p>
-        )}
 
         <Keypad value={value} onChange={setValue} />
 
@@ -132,9 +151,16 @@ export function LogWeightSheet({ open, onClose, lastValueKg, editing }: LogWeigh
           </Button>
         )}
 
-        {!state.ok && state.message && <FormError>{state.message}</FormError>}
+        {(rangeError ?? (!state.ok ? state.message : null)) && <FormError>{rangeError ?? state.message}</FormError>}
 
-        <Button type="submit" fullWidth size="lg" className="h-13" disabled={!canSave || !measuredAt} pending={pending}>
+        <Button
+          type="submit"
+          fullWidth
+          size="lg"
+          className="mt-1 h-13"
+          disabled={!canSave || !measuredAt}
+          pending={pending}
+        >
           Save
         </Button>
       </form>

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { getDeviceTimeZone } from "@/lib/time/zone";
 
 interface AppTimeZoneValue {
@@ -56,5 +56,8 @@ export function useIsTimeZoneConfigured(): boolean {
  */
 export function useWriteTimeZone(): () => string {
   const timeZone = useAppTimeZone();
-  return () => timeZone ?? getDeviceTimeZone();
+  // Memoised: an unstable identity here silently re-fires every effect that depends on it. That
+  // cost the weight sheet its input -- the reset effect re-ran on every render and cleared the
+  // value between keypresses.
+  return useCallback(() => timeZone ?? getDeviceTimeZone(), [timeZone]);
 }

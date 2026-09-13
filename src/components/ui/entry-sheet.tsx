@@ -19,7 +19,7 @@ export interface EntrySheetProps {
   pending?: boolean;
   /** "Cancel" by default; becomes "Done" once a picker-style sheet has changed something. */
   cancelLabel?: string;
-  /** Fills most of the viewport and scrolls, for long lists. Otherwise the sheet fits its content. */
+  /** Fills most of the viewport, for long lists. Otherwise the sheet fits its content, up to 88vh. */
   tall?: boolean;
   children: ReactNode;
 }
@@ -35,8 +35,12 @@ export interface EntrySheetProps {
  * it is a solved primitive).
  *
  * The header is title + Cancel rather than an X, so the dismiss affordance is reachable by a
- * thumb and reads as a choice. The CTA is sticky and padded past the home indicator, so it stays
- * above the keyboard on a phone.
+ * thumb and reads as a choice. The CTA is padded past the home indicator, so it stays above the
+ * keyboard on a phone.
+ *
+ * The body always scrolls, inside the Drawer's own 80vh cap. A sheet that merely "fits its
+ * content" is fine until the content is a keypad plus a date row on a short phone, at which point
+ * the bottom — including the Save button — is simply unreachable.
  */
 export function EntrySheet({
   open,
@@ -67,7 +71,7 @@ export function EntrySheet({
         </Button>
       </div>
 
-      <div className={cn("flex flex-col gap-4", tall && "min-h-0 flex-1 overflow-y-auto")}>{children}</div>
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain pb-1">{children}</div>
 
       {submitLabel && (
         <Button
@@ -87,7 +91,7 @@ export function EntrySheet({
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent showCloseButton={false} className={cn("flex flex-col gap-5", tall && "max-h-[85vh]")}>
+        <DialogContent showCloseButton={false} className={cn("flex max-h-[85vh] flex-col gap-4", tall && "h-[85vh]")}>
           {body}
         </DialogContent>
       </Dialog>
@@ -96,9 +100,7 @@ export function EntrySheet({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent
-        className={cn("gap-5 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]", tall && "h-[85vh] max-h-[85vh]")}
-      >
+      <DrawerContent className={cn("gap-4 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]", tall && "h-[85vh]")}>
         {body}
       </DrawerContent>
     </Drawer>
