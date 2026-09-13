@@ -90,7 +90,8 @@ never need arbitrary hex values or sizes:
 | `alert.tsx` + `form-error.tsx` | US-001 | 4 tones. `form-error` = alert with `role="alert"`. |
 | `badge.tsx` | US-001 | success, accent, neutral, warning, danger, plus a mono variant. `/` uses the success `aal2` badge. |
 | `copy-secret-button.tsx` | US-001 | `'use client'`. 2s "Copied" state, `aria-live="polite"`, copies with spaces stripped. |
-| `toast.tsx`, table, modal/bottom sheet, skeleton | **Later**, when a story first needs them | Follow the README exactly when they're built. Don't build them early. |
+| `sheet.tsx` (modal / bottom sheet) | US-003 | Exactly per the README. Used for discard/delete confirmations. |
+| `toast.tsx`, table, skeleton | **Later**, when a story first needs them | Follow the README exactly when they're built. Don't build them early. |
 
 ## 6. Resolved conflicts (design README vs drawn v2 screens)
 
@@ -149,3 +150,6 @@ Components, variants, and tokens added by agents beyond the handoff. Add a row f
 |----------|------|---------|------------|
 | US-001 | `--text-body-sm`, `--text-control`, `--color-surface-sunken`, `--color-surface-hover`, `--color-danger-900`, `--color-skeleton-shine` | Name values the handoff uses without tokens | See §4.1 b |
 | US-001 | PWA app icons (`app/icon.tsx`, `app/apple-icon.tsx`, `app/icons/icon-192`, `app/icons/icon-512`, `app/manifest.ts`) | Installable-to-home-screen support | The gold rounded-square brand mark (`accent-500`, radius 22%) centered on the `neutral-950` ground, generated with `next/og` via the shared `src/lib/app-icon.tsx` helper — no new image assets. |
+| US-003 | `components/stopwatch/stopwatch-elapsed.tsx` | Live, drift-free elapsed-time readout shared by any tracker's control panel and the global bar | DM Mono, `tabular-nums`, `role="timer"`; `size="display"` = `text-display` centered, `size="bar"` = 20px (`text-xl`); idle (`startedAt` null) renders `0:00` in `neutral-600` |
+| US-003 | `components/stopwatch/stopwatch-control.tsx` | The start/stop/discard panel a tracker page composes into itself | Card with a `STOPWATCH` eyebrow (11px DM Mono uppercase `0.1em` `neutral-500`, per §6 #6), the elapsed display, one result alert above the primary button, and the discard confirm `Sheet` |
+| US-003 | `components/stopwatch/active-stopwatch-bar.tsx` | Global "something is still running" bar mounted in `(app)/layout.tsx` | Fixed to the bottom, `neutral-900` bg, `neutral-800` top hairline, 56px per active row, an 8px `success-400` status dot, a secondary (not gold) Stop button; hidden on the active item's own tracker page |

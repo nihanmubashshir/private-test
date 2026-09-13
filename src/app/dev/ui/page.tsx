@@ -9,8 +9,71 @@ import { FormError } from "@/components/ui/form-error";
 import { Badge } from "@/components/ui/badge";
 import { CopySecretButton } from "@/components/ui/copy-secret-button";
 import { Brand } from "@/components/ui/brand";
+import { StopwatchElapsed } from "@/components/stopwatch/stopwatch-elapsed";
+import { StopwatchControl } from "@/components/stopwatch/stopwatch-control";
+import type { StopwatchKind } from "@/lib/stopwatch/registry";
+import { SheetDemo } from "./sheet-demo";
 
 export const dynamic = "force-dynamic";
+
+// No kind is registered yet (US-003 ships before any tracker) — this cast stands in for one so
+// the gallery below can demo the control's states. StopwatchControl never looks the kind up in
+// the registry itself (it only forwards it to the Server Actions, which validate it), so this is
+// safe here even though it wouldn't be a real, resolvable kind.
+const DEMO_KIND = "demo" as unknown as StopwatchKind;
+
+function MockStopwatchPanel({
+  heading,
+  elapsed,
+  started,
+  message,
+  tone,
+  primaryLabel,
+  pending,
+  showDiscard,
+}: {
+  heading: string;
+  elapsed: string;
+  started?: string;
+  message?: string;
+  tone?: "danger" | "warning" | "success" | "neutral";
+  primaryLabel: string;
+  pending?: boolean;
+  showDiscard?: boolean;
+}) {
+  return (
+    <Card className="flex w-full max-w-sm flex-col gap-5">
+      <p className="font-mono text-[11px] tracking-[0.1em] text-neutral-500 uppercase">STOPWATCH</p>
+      <span className="text-display text-center font-mono text-neutral-50 tabular-nums">{elapsed}</span>
+      {started && <p className="text-body-sm text-center text-neutral-400">Started {started}</p>}
+      {message && <Alert tone={tone ?? "neutral"}>{message}</Alert>}
+      <Button fullWidth size="lg" pending={pending}>
+        {primaryLabel}
+      </Button>
+      {showDiscard && (
+        <Button fullWidth size="lg" variant="ghost">
+          Discard
+        </Button>
+      )}
+      <p className="text-center text-[11px] text-neutral-600">{heading}</p>
+    </Card>
+  );
+}
+
+function MockStopwatchBarRow({ label, elapsed }: { label: string; elapsed: string }) {
+  return (
+    <div className="flex min-h-14 items-center gap-3">
+      <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-full bg-success-400" />
+      <div className="flex min-h-11 flex-1 items-center gap-3">
+        <span className="text-body-sm font-semibold text-neutral-50">{label}</span>
+        <span className="font-mono text-xl tabular-nums text-neutral-50">{elapsed}</span>
+      </div>
+      <Button variant="secondary" size="md">
+        Stop
+      </Button>
+    </div>
+  );
+}
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -147,6 +210,102 @@ export default function DevUiPage() {
         <div className="w-full max-w-xs">
           <CopySecretButton secret="ABCD EFGH IJKL MNOP" />
         </div>
+      </Section>
+
+      <Section title="StopwatchElapsed">
+        <Row label="idle / ~0:05 / ~1:02:15 (live, ticking from a mocked startedAt)">
+          <div className="flex items-center gap-6">
+            <StopwatchElapsed startedAt={null} size="display" />
+            <StopwatchElapsed startedAt={new Date(Date.now() - 5_000).toISOString()} size="display" />
+            <StopwatchElapsed
+              startedAt={new Date(Date.now() - (3600 + 2 * 60 + 15) * 1000).toISOString()}
+              size="display"
+            />
+          </div>
+        </Row>
+        <Row label="bar size">
+          <StopwatchElapsed startedAt={new Date(Date.now() - 5 * 60_000).toISOString()} size="bar" />
+        </Row>
+      </Section>
+
+      <Section title="StopwatchControl">
+        <Row label="idle">
+          <StopwatchControl
+            kind={DEMO_KIND}
+            active={null}
+            labels={{ label: "run", activeLabel: "Running" }}
+          />
+        </Row>
+        <Row label="running">
+          <StopwatchControl
+            kind={DEMO_KIND}
+            active={{
+              kind: DEMO_KIND,
+              id: "00000000-0000-0000-0000-000000000000",
+              startedAt: new Date(Date.now() - 5 * 60_000).toISOString(),
+              timeZone: "Asia/Dhaka",
+            }}
+            labels={{ label: "run", activeLabel: "Running" }}
+          />
+        </Row>
+        <Row label="pending (mocked — the real control only shows this mid-request)">
+          <div className="flex flex-wrap gap-4">
+            <MockStopwatchPanel heading="starting" elapsed="0:00" primaryLabel="Starting…" pending />
+            <MockStopwatchPanel
+              heading="stopping"
+              elapsed="5:12"
+              started="06:42"
+              primaryLabel="Stopping…"
+              pending
+              showDiscard
+            />
+          </div>
+        </Row>
+        <Row label="each alert tone (mocked result)">
+          <div className="flex flex-wrap gap-4">
+            <MockStopwatchPanel
+              heading="danger — overlap"
+              elapsed="0:00"
+              message="This overlaps an existing entry."
+              tone="danger"
+              primaryLabel="Start run"
+            />
+            <MockStopwatchPanel
+              heading="neutral — stale stop"
+              elapsed="0:00"
+              message="This stopwatch was already stopped."
+              tone="neutral"
+              primaryLabel="Start run"
+            />
+            <MockStopwatchPanel
+              heading="success — stopped"
+              elapsed="0:00"
+              message="Run saved · 32m 10s"
+              tone="success"
+              primaryLabel="Start run"
+            />
+          </div>
+        </Row>
+      </Section>
+
+      <Section title="ActiveStopwatchBar">
+        <Row label="1 active (see also the live global bar mounted in the app shell)">
+          <div className="w-full max-w-sm divide-y divide-neutral-800 border-t border-neutral-800 bg-neutral-900 px-4">
+            <MockStopwatchBarRow label="Running" elapsed="5:12" />
+          </div>
+        </Row>
+        <Row label="2 actives">
+          <div className="w-full max-w-sm divide-y divide-neutral-800 border-t border-neutral-800 bg-neutral-900 px-4">
+            <MockStopwatchBarRow label="Running" elapsed="5:12" />
+            <MockStopwatchBarRow label="Cycling" elapsed="12:47" />
+          </div>
+        </Row>
+      </Section>
+
+      <Section title="Sheet">
+        <Row label="mobile sheet below sm:, centered dialog from sm: up">
+          <SheetDemo />
+        </Row>
       </Section>
     </div>
   );

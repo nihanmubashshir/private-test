@@ -1,20 +1,16 @@
-import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
-import { createClient } from "@/lib/supabase/server";
-import { getAuthState } from "@/lib/auth/state";
-import { homeFor } from "@/lib/auth/route-guard";
+import Link from "next/link";
+import { requireFull } from "@/lib/auth/require-full";
+import { getActiveStopwatches } from "@/lib/stopwatch/server";
 import { Brand } from "@/components/ui/brand";
 import { SignOutForm } from "@/components/sign-out-form";
+import { ActiveStopwatchBar } from "@/components/stopwatch/active-stopwatch-bar";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
-  const supabase = await createClient();
-
   // Defense in depth: src/proxy.ts already guards this route, but every
   // protected layout re-checks FULL itself (US-001 §4.2).
-  const state = await getAuthState(supabase);
-  if (state !== "FULL") {
-    redirect(homeFor(state));
-  }
+  const supabase = await requireFull();
+  const actives = await getActiveStopwatches(supabase);
 
   return (
     <div className="min-h-dvh">
@@ -23,11 +19,19 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
         <div className="flex h-14 items-center justify-between pr-2 pl-4">
-          <Brand />
+          <Link href="/">
+            <Brand />
+          </Link>
           <SignOutForm />
         </div>
       </header>
-      <main className="mx-auto max-w-[1120px] px-4">{children}</main>
+      <main
+        className="mx-auto max-w-[1120px] px-4"
+        style={{ paddingBottom: "var(--stopwatch-bar-height, 0px)" }}
+      >
+        {children}
+      </main>
+      <ActiveStopwatchBar actives={actives} />
     </div>
   );
 }
