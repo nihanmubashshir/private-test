@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import {
   startReadingSession,
   discardReadingSession,
+  pauseReadingSession,
+  resumeReadingSession,
   deleteBook,
   type ReadingActionResult,
 } from "@/app/(app)/reading/actions";
@@ -20,7 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { FormError } from "@/components/ui/form-error";
 import { ConfirmSheet } from "@/components/ui/confirm-sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { StopwatchElapsed } from "@/components/stopwatch/stopwatch-elapsed";
+import { ReadingSessionTimer } from "./reading-session-timer";
 import { ReadingProgress } from "./reading-progress";
 import { FinishSessionSheet } from "./finish-session-sheet";
 import { BumpPageSheet } from "./bump-page-sheet";
@@ -39,16 +41,21 @@ export function BookDetail({ book, sessions, activeSession }: BookDetailProps) {
   const timeZone = useAppTimeZone();
   const writeTimeZone = useWriteTimeZone();
 
-  const [startPage, setStartPage] = useState(String(book.currentPage));
+  // Defaults to the last page reached, purely a convenience — it isn't stored or used for
+  // progress, which is cumulative pages read, not a bookmark (US-016 fix).
+  const lastEndPage = sessions.find((s) => s.endPage !== null)?.endPage ?? 0;
+  const [startPage, setStartPage] = useState(String(lastEndPage));
   const [startState, startAction, startPending] = useActionState(startReadingSession, INITIAL);
   const [finishOpen, setFinishOpen] = useState(false);
   const [bumpOpen, setBumpOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [discardPending, startDiscardTransition] = useTransition();
+  const [pausePending, startPauseTransition] = useTransition();
   const [deletePending, startDeleteTransition] = useTransition();
 
   const mineIsRunning = activeSession !== null && activeSession.bookId === book.id;
   const otherIsRunning = activeSession !== null && activeSession.bookId !== book.id;
+  const isPaused = mineIsRunning && activeSession?.pausedAt !== null;
 
   useEffect(() => {
     if (!startState.ok || !startState.id) return;
@@ -62,6 +69,18 @@ export function BookDetail({ book, sessions, activeSession }: BookDetailProps) {
     startDiscardTransition(async () => {
       const result = await discardReadingSession(INITIAL, form);
       if (!result.ok) toast.error(result.message ?? "Couldn't discard that session.");
+    });
+  };
+
+  const togglePause = () => {
+    if (!activeSession) return;
+    const form = new FormData();
+    form.set("id", activeSession.id);
+    form.set("at", new Date().toISOString());
+    startPauseTransition(async () => {
+      const action = isPaused ? resumeReadingSession : pauseReadingSession;
+      const result = await action(INITIAL, form);
+      if (!result.ok) toast.error(result.message ?? "Couldn't update that session.");
     });
   };
 
@@ -114,8 +133,18 @@ export function BookDetail({ book, sessions, activeSession }: BookDetailProps) {
           </Badge>
         ) : mineIsRunning && activeSession ? (
           <div className="flex flex-col items-center gap-3 rounded-md border border-neutral-800 bg-neutral-900 p-4">
-            <StopwatchElapsed startedAt={activeSession.startedAt} size="display" />
-            <p className="text-body-sm text-neutral-400">Reading from page {activeSession.startPage}</p>
+            <ReadingSessionTimer
+              startedAt={activeSession.startedAt}
+              pausedAt={activeSession.pausedAt}
+              pausedSeconds={activeSession.pausedSeconds}
+            />
+            <p className="text-body-sm text-neutral-400">
+              Reading from page {activeSession.startPage}
+              {isPaused && <span className="ml-2 text-warning-400">· Paused</span>}
+            </p>
+            <Button variant="secondary" fullWidth onClick={togglePause} pending={pausePending}>
+              {isPaused ? "Resume" : "Pause"}
+            </Button>
             <div className="flex w-full gap-2">
               <Button variant="secondary" fullWidth onClick={discardCurrent} pending={discardPending}>
                 Discard
@@ -161,7 +190,7 @@ export function BookDetail({ book, sessions, activeSession }: BookDetailProps) {
               Start reading
             </Button>
             <Button type="button" variant="ghost" size="sm" onClick={() => setBumpOpen(true)}>
-              Or just jump to a page
+              Or just add pages read, untimed
             </Button>
           </form>
         )}
@@ -212,7 +241,7 @@ export function BookDetail({ book, sessions, activeSession }: BookDetailProps) {
         open={bumpOpen}
         onClose={() => setBumpOpen(false)}
         bookId={book.id}
-        currentPage={book.currentPage}
+        pagesRead={book.pagesRead}
         totalPages={book.totalPages}
       />
       <ConfirmSheet

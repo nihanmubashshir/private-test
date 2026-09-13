@@ -13,18 +13,18 @@ export interface BumpPageSheetProps {
   open: boolean;
   onClose: () => void;
   bookId: string;
-  currentPage: number;
+  pagesRead: number;
   totalPages: number;
 }
 
-/** Pages read without timing them — not every page has a time (US-016 §2). */
-export function BumpPageSheet({ open, onClose, bookId, currentPage, totalPages }: BumpPageSheetProps) {
-  const [page, setPage] = useState("");
+/** Pages read without timing them — not every stretch of reading has a timer (US-016 §2). */
+export function BumpPageSheet({ open, onClose, bookId, pagesRead, totalPages }: BumpPageSheetProps) {
+  const [pages, setPages] = useState("");
   const [state, formAction, pending] = useActionState(bumpPage, INITIAL);
 
   const wasOpen = useRef(false);
   useEffect(() => {
-    if (open && !wasOpen.current) setPage("");
+    if (open && !wasOpen.current) setPages("");
     wasOpen.current = open;
   }, [open]);
 
@@ -32,33 +32,34 @@ export function BumpPageSheet({ open, onClose, bookId, currentPage, totalPages }
   onCloseRef.current = onClose;
   useEffect(() => {
     if (!state.ok || !state.id) return;
-    toast.success("Page updated");
+    toast.success("Pages added");
     onCloseRef.current();
   }, [state]);
 
-  const pageNumber = Number(page);
-  const canSave = Number.isInteger(pageNumber) && pageNumber > currentPage && pageNumber <= totalPages;
+  const remaining = totalPages - pagesRead;
+  const count = Number(pages);
+  const canSave = Number.isInteger(count) && count > 0 && count <= remaining;
 
   return (
-    <EntrySheet open={open} onClose={onClose} title="Jump to a page">
+    <EntrySheet open={open} onClose={onClose} title="Add pages read">
       <form action={formAction} className="flex flex-col gap-4">
         <input type="hidden" name="bookId" value={bookId} />
-        <input type="hidden" name="page" value={page} />
+        <input type="hidden" name="pages" value={pages} />
 
         <label className="flex flex-col gap-1.5">
-          <span className="text-body-sm text-neutral-400">Now at page</span>
+          <span className="text-body-sm text-neutral-400">How many pages did you read?</span>
           <input
             type="number"
             inputMode="numeric"
-            min={currentPage + 1}
-            max={totalPages}
-            value={page}
-            onChange={(event) => setPage(event.target.value)}
-            placeholder={String(currentPage + 1)}
+            min={1}
+            max={remaining}
+            value={pages}
+            onChange={(event) => setPages(event.target.value)}
+            placeholder="e.g. 12"
             className="min-h-tap w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 text-base text-neutral-50 placeholder:text-neutral-600"
           />
         </label>
-        <p className="text-xs text-neutral-500">No timer needed — this just moves your progress forward.</p>
+        <p className="text-xs text-neutral-500">No timer needed — this just adds to your total, untimed.</p>
 
         {!state.ok && state.message && <FormError>{state.message}</FormError>}
 

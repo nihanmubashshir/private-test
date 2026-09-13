@@ -12,7 +12,7 @@ export interface ReadingProgressProps {
  * goal progress (01-design-system.md §10.2) — this is feedback, not the screen's primary action.
  */
 export function ReadingProgress({ book, sessions }: ReadingProgressProps) {
-  const ratio = book.totalPages > 0 ? Math.min(1, book.currentPage / book.totalPages) : 0;
+  const ratio = book.totalPages > 0 ? Math.min(1, book.pagesRead / book.totalPages) : 0;
   const percent = Math.round(ratio * 100);
   const secondsLeft = estimateSecondsLeft(book, sessions);
 
@@ -20,7 +20,7 @@ export function ReadingProgress({ book, sessions }: ReadingProgressProps) {
     <div className="flex flex-col gap-2">
       <div className="flex items-baseline justify-between">
         <span className="text-body-sm text-neutral-300">
-          Page {book.currentPage} / {book.totalPages}
+          {book.pagesRead} / {book.totalPages} pages
         </span>
         <span className="font-mono text-body-sm text-neutral-400 tabular-nums">{percent}%</span>
       </div>

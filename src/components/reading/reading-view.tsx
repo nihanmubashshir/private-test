@@ -28,7 +28,7 @@ export function ReadingView({ books }: ReadingViewProps) {
       ) : (
         <div className="flex flex-col gap-2">
           {books.map((book) => {
-            const percent = book.totalPages > 0 ? Math.round((book.currentPage / book.totalPages) * 100) : 0;
+            const percent = book.totalPages > 0 ? Math.round((book.pagesRead / book.totalPages) * 100) : 0;
             return (
               <Link
                 key={book.id}
@@ -38,7 +38,7 @@ export function ReadingView({ books }: ReadingViewProps) {
                 <div className="flex min-w-0 flex-col gap-0.5">
                   <span className="truncate text-base text-neutral-50">{book.title}</span>
                   <span className="text-body-sm text-neutral-500">
-                    Page {book.currentPage} / {book.totalPages}
+                    {book.pagesRead} / {book.totalPages} pages
                   </span>
                 </div>
                 <Badge tone={book.status === "finished" ? "success" : "neutral"}>

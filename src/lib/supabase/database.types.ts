@@ -66,9 +66,9 @@ export type Database = {
       books: {
         Row: {
           created_at: string
-          current_page: number
           id: string
           owner_id: string
+          pages_read: number
           status: Database["public"]["Enums"]["book_status"]
           title: string
           total_pages: number
@@ -76,9 +76,9 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          current_page?: number
           id?: string
           owner_id?: string
+          pages_read?: number
           status?: Database["public"]["Enums"]["book_status"]
           title: string
           total_pages: number
@@ -86,9 +86,9 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          current_page?: number
           id?: string
           owner_id?: string
+          pages_read?: number
           status?: Database["public"]["Enums"]["book_status"]
           title?: string
           total_pages?: number
@@ -424,6 +424,8 @@ export type Database = {
           ended_at: string | null
           id: string
           owner_id: string
+          paused_at: string | null
+          paused_seconds: number
           start_page: number
           started_at: string
           time_zone: string
@@ -437,6 +439,8 @@ export type Database = {
           ended_at?: string | null
           id?: string
           owner_id?: string
+          paused_at?: string | null
+          paused_seconds?: number
           start_page: number
           started_at: string
           time_zone: string
@@ -450,6 +454,8 @@ export type Database = {
           ended_at?: string | null
           id?: string
           owner_id?: string
+          paused_at?: string | null
+          paused_seconds?: number
           start_page?: number
           started_at?: string
           time_zone?: string

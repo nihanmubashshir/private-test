@@ -4,7 +4,8 @@ export interface Book {
   id: string;
   title: string;
   totalPages: number;
-  currentPage: number;
+  /** Cumulative pages actually read — the sum of every session's (end - start), not a bookmark. */
+  pagesRead: number;
   status: BookStatus;
 }
 
@@ -14,9 +15,14 @@ export interface ReadingSession {
   startedAt: string;
   endedAt: string | null;
   timeZone: string;
+  /** Active reading time — excludes any paused stretch (§pause). */
   durationSeconds: number | null;
   startPage: number;
   endPage: number | null;
+  /** Set while paused, null while running or once ended. */
+  pausedAt: string | null;
+  /** Accumulated pause time for this session, in seconds. */
+  pausedSeconds: number;
 }
 
 /**
@@ -34,6 +40,6 @@ export function estimateSecondsLeft(book: Book, sessions: ReadingSession[]): num
     pages += covered;
   }
   if (pages === 0) return null;
-  const remaining = book.totalPages - book.currentPage;
+  const remaining = book.totalPages - book.pagesRead;
   return Math.round((seconds / pages) * remaining);
 }

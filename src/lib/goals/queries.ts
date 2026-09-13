@@ -83,8 +83,8 @@ export async function loadGoalInputs(supabase: Client, goals: Goal[]): Promise<G
       ? supabase.from("prayers").select("prayed_at, waqt").gte("prayed_at", since)
       : Promise.resolve({ data: [] as { prayed_at: string; waqt: Waqt }[] }),
     bookIds.length > 0
-      ? supabase.from("books").select("id, current_page, total_pages").in("id", bookIds)
-      : Promise.resolve({ data: [] as { id: string; current_page: number; total_pages: number }[] }),
+      ? supabase.from("books").select("id, pages_read, total_pages").in("id", bookIds)
+      : Promise.resolve({ data: [] as { id: string; pages_read: number; total_pages: number }[] }),
   ]);
 
   const workouts: GoalInputs["workouts"] = {};
@@ -102,7 +102,7 @@ export async function loadGoalInputs(supabase: Client, goals: Goal[]): Promise<G
     workouts,
     prayerLogs: (prayers.data ?? []).map((row) => ({ at: row.prayed_at, waqt: row.waqt })),
     books: Object.fromEntries(
-      (bookRows.data ?? []).map((row) => [row.id, { currentPage: row.current_page, totalPages: row.total_pages }]),
+      (bookRows.data ?? []).map((row) => [row.id, { pagesRead: row.pages_read, totalPages: row.total_pages }]),
     ),
   };
 }

@@ -49,7 +49,7 @@ export interface GoalInputs {
   /** Every logged waqt, any status — Qadha still counts toward a prayer streak (US-015). */
   prayerLogs: { at: string; waqt: Waqt }[];
   /** Per book id: pages read so far and the book's total (US-016). */
-  books: Record<string, { currentPage: number; totalPages: number }>;
+  books: Record<string, { pagesRead: number; totalPages: number }>;
 }
 
 export interface Progress {
@@ -143,11 +143,11 @@ function targetProgress(goal: Goal, inputs: GoalInputs): Progress {
     if (!info) {
       return { ratio: 0, text: `— / ${fmt(target)} pages`, spoken: `No pages read yet, target ${fmt(target)} pages` };
     }
-    const ratio = info.totalPages > 0 ? Math.min(1, info.currentPage / info.totalPages) : 0;
+    const ratio = info.totalPages > 0 ? Math.min(1, info.pagesRead / info.totalPages) : 0;
     return {
       ratio,
-      text: `${info.currentPage} / ${info.totalPages} pages`,
-      spoken: `${info.currentPage} of ${info.totalPages} pages, ${Math.round(ratio * 100)} percent read`,
+      text: `${info.pagesRead} / ${info.totalPages} pages`,
+      spoken: `${info.pagesRead} of ${info.totalPages} pages, ${Math.round(ratio * 100)} percent read`,
     };
   }
 
