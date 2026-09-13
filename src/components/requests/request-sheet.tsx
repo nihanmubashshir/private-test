@@ -1,26 +1,30 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { EntrySheet } from "@/components/ui/entry-sheet";
 import { Button } from "@/components/ui/button";
 
-/**
- * The full add flow for `/settings/requests` (US-013 §3): a name plus a large details textarea,
- * in the same sheet shell as the radial menu's `QuickCaptureSheet` (US-014) so the two feel like
- * one pattern rather than two different "add" experiences.
- */
-export function CreateRequestSheet({
-  open,
-  onClose,
-  onCreate,
-}: {
+export interface RequestSheetValues {
+  title: string;
+  note: string | null;
+}
+
+export interface RequestSheetProps {
   open: boolean;
   onClose: () => void;
-  onCreate: (values: { title: string; note: string | null }) => void;
-}) {
+  onSubmit: (values: RequestSheetValues) => void;
+  pending?: boolean;
+}
+
+/**
+ * The one add-request sheet, used both from `/settings/requests` and the radial menu's quick
+ * capture (US-014) — the two used to look different, which read as two features rather than one.
+ * The sheet only collects and validates the fields; each caller decides how to persist them
+ * (the settings list adds optimistically, the radial menu awaits the Server Action and toasts).
+ */
+export function RequestSheet({ open, onClose, onSubmit, pending }: RequestSheetProps) {
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
-  const [pending, startTransition] = useTransition();
 
   const wasOpen = useRef(false);
   useEffect(() => {
@@ -36,10 +40,7 @@ export function CreateRequestSheet({
     const trimmedTitle = title.trim();
     if (trimmedTitle === "") return;
     const trimmedNote = note.trim();
-    startTransition(() => {
-      onCreate({ title: trimmedTitle, note: trimmedNote === "" ? null : trimmedNote });
-      onClose();
-    });
+    onSubmit({ title: trimmedTitle, note: trimmedNote === "" ? null : trimmedNote });
   };
 
   return (

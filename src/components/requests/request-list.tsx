@@ -14,7 +14,7 @@ import {
 import { useAppTimeZone } from "@/components/shell/app-time-zone";
 import { formatRelativeDay } from "@/lib/time/format";
 import { Button } from "@/components/ui/button";
-import { CreateRequestSheet } from "@/components/requests/create-request-sheet";
+import { RequestSheet, type RequestSheetValues } from "@/components/requests/request-sheet";
 import { cn } from "@/lib/utils";
 
 type Change =
@@ -66,7 +66,7 @@ export function RequestList({ requests }: { requests: FeatureRequest[] }) {
     });
   };
 
-  const add = ({ title, note }: { title: string; note: string | null }) => {
+  const add = ({ title, note }: RequestSheetValues) => {
     const item: FeatureRequest = {
       id: `${PENDING_PREFIX}${crypto.randomUUID()}`,
       title,
@@ -75,6 +75,7 @@ export function RequestList({ requests }: { requests: FeatureRequest[] }) {
       createdAt: new Date().toISOString(),
     };
     run({ type: "add", item }, () => createRequest({ title, note }), "Couldn't add that request.");
+    setSheetOpen(false);
   };
 
   const toggle = (item: FeatureRequest) => {
@@ -125,7 +126,7 @@ export function RequestList({ requests }: { requests: FeatureRequest[] }) {
         </Button>
       </div>
 
-      <CreateRequestSheet open={sheetOpen} onClose={() => setSheetOpen(false)} onCreate={add} />
+      <RequestSheet open={sheetOpen} onClose={() => setSheetOpen(false)} onSubmit={add} />
 
       {open.length === 0 && done.length === 0 && (
         <p className="py-10 text-center text-body-sm text-neutral-500">

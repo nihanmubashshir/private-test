@@ -64,7 +64,7 @@ design-system §9.1 reserves Motion for. Only `transform` and `opacity` animate.
 | Home | `/` | — |
 | Start gym session | Starts today's session from the **active plan's day for today, in the app zone** | A session is running, there is no active plan, or today is a rest day |
 | Log weight | Opens the US-009 log sheet over the current screen | — |
-| Add request | Opens a one-field capture sheet writing into US-013's list, with a **View** action on the toast | — |
+| Add request | Opens the same add sheet as US-013's own screen (name + details), with a **View** action on the toast | — |
 | Switch plan | `/gym/plans` | — |
 | Settings | `/settings` | — |
 
@@ -92,7 +92,7 @@ Fixed at `right: 20px`, `bottom: 20px + safe-area + var(--mini-bar-height)` — 
 |---|------|
 | T1 | `radial-menu.tsx`: button, tap-to-Home, hold/drag, hit-testing, placement and hide rules |
 | T2 | The wheel on a true circle, Motion fan-out, reduced motion |
-| T3 | The six actions and their disabled state; `radial-menu-slot.tsx`; `quick-capture-sheet.tsx` |
+| T3 | The six actions and their disabled state; `radial-menu-slot.tsx`; `request-sheet.tsx` |
 | T4 | Mouse toggle and keyboard |
 | T5 | Docs pass |
 
@@ -120,3 +120,4 @@ Fixed at `right: 20px`, `bottom: 20px + safe-area + var(--mini-bar-height)` — 
 | D4 | The button offsets by `--mini-bar-height` | The draft didn't account for the running-session bar, which occupies the bottom of every screen. |
 | D5 | The highlight uses accent tokens | Gold is reserved for primary actions and focus (design-system §2). A highlighted node is the action about to run — the same role as a focus ring. Icons stay neutral. |
 | D6 | "Start gym session" follows the draft and is disabled on a rest day, although the Home card now allows starting one | The draft is explicit, and the Home card is always one tap away. Worth revisiting if it gets in the way. |
+| D7 | The one-field `quick-capture-sheet.tsx` was merged into US-013's own `request-sheet.tsx` (name + details, used from both places) | Feedback after shipping both: two differently-shaped "add request" sheets read as two features rather than one. `RequestSheet` is now the single presentational sheet; this screen supplies its own submit (awaits the Server Action, toasts, offers Retry/View) while US-013's list still adds optimistically. |

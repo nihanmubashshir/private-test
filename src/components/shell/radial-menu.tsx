@@ -14,11 +14,12 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { CalendarDays, Dumbbell, House, Lightbulb, Scale, Settings, type LucideIcon } from "lucide-react";
 import { toast } from "sonner";
 import { startSession } from "@/app/(app)/gym/session/actions";
+import { createRequest } from "@/app/(app)/settings/requests/actions";
 import { weekdayInZone } from "@/lib/gym/types";
 import { EASE_OUT_SOFT, transitions } from "@/lib/motion";
 import { useAppTimeZone, useWriteTimeZone } from "@/components/shell/app-time-zone";
 import { LogWeightSheet } from "@/components/weight/log-weight-sheet";
-import { QuickCaptureSheet } from "@/components/requests/quick-capture-sheet";
+import { RequestSheet, type RequestSheetValues } from "@/components/requests/request-sheet";
 import { cn } from "@/lib/utils";
 
 /** Hold longer than this and it's the wheel, not a tap to Home (US-014 §3). */
@@ -115,6 +116,7 @@ export function RadialMenu({ planDays, gymRunning, lastWeightKg }: RadialMenuPro
   const [requestOpen, setRequestOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [, startTransition] = useTransition();
+  const [requestPending, startRequestTransition] = useTransition();
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const activeRef = useRef<number | null>(null);
@@ -198,6 +200,22 @@ export function RadialMenu({ planDays, gymRunning, lastWeightKg }: RadialMenuPro
       }
     }
     return best;
+  };
+
+  const submitRequest = (values: RequestSheetValues) => {
+    startRequestTransition(async () => {
+      const result = await createRequest(values);
+      if (!result.ok) {
+        toast.error(result.message ?? "Couldn't save that request.", {
+          action: { label: "Retry", onClick: () => submitRequest(values) },
+        });
+        return;
+      }
+      toast.success("Request saved", {
+        action: { label: "View", onClick: () => router.push("/settings/requests") },
+      });
+      setRequestOpen(false);
+    });
   };
 
   const perform = (index: number) => {
@@ -450,7 +468,12 @@ export function RadialMenu({ planDays, gymRunning, lastWeightKg }: RadialMenuPro
       )}
 
       <LogWeightSheet open={weightOpen} onClose={() => setWeightOpen(false)} lastValueKg={lastWeightKg} />
-      <QuickCaptureSheet open={requestOpen} onClose={() => setRequestOpen(false)} />
+      <RequestSheet
+        open={requestOpen}
+        onClose={() => setRequestOpen(false)}
+        onSubmit={submitRequest}
+        pending={requestPending}
+      />
     </>
   );
 }
