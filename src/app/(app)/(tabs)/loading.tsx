@@ -1,12 +1,13 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { LargeTitle } from "@/components/shell/large-title";
 import { TodayEyebrow } from "@/components/shell/today-eyebrow";
+import { SettingsButton } from "@/components/shell/settings-button";
 
 // Titles render immediately — only data-dependent content is skeletons (01-design-system.md §7.1).
 export default function HomeLoading() {
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
-      <LargeTitle title="Home" eyebrow={<TodayEyebrow />} />
+      <LargeTitle title="Home" eyebrow={<TodayEyebrow />} rightSlot={<SettingsButton />} />
 
       <Skeleton className="h-[168px] w-full rounded-lg" />
 

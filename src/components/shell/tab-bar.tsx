@@ -2,13 +2,13 @@
 
 import Link, { useLinkStatus } from "next/link";
 import { usePathname } from "next/navigation";
-import { House, ListOrdered, CircleUser, type LucideIcon } from "lucide-react";
+import { House, ListOrdered, Settings, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const TABS: { href: string; label: string; Icon: LucideIcon }[] = [
   { href: "/", label: "Home", Icon: House },
   { href: "/activity", label: "Activity", Icon: ListOrdered },
-  { href: "/account", label: "Account", Icon: CircleUser },
+  { href: "/settings", label: "Settings", Icon: Settings },
 ];
 
 /** Bottom tab bar (01-design-system.md §10.1). Rendered only on the three tab roots. */

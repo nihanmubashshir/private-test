@@ -4,6 +4,7 @@ import { getActiveStopwatches, listCompletedSessions } from "@/lib/stopwatch/ser
 import { stopwatchKinds, type StopwatchKind } from "@/lib/stopwatch/registry";
 import { LargeTitle } from "@/components/shell/large-title";
 import { TodayEyebrow } from "@/components/shell/today-eyebrow";
+import { SettingsButton } from "@/components/shell/settings-button";
 import { PullToRefresh } from "@/components/shell/pull-to-refresh";
 import { Button } from "@/components/ui/button";
 import { TrackerCard } from "@/components/trackers/tracker-card";
@@ -24,7 +25,11 @@ export default async function HomePage() {
   return (
     <PullToRefresh>
       <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
-        <LargeTitle title="Home" eyebrow={<TodayEyebrow />} />
+        <LargeTitle
+          title="Home"
+          eyebrow={<TodayEyebrow />}
+          rightSlot={<SettingsButton />}
+        />
 
         <div className="flex flex-col gap-4">
           {kinds.map((kind, index) => (

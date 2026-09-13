@@ -114,10 +114,9 @@ the code that reads it — see §5.
 | # | Task | Deployable on its own because |
 |---|------|-------------------------------|
 | T1 | `src/content/changelog.ts`: types, seed entries for 0.1.0–0.5.0, `LATEST_VERSION`, and the order/uniqueness invariant that throws at import | Pure data module, imported by nothing yet |
-| T2 | `/settings` stack screen (Preferences + App groups, sign-out), gear button in Home's header, `/account` → redirect | Complete screen; the Account tab still resolves |
-| T3 | `/settings/whats-new`: `<details>` accordions, kind badges, `loading.tsx` skeleton | Complete screen, reachable from T2's row |
-| T4 | Unseen-version dot (`localStorage`) on the Home gear and the Settings row | Additive; hydration-only, no layout shift |
-| T5 | Docs: story Deviations, design-system §8 rows, overview §9 index, AGENTS.md command table fix | Docs only |
+| T2 | `/settings` and `/settings/whats-new` stack screens, `loading.tsx` skeleton, gear button in Home's header, `/account` → redirect, tab-bar relabel | Every route it adds resolves and every link it adds has a target |
+| T3 | Unseen-version dot (`localStorage`) on the Home gear and the Settings row | Additive; hydration-only, no layout shift |
+| T4 | Docs: story Deviations, design-system §8 rows, overview §9 index, AGENTS.md command table fix | Docs only |
 
 ### US-007 — App shell rework
 

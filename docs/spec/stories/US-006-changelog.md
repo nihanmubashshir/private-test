@@ -153,10 +153,13 @@ src/components/changelog/unseen-dot.tsx           T4
 | # | Task | Pushable on its own because |
 |---|------|-----------------------------|
 | T1 | `changelog.ts` content + invariant, `lib/changelog.ts` helpers | Pure modules, imported by nothing yet |
-| T2 | `/settings` screen, Home gear, `/account` redirect, tab-bar relabel | Complete screen; both entry points resolve |
-| T3 | `/settings/whats-new` + skeleton | Complete screen, reachable from T2's row |
-| T4 | Unseen dot + mark-seen | Additive, hydration-only |
-| T5 | Docs: Deviations, design-system §8, overview §9, AGENTS.md commands | Docs only |
+| T2 | Both screens — `/settings` and `/settings/whats-new` + skeleton — plus the Home gear, the `/account` redirect and the tab-bar relabel | Every route it adds resolves and every link it adds has a target |
+| T3 | Unseen dot + mark-seen | Additive, hydration-only |
+| T4 | Docs: Deviations, design-system §8, overview §9, AGENTS.md commands | Docs only |
+
+The two screens are **one task, not two**: a Settings screen whose only row links to a route that
+does not exist yet is not deployable, and a What's new screen whose back chevron points at a
+missing `/settings` is not either. They ship together or not at all.
 
 No migration in this story — nothing here touches the database.
 
