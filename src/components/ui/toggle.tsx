@@ -7,7 +7,7 @@ import { Toggle as TogglePrimitive } from "radix-ui"
 
 /** Segmented-control look (01-design-system.md §4.3) — never gold, per §10.2. */
 const toggleVariants = cva(
-  "group/toggle inline-flex items-center justify-center gap-1.5 whitespace-nowrap text-body-sm font-semibold text-neutral-400 transition-colors outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-500 disabled:pointer-events-none disabled:opacity-50 hover:text-neutral-50 data-[state=on]:bg-neutral-800 data-[state=on]:text-neutral-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/toggle inline-flex items-center justify-center gap-1.5 whitespace-nowrap text-body-sm font-semibold text-neutral-400 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-500 disabled:pointer-events-none disabled:opacity-50 hover:text-neutral-50 data-[state=on]:bg-neutral-800 data-[state=on]:text-neutral-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {

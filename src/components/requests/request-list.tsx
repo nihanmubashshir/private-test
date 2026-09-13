@@ -1,8 +1,8 @@
 "use client";
 
-import { useOptimistic, useRef, useState, useTransition, type FormEvent } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Check, ChevronDown, Trash2 } from "lucide-react";
+import { Check, ChevronDown, Plus, Trash2 } from "lucide-react";
 import { PENDING_PREFIX, isPending, type FeatureRequest } from "@/lib/requests/types";
 import {
   createRequest,
@@ -14,6 +14,7 @@ import {
 import { useAppTimeZone } from "@/components/shell/app-time-zone";
 import { formatRelativeDay } from "@/lib/time/format";
 import { Button } from "@/components/ui/button";
+import { CreateRequestSheet } from "@/components/requests/create-request-sheet";
 import { cn } from "@/lib/utils";
 
 type Change =
@@ -51,10 +52,7 @@ export function RequestList({ requests }: { requests: FeatureRequest[] }) {
   const timeZone = useAppTimeZone();
   const [items, applyOptimistic] = useOptimistic(requests, reduce);
   const [, startTransition] = useTransition();
-  const [title, setTitle] = useState("");
-  const [note, setNote] = useState("");
-  const [showNote, setShowNote] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const run = (change: Change, write: () => Promise<RequestActionResult>, failure: string) => {
     startTransition(async () => {
@@ -68,25 +66,15 @@ export function RequestList({ requests }: { requests: FeatureRequest[] }) {
     });
   };
 
-  const add = (event: FormEvent) => {
-    event.preventDefault();
-    const trimmed = title.trim();
-    if (trimmed === "") return;
-    const noteValue = showNote && note.trim() !== "" ? note.trim() : null;
-
+  const add = ({ title, note }: { title: string; note: string | null }) => {
     const item: FeatureRequest = {
       id: `${PENDING_PREFIX}${crypto.randomUUID()}`,
-      title: trimmed,
-      note: noteValue,
+      title,
+      note,
       doneAt: null,
       createdAt: new Date().toISOString(),
     };
-    // Cleared straight away so the next idea can be typed; Retry re-sends the captured values.
-    setTitle("");
-    setNote("");
-    setShowNote(false);
-    run({ type: "add", item }, () => createRequest({ title: trimmed, note: noteValue }), "Couldn't add that request.");
-    inputRef.current?.focus();
+    run({ type: "add", item }, () => createRequest({ title, note }), "Couldn't add that request.");
   };
 
   const toggle = (item: FeatureRequest) => {
@@ -129,45 +117,15 @@ export function RequestList({ requests }: { requests: FeatureRequest[] }) {
   return (
     <>
       {/* Pinned under the app bar, so adding is reachable without scrolling however long the list
-          gets (US-013 AC 5). */}
-      <form
-        onSubmit={add}
-        className="sticky top-[calc(var(--spacing-app-bar)+env(safe-area-inset-top))] z-10 -mx-4 flex flex-col gap-2 border-b border-neutral-800 bg-neutral-950 px-4 py-3"
-      >
-        <div className="flex gap-2">
-          <input
-            ref={inputRef}
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-            maxLength={120}
-            placeholder="What should the app do?"
-            aria-label="New request"
-            enterKeyHint="done"
-            className="min-h-tap min-w-0 flex-1 rounded-md border border-neutral-700 bg-neutral-900 px-3 text-base text-neutral-50 placeholder:text-neutral-600"
-          />
-          <Button type="submit" disabled={title.trim() === ""}>
-            Add
-          </Button>
-        </div>
-        {showNote ? (
-          <input
-            value={note}
-            onChange={(event) => setNote(event.target.value)}
-            maxLength={500}
-            placeholder="Details (optional)"
-            aria-label="Details"
-            className="min-h-tap w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 text-base text-neutral-50 placeholder:text-neutral-600"
-          />
-        ) : (
-          <button
-            type="button"
-            onClick={() => setShowNote(true)}
-            className="min-h-9 self-start text-body-sm text-neutral-500 active:text-neutral-300"
-          >
-            + details
-          </button>
-        )}
-      </form>
+          gets (US-013 AC 5). Opens the full add sheet rather than an inline row (D5). */}
+      <div className="sticky top-[calc(var(--spacing-app-bar)+env(safe-area-inset-top))] z-10 -mx-4 border-b border-neutral-800 bg-neutral-950 px-4 py-3">
+        <Button type="button" fullWidth onClick={() => setSheetOpen(true)}>
+          <Plus className="size-4" strokeWidth={2} aria-hidden />
+          Add request
+        </Button>
+      </div>
+
+      <CreateRequestSheet open={sheetOpen} onClose={() => setSheetOpen(false)} onCreate={add} />
 
       {open.length === 0 && done.length === 0 && (
         <p className="py-10 text-center text-body-sm text-neutral-500">
@@ -259,12 +217,12 @@ function RequestRow({
             type="button"
             disabled={pending}
             onClick={() => setEditing(true)}
-            className={cn("text-left text-body-sm text-neutral-50", done && "line-through")}
+            className={cn("truncate text-left text-body-sm text-neutral-50", done && "line-through")}
           >
             {item.title}
           </button>
         )}
-        {item.note && <p className="text-[13px] text-neutral-500">{item.note}</p>}
+        {item.note && <p className="line-clamp-2 text-[13px] text-neutral-500">{item.note}</p>}
         <p className="text-xs text-neutral-600">{timeZone ? formatRelativeDay(item.createdAt, timeZone) : " "}</p>
       </div>
 

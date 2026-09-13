@@ -16,7 +16,7 @@ const buttonVariants = cva(
         ghost:
           "bg-transparent text-neutral-300 font-medium hover:bg-neutral-800 hover:text-neutral-50 active:bg-neutral-900 aria-disabled:text-neutral-500 disabled:text-neutral-600",
         danger:
-          "bg-danger-950 border border-danger-800 text-danger-400 font-semibold hover:bg-danger-900 hover:border-danger-400 active:bg-danger-950/60 focus-visible:outline-danger-400 aria-disabled:text-danger-800 disabled:border-neutral-800 disabled:text-neutral-600",
+          "bg-danger-950 border border-danger-800 text-danger-400 font-semibold hover:bg-danger-900 hover:border-danger-400 active:bg-danger-950/60 focus-visible:ring-danger-400 aria-disabled:text-danger-800 disabled:border-neutral-800 disabled:text-neutral-600",
       },
       size: {
         sm: "h-9 px-3 text-sm rounded-sm gap-1.5",

@@ -91,7 +91,10 @@ export function EntrySheet({
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent showCloseButton={false} className={cn("flex max-h-[85vh] flex-col gap-4", tall && "h-[85vh]")}>
+        <DialogContent
+          showCloseButton={false}
+          className={cn("flex max-h-[85vh] min-h-[60vh] flex-col gap-4", tall && "h-[85vh]")}
+        >
           {body}
         </DialogContent>
       </Dialog>
@@ -100,7 +103,12 @@ export function EntrySheet({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className={cn("gap-4 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]", tall && "h-[85vh]")}>
+      <DrawerContent
+        className={cn(
+          "min-h-[60vh] gap-4 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]",
+          tall && "h-[85vh]",
+        )}
+      >
         {body}
       </DrawerContent>
     </Drawer>

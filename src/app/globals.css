@@ -173,8 +173,10 @@
        feedback enough, and a hand-rolled swipe gesture is one more thing to fight. */
     overscroll-behavior-y: none;
   }
+  /* An outset outline gets clipped by any ancestor with overflow-hidden (sticky bars, sheets,
+     the radial menu) — an inset ring stays inside the element's own box, so it is never cut off. */
   *:focus-visible {
-    @apply outline-2 outline-offset-2 outline-accent-500;
+    @apply outline-none ring-2 ring-inset ring-accent-500;
   }
   input,
   select,
