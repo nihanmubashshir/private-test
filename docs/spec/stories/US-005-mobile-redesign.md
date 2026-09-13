@@ -445,3 +445,25 @@ Test on **a real iPhone with the app installed to the Home Screen** and **Androi
 | Q2 | Smart default for a new manual run | stop = now (rounded down to 5 min), start = stop − 30 min. |
 | Q3 | Undo instead of delete confirmation | No. Keep the confirmation sheet. Revisit later. |
 | Q4 | Service worker library (Serwist etc.) | No. A small hand-written `sw.js` with no data caching. |
+
+## 14. Deviations
+
+- **T1 — shadcn CLI is a newer major version than this spec assumed.** The installed `shadcn@4.21` init/add flow differs from
+  the classic one §4.1–4.3 describe:
+  - It ships Radix as one consolidated `radix-ui` package (not per-primitive `@radix-ui/react-*` packages), and requires a
+    style preset; **Nova** was chosen since it's the Lucide-icon preset, matching §9.1.
+  - It replaces `clsx` + `tailwind-merge` with `cn` (a shadcn-maintained drop-in with an equivalent config API). §9.3's
+    `extendTailwindMerge` call became `createCn` from `cn/config` in `src/lib/utils.ts`, registering the same custom
+    font-size tokens and the `tap` spacing token. Behavior (verified with a scratch merge check) is the same.
+  - `init` **silently overwrote** `src/components/ui/button.tsx` and injected a `Geist` font into `src/app/layout.tsx`
+    despite §4.1 step 3's "answer No" instruction — the `-y` flag needed for a non-interactive run skips that prompt
+    entirely. Both files were reverted to their pre-init state immediately after.
+  - `add dropdown-menu` pulled in `next-themes` (via the generated `sonner.tsx`, which read the active theme for the toast
+    palette) — not on §9.1's dependency allowlist and unnecessary since the app is dark only (§2). Removed the dependency
+    and hardcoded `theme="dark"` in `sonner.tsx` instead.
+  - The generated `dialog.tsx`'s built-in close button used a `Button` `size`/`variant` (`icon-sm` / `outline`) that don't
+    exist on our design-exact `button.tsx`. Swapped for `sm` / `secondary` so T1 typechecks; the real restyle happens in T2.
+  - `shadcn` moved to `devDependencies` (CLI + build-time CSS only, never imported at runtime), matching the existing
+    `tailwindcss`/`@tailwindcss/postcss` pattern.
+  - Kept `@import "shadcn/tailwind.css"` (accordion keyframes, Radix `data-*` custom variants, `shimmer`/`scroll-fade`
+    utilities) — it adds no colors or radii, so it doesn't conflict with §4.2's "no visual change" rule.
