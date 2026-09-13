@@ -147,9 +147,11 @@
 @layer base {
   html {
     color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
   }
   body {
     @apply bg-neutral-950 text-neutral-50 font-sans antialiased;
+    overscroll-behavior-y: none;
   }
   *:focus-visible {
     @apply outline-2 outline-offset-2 outline-accent-500;
@@ -158,5 +160,17 @@
   select,
   textarea {
     font-size: 1rem; /* stop iOS zoom on focus */
+  }
+  /* Standalone/touch polish (01-design-system.md §10.4). Never on content text or inputs. */
+  button,
+  a,
+  [role="tab"],
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  button,
+  [role="button"] {
+    user-select: none;
   }
 }

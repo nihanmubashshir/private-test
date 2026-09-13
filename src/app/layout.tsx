@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, DM_Mono } from "next/font/google";
 import "./globals.css";
+import { OfflineBanner } from "@/components/shell/offline-banner";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -38,12 +39,16 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: "#08090a",
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${manrope.variable} ${dmMono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <OfflineBanner />
+        {children}
+      </body>
     </html>
   );
 }

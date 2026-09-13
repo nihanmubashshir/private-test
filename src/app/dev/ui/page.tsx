@@ -372,6 +372,21 @@ export default function DevUiPage() {
           </ToggleGroup>
         </Row>
       </Section>
+
+      <Section title="OfflineBanner (mocked — the real one listens to online/offline)">
+        <Row label="offline / back online">
+          <div className="flex w-full max-w-sm flex-col gap-2">
+            <div className="flex min-h-9 items-center justify-center gap-2 border-b border-warning-800 bg-warning-950 px-4 text-center text-sm font-semibold text-warning-400">
+              <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-warning-400" />
+              You&apos;re offline. Changes won&apos;t save.
+            </div>
+            <div className="flex min-h-9 items-center justify-center gap-2 border-b border-success-800 bg-success-950 px-4 text-center text-sm font-semibold text-success-400">
+              <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-success-400" />
+              Back online
+            </div>
+          </div>
+        </Row>
+      </Section>
     </div>
   );
 }

@@ -3,8 +3,9 @@
 > Status: **Ready** · Depends on: US-001, US-003, US-004 (all done)
 > Read first: [`../00-overview.md`](../00-overview.md), [`../01-design-system.md`](../01-design-system.md) (**especially the new §9 shadcn/ui
 > and §10 Mobile UX patterns**), then this file.
-> Before any Next.js work, read the installed guides: `node_modules/next/dist/docs/01-app/02-guides/progressive-web-apps.md`,
-> `offline-support.md`, `view-transitions.md`, and `03-api-reference/04-functions/use-link-status.md`.
+> Before any Next.js work, read the installed guides: `node_modules/next/dist/docs/01-app/02-guides/view-transitions.md` and
+> `03-api-reference/04-functions/use-link-status.md`. `progressive-web-apps.md` / `offline-support.md` describe a service-worker/
+> `useOffline` offline story this story doesn't build (§14 Deviations) — skip them unless revisiting that decision.
 
 ## 0. The brief in one paragraph
 
@@ -31,14 +32,15 @@ primitives** and theme it with our tokens, so we get accessible, battle-tested i
   mini stopwatch bar, and toasts (§5).
 - **Redesigned screens:** Home hub, Activity, Running tracker, Stopwatch focus view, Run detail, Run add/edit, Account, and
   the auth screens' UX (§6).
-- **PWA experience:** route skeletons, streamed shell, link-pending feedback, progress bar, optimistic stopwatch, iOS
-  startup images, offline fallback + service worker, online/offline banner, standalone polish (§7).
+- **Loading feedback:** route skeletons, streamed shell, link-pending feedback, a top progress bar, optimistic stopwatch,
+  and an online/offline banner — everything a native app would show that a browser chrome normally gives you for free (§7).
 - Small generic data additions to the stopwatch registry and data layer, so screens can be tracker-agnostic (§8).
 
 ### Out of scope
 - New trackers, analytics/charts, and new data fields (distance, notes…).
 - Changing any token value, hue, or font. New tokens are allowed only for sizes and layout, recorded in 01-design-system §8.
-- Offline *writes* (queueing saves while offline). Offline shows a clear state; the existing Retry behavior stays.
+- **Any offline support**: no service worker, no `/offline` fallback page, no offline navigation or caching, no iOS startup
+  images. The app requires a live network; only a connectivity banner (§7.5) is in scope. See §14 Deviations.
 - Push notifications, widgets, and background timers.
 - Behavior and security changes to auth (TOTP, route guard, and actions stay as specified in US-001; only the UX changes).
 
@@ -304,22 +306,12 @@ content is a single column with `max-w-md mx-auto px-4`, and 24px gaps between b
   revert and show the existing inline error + **Retry** (the same `at`, per US-003).
 - The global mini bar appears and disappears optimistically, driven by the same state (a shared client store/context seeded by the server `actives`).
 
-### 7.5 Launch, offline, and connectivity
-- **iOS startup images:** add `apple-touch-startup-image` links (via `metadata.appleWebApp.startupImage`) for current iPhone portrait
-  sizes, generated with `next/og` route handlers like the existing icons: the brand mark centered on `neutral-950`. Android uses the
-  manifest `background_color` (already `#08090a`).
-- **Service worker** (`public/sw.js`, hand-written, registered from a client component in production only), following
-  `offline-support.md` / `progressive-web-apps.md`:
-  - Precache: `/offline` page, icons, and fonts/static `_next/static` assets as they're fetched (cache-first for `_next/static` only).
-  - Navigations: **network-first**, with a fallback to the cached `/offline` page when the network fails.
-  - **Never cache** HTML of authenticated pages, Server Action responses, Supabase requests, or anything with auth cookies. No data is
-    stored offline.
-  - Versioned cache name, and old caches deleted on `activate`.
-- **`/offline` page** (public, excluded from the proxy auth guard): brand mark, `You're offline` (`text-h2`), `Reconnect to see your
-  latest activity.`, and a secondary `Try again` (reload).
+### 7.5 Connectivity (descoped — see §14 Deviations)
 - **Connectivity banner** (`src/components/shell/offline-banner.tsx`): listens to `online`/`offline`. While offline, a 36px warning strip
   under the safe area says `You're offline. Changes won't save.` When the connection returns, it shows success `Back online` for 2s, then
   `router.refresh()`.
+- No service worker, no `/offline` fallback page, no iOS startup images, and no offline navigation/caching. The app requires a live
+  network for every screen (it's a thin Server-Component + Server-Action app over Supabase); the banner is the whole offline story.
 
 ### 7.6 Standalone and touch polish
 - Viewport: add `interactiveWidget: "resizes-content"`, so the layout shrinks for the keyboard and sticky bottom CTAs sit above it.
@@ -349,7 +341,7 @@ components.json
 src/app/globals.css                         (reconciled, not re-themed)
 src/lib/utils.ts                            (twMerge + extendTailwindMerge)
 src/components/ui/{button,confirm-sheet,skeleton,toaster,dropdown-menu,toggle-group,drawer,dialog}.tsx
-src/components/shell/{tab-bar,large-title,app-bar,bottom-cta,navigation-progress,offline-banner,pull-to-refresh,sw-register}.tsx
+src/components/shell/{tab-bar,large-title,app-bar,bottom-cta,navigation-progress,offline-banner,pull-to-refresh}.tsx
 src/components/trackers/{tracker-card,activity-row,activity-list,day-group-header,empty-state}.tsx
 src/components/stopwatch/*                  (optimistic store, restyled control, mini bar placement)
 src/app/(app)/layout.tsx, (tabs)/layout.tsx, (stack)/layout.tsx
@@ -359,10 +351,6 @@ src/app/(app)/(stack)/running/new/page.tsx
 src/app/(app)/(stack)/running/[id]/{page,loading}.tsx
 src/app/(app)/(stack)/running/[id]/edit/{page,loading}.tsx
 src/app/(app)/(stack)/stopwatch/[kind]/{page,loading}.tsx
-src/app/offline/page.tsx
-src/app/startup-image/[size]/route.tsx      (or similar, next/og)
-public/sw.js
-src/proxy.ts                                (matcher: exclude /offline, /sw.js, startup images)
 src/app/(auth)/**                           (UX changes §6.8)
 src/app/dev/ui/page.tsx                     (new components/states)
 ```
@@ -376,7 +364,7 @@ Each task ends with `pnpm typecheck` + `pnpm build` green, a manual check at 375
 |---|------|-----------|
 | T1 | **shadcn + Radix install and reconcile** (§4.1–4.2). | `/dev/ui` screenshots are identical before and after. The `cn` merge check passes. Only the listed dependencies were added. |
 | T2 | **Primitive refactors** (§4.3) + gallery. | All call sites use `asChild`. ConfirmSheet swipes to dismiss on mobile and is a dialog at ≥640px. Gallery shows all states. |
-| T3 | **PWA foundations** (§7.5–7.6 minus pull-to-refresh): viewport, touch CSS, startup images, SW + `/offline`, offline banner. | Airplane mode in the installed PWA shows `/offline` on navigation and the banner in-app. Startup image shows on iOS launch. No authenticated HTML in Cache Storage (devtools check). |
+| T3 | **Touch/viewport polish + connectivity banner** (§7.5–7.6 minus pull-to-refresh): viewport, touch CSS, offline banner. | Airplane mode in the installed PWA shows the in-app banner within 1s and it clears with a "Back online" state when connectivity returns. No horizontal scroll or mis-sized touch targets at 320px. |
 | T4 | **Shell** (§5): route groups, TabBar, LargeTitle, AppBar, BottomCta, mini bar placement, Toaster, Suspense-streamed actives, NavigationProgress. | Tabs switch with pending feedback. Stack screens have correct back targets. Content is never hidden behind bars at 320px. |
 | T5 | **Registry and data additions** (§8). | Typecheck green. Home and Activity can render from the generic functions. |
 | T6 | **Home** (§6.1) + skeleton. | Idle/running/empty states. Start from Home works in one tap. |
@@ -408,9 +396,10 @@ Each task ends with `pnpm typecheck` + `pnpm build` green, a manual check at 375
 9. The shell (tab bar or app bar) paints before the active-stopwatch query completes.
 10. Start on Home, the tracker page, or the focus view starts ticking **immediately** with the network throttled to "Slow 3G". The saved `started_at`
     equals the tap time. On failure the UI reverts and Retry reuses the tap time.
-11. Offline: the in-app banner appears within 1s. Navigating while offline shows `/offline`. Coming back online shows `Back online` and refreshes.
-    Cache Storage contains no authenticated page HTML or API responses.
-12. Cold launch of the installed PWA on iOS shows the branded startup image, then the shell, with no white flash at any point.
+11. Offline: the in-app banner appears within 1s. Navigating while offline fails normally (no network, no service worker — this app
+    doesn't support offline use). Coming back online shows `Back online` and refreshes.
+12. Cold launch of the installed PWA shows the shell with no white flash (the root layout's `bg-neutral-950` paints immediately; no
+    branded startup image — see §14 Deviations).
 
 **Flows**
 13. Start a run from Home in 1 tap. Stop it from the mini bar on any other tab in 1 tap. Open the focus view from the mini bar.
@@ -433,8 +422,8 @@ Each task ends with `pnpm typecheck` + `pnpm build` green, a manual check at 375
 
 Test on **a real iPhone with the app installed to the Home Screen** and **Android Chrome installed**, plus desktop Chrome devtools at
 320/375px:
-- Walk through AC 1–22 in order. Use devtools network throttling (Slow 3G, Offline) for AC 7–11. Use Application → Service Workers / Cache
-  Storage for AC 11. Use Performance → Layout shifts (or the CLS overlay) for AC 6. Use a second device for AC 13 and 20.
+- Walk through AC 1–22 in order. Use devtools network throttling (Slow 3G, Offline) for AC 7, 10, 11. Use Performance → Layout shifts
+  (or the CLS overlay) for AC 6. Use a second device for AC 13 and 20.
 - Record short screen recordings of AC 10, 12, 13, and 14 in the PR/commit description for future reference.
 
 ## 13. Open questions (defaults apply)
@@ -444,9 +433,19 @@ Test on **a real iPhone with the app installed to the Home Screen** and **Androi
 | Q1 | Tabs | Home · Activity · Account. Trackers are reached from Home, and new trackers don't add tabs. |
 | Q2 | Smart default for a new manual run | stop = now (rounded down to 5 min), start = stop − 30 min. |
 | Q3 | Undo instead of delete confirmation | No. Keep the confirmation sheet. Revisit later. |
-| Q4 | Service worker library (Serwist etc.) | No. A small hand-written `sw.js` with no data caching. |
+| Q4 | Service worker / offline support | No, descoped entirely. A connectivity banner is the whole offline story. See §14 Deviations. |
 
 ## 14. Deviations
+
+- **T3 — offline support descoped to a connectivity banner, on direct product direction.** §7.5's original scope (a hand-written
+  service worker, an `/offline` fallback page, and generated iOS startup images) is dropped entirely. Reasoning given: this app
+  has no meaningful offline use case (every screen is a live Server Component/Action over Supabase — there's nothing useful to
+  show without a network), so the goal is just good communication ("you're offline") rather than actual offline capability. What
+  stays: the `offline-banner.tsx` connectivity banner (§7.5) and the touch/viewport polish (§7.6). What's dropped: `public/sw.js`,
+  `src/app/offline/page.tsx`, the startup-image route, and the corresponding `next.config.ts`/`src/proxy.ts` matcher changes —
+  none of these are built. AC 11 and 12 and the T3 "done when" were reworded to match (§11, §10). The "custom loading feedback"
+  half of the original PWA motivation (skeletons, a top progress bar, optimistic UI) is unaffected and still ships in T4/T6–T9 —
+  that's the real answer to "an installed PWA has no browser loading chrome," not the offline machinery.
 
 - **T1 — shadcn CLI is a newer major version than this spec assumed.** The installed `shadcn@4.21` init/add flow differs from
   the classic one §4.1–4.3 describe:
