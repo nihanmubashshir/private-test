@@ -81,8 +81,10 @@ export function TodayGymCard({
           <input type="hidden" name="planDayId" value="" />
           <input type="hidden" name="startedAt" value={new Date().toISOString()} />
           <input type="hidden" name="timeZone" value={timeZone ?? writeTimeZone()} />
-          <Button type="submit" variant="ghost" size="sm" pending={pending} disabled={!timeZone}>
-            Start anyway
+          {/* Secondary, not ghost: the seeded "My week" is seven rest days, so on a fresh install this
+              is the only way into a session, and a ghost button here was easy to miss entirely. */}
+          <Button type="submit" variant="secondary" size="sm" pending={pending} disabled={!timeZone}>
+            Start session
           </Button>
         </form>
         <Link

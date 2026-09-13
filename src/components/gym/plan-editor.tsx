@@ -15,6 +15,7 @@ import { WEEKDAY_LABELS, describeTargets, weekdayFromDate, type Plan, type Worko
 import { estimateMinutes } from "@/lib/gym/summary";
 import { useAppTimeZone } from "@/components/shell/app-time-zone";
 import { EntrySheet } from "@/components/ui/entry-sheet";
+import { WorkoutPicker } from "@/components/gym/workout-picker";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -200,7 +201,16 @@ export function PlanEditor({ plan, workouts }: PlanEditorProps) {
       </p>
 
       <EntrySheet open={pickerOpen} onClose={() => setPickerOpen(false)} title="Add exercise" cancelLabel="Done" tall>
-        <ExercisePicker workouts={workouts} alreadyAdded={alreadyAdded} planDayId={day.id} onAdd={addAction} />
+        <WorkoutPicker
+          workouts={workouts}
+          disabledIds={alreadyAdded}
+          onPick={(workoutId) => {
+            const form = new FormData();
+            form.set("planDayId", day.id);
+            form.set("workoutId", workoutId);
+            addAction(form);
+          }}
+        />
       </EntrySheet>
 
       <EntrySheet
@@ -248,59 +258,5 @@ function TargetField({
         className="min-h-tap w-28 rounded-md border border-neutral-700 bg-neutral-950 px-3 text-right text-base text-neutral-50"
       />
     </label>
-  );
-}
-
-function ExercisePicker({
-  workouts,
-  alreadyAdded,
-  planDayId,
-  onAdd,
-}: {
-  workouts: Workout[];
-  alreadyAdded: Set<string>;
-  planDayId: string;
-  onAdd: (formData: FormData) => void;
-}) {
-  const [query, setQuery] = useState("");
-  const needle = query.trim().toLowerCase();
-  const matches = workouts.filter((workout) => workout.name.toLowerCase().includes(needle));
-
-  return (
-    <>
-      <input
-        type="search"
-        value={query}
-        onChange={(event) => setQuery(event.target.value)}
-        placeholder="Search exercises"
-        aria-label="Search exercises"
-        className="min-h-tap w-full shrink-0 rounded-md border border-neutral-700 bg-neutral-950 px-3 text-base text-neutral-50 placeholder:text-neutral-600"
-      />
-      <div className="flex flex-col">
-        {matches.map((workout) => {
-          const added = alreadyAdded.has(workout.id);
-          return (
-            <button
-              key={workout.id}
-              type="button"
-              disabled={added}
-              onClick={() => {
-                const form = new FormData();
-                form.set("planDayId", planDayId);
-                form.set("workoutId", workout.id);
-                onAdd(form);
-              }}
-              className="flex min-h-14 items-center gap-3 border-b border-neutral-800 text-left disabled:opacity-40"
-            >
-              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <span className="truncate text-control text-neutral-50">{workout.name}</span>
-                <span className="truncate font-mono text-xs text-neutral-500">{workout.tracks.join(" · ")}</span>
-              </span>
-              {added && <span className="shrink-0 text-xs text-neutral-500">Added</span>}
-            </button>
-          );
-        })}
-      </div>
-    </>
   );
 }

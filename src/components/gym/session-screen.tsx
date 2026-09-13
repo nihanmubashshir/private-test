@@ -3,11 +3,12 @@
 import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ChevronDown, Check, Trash2 } from "lucide-react";
+import { ChevronDown, Check, Plus, Trash2 } from "lucide-react";
 import type { GymSession, SessionExercise, SetLog } from "@/lib/gym/session-types";
 import { sessionSetCount, sessionVolume } from "@/lib/gym/session-types";
-import { describeTargets } from "@/lib/gym/types";
+import { describeTargets, type Workout } from "@/lib/gym/types";
 import {
+  addSessionExercise,
   deleteSet,
   discardSession,
   finishSession,
@@ -18,6 +19,8 @@ import { StopwatchElapsed } from "@/components/stopwatch/stopwatch-elapsed";
 import { SetInputs, describeSet, type SetValues } from "@/components/gym/set-inputs";
 import { RestTimer } from "@/components/gym/rest-timer";
 import { ConfirmSheet } from "@/components/ui/confirm-sheet";
+import { EntrySheet } from "@/components/ui/entry-sheet";
+import { WorkoutPicker } from "@/components/gym/workout-picker";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +30,8 @@ export interface SessionScreenProps {
   session: GymSession;
   /** Last working set per exercise, from any past session — the prefill source. */
   lastSets: Record<string, SetLog>;
+  /** The library, for adding an exercise mid-session. */
+  workouts: Workout[];
 }
 
 /** Prefill order: this session's last set for the exercise, then the plan target, then last time. */
@@ -48,16 +53,28 @@ function prefillFor(exercise: SessionExercise, lastSet: SetLog | undefined): Set
  * **No back chevron.** Leaving is Minimise, which returns to Home with the session still running —
  * a back button here would read as "cancel", and the mini bar is what brings you back.
  */
-export function SessionScreen({ session, lastSets }: SessionScreenProps) {
+export function SessionScreen({ session, lastSets, workouts }: SessionScreenProps) {
   const router = useRouter();
   const [expanded, setExpanded] = useState<string | null>(session.exercises[0]?.workoutId ?? null);
   const [restSince, setRestSince] = useState<number | null>(null);
   const [confirmFinish, setConfirmFinish] = useState(false);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const [logState, logAction, logPending] = useActionState(logSet, INITIAL);
   const [, deleteSetAction] = useActionState(deleteSet, INITIAL);
   const [finishState, finishAction, finishPending] = useActionState(finishSession, INITIAL);
+  const [addState, addAction] = useActionState(addSessionExercise, INITIAL);
+
+  // Keyed on the action state alone. On success, close the picker and open the new exercise, so
+  // logging its first set is one tap away.
+  useEffect(() => {
+    if (!addState.ok && addState.message) toast.error(addState.message);
+    if (addState.ok && addState.id) {
+      setExpanded(addState.id);
+      setPickerOpen(false);
+    }
+  }, [addState]);
   const [, discardAction] = useActionState(discardSession, INITIAL);
 
   const setCount = sessionSetCount(session.exercises);
@@ -131,15 +148,33 @@ export function SessionScreen({ session, lastSets }: SessionScreenProps) {
           ))}
           {session.exercises.length === 0 && (
             <p className="py-6 text-center text-body-sm text-neutral-500">
-              This session has no exercises. Add some to the plan day, or finish and log it as time only.
+              No exercises yet. Add one below to start logging.
             </p>
           )}
         </div>
+
+        <Button type="button" variant="secondary" fullWidth onClick={() => setPickerOpen(true)}>
+          <Plus className="size-5" strokeWidth={1.75} aria-hidden />
+          Add exercise
+        </Button>
 
         <Button type="button" variant="ghost" fullWidth onClick={() => setConfirmDiscard(true)}>
           Discard session
         </Button>
       </div>
+
+      <EntrySheet open={pickerOpen} onClose={() => setPickerOpen(false)} title="Add exercise" tall>
+        <WorkoutPicker
+          workouts={workouts}
+          disabledIds={new Set(session.exercises.map((exercise) => exercise.workoutId))}
+          onPick={(workoutId) => {
+            const form = new FormData();
+            form.set("sessionId", session.id);
+            form.set("workoutId", workoutId);
+            addAction(form);
+          }}
+        />
+      </EntrySheet>
 
       <RestTimer since={restSince} onSkip={() => setRestSince(null)} />
 

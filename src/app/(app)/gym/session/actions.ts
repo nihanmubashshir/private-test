@@ -214,3 +214,41 @@ export async function deleteSession(_prev: SessionActionResult, formData: FormDa
   revalidateGym();
   redirect("/?deleted=1");
 }
+
+/**
+ * Adds an exercise to a running session (US-011, reversing D4 after owner feedback).
+ *
+ * Without this an ad-hoc session — "Start anyway" on a rest day — had no exercises and no way to
+ * get one, so there was nothing to log. Persisted on the session rather than held in client state,
+ * because an exercise with no sets yet would otherwise vanish on the next refresh.
+ *
+ * Read-then-write on the array: one owner, one phone, and the worst a race could do is add the same
+ * id twice, which getSession() de-duplicates on read.
+ */
+export async function addSessionExercise(_prev: SessionActionResult, formData: FormData): Promise<SessionActionResult> {
+  const supabase = await requireFull();
+  const parsed = z
+    .object({ sessionId: z.uuid(), workoutId: z.uuid() })
+    .safeParse({ sessionId: formData.get("sessionId"), workoutId: formData.get("workoutId") });
+  if (!parsed.success) return fail(GENERIC_ERROR);
+
+  const { data: session } = await supabase
+    .from("gym_sessions")
+    .select("added_workout_ids")
+    .eq("id", parsed.data.sessionId)
+    .is("ended_at", null)
+    .maybeSingle();
+  if (!session) return fail("That session isn't running.");
+
+  const current = session.added_workout_ids ?? [];
+  if (!current.includes(parsed.data.workoutId)) {
+    const { error } = await supabase
+      .from("gym_sessions")
+      .update({ added_workout_ids: [...current, parsed.data.workoutId] })
+      .eq("id", parsed.data.sessionId);
+    if (error) return fail(GENERIC_ERROR);
+  }
+
+  revalidateGym();
+  return ok(parsed.data.workoutId);
+}

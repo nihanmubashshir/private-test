@@ -43,7 +43,7 @@ function toSetLog(row: {
 export async function getSession(supabase: Client, id: string): Promise<GymSession | null> {
   const { data: session } = await supabase
     .from("gym_sessions")
-    .select("id, name, started_at, ended_at, time_zone, note, plan_day_id")
+    .select("id, name, started_at, ended_at, time_zone, note, plan_day_id, added_workout_ids")
     .eq("id", id)
     .maybeSingle();
   if (!session) return null;
@@ -83,20 +83,29 @@ export async function getSession(supabase: Client, id: string): Promise<GymSessi
     });
   }
 
-  // Anything logged that the plan no longer lists — an ad-hoc addition, or an exercise removed
-  // from the plan mid-session. Never dropped, or the sets would vanish from the screen.
+  // Then exercises added on the spot, in the order they were added, then anything with sets that
+  // neither list names -- an exercise removed from the plan mid-session. Never dropped, or its sets
+  // would vanish from the screen.
+  const addedIds = [...new Set(session.added_workout_ids ?? [])].filter((workoutId) => !seen.has(workoutId));
+  for (const workoutId of addedIds) seen.add(workoutId);
   const extraIds = [...byWorkout.keys()].filter((workoutId) => !seen.has(workoutId));
-  if (extraIds.length > 0) {
-    const { data: extras } = await supabase.from("workouts").select("id, name, tracks").in("id", extraIds);
-    for (const workout of extras ?? []) {
+  const lookupIds = [...addedIds, ...extraIds];
+
+  if (lookupIds.length > 0) {
+    const { data: found } = await supabase.from("workouts").select("id, name, tracks").in("id", lookupIds);
+    const byId = new Map((found ?? []).map((workout) => [workout.id, workout]));
+    // `.in()` returns rows in no particular order, so the added order is restored from the ids.
+    for (const workoutId of lookupIds) {
+      const workout = byId.get(workoutId);
+      if (!workout) continue; // deleted since it was added
       exercises.push({
-        workoutId: workout.id,
+        workoutId,
         name: workout.name,
         tracks: workout.tracks,
         targetSets: null,
         targetReps: null,
         targetWeight: null,
-        sets: byWorkout.get(workout.id) ?? [],
+        sets: byWorkout.get(workoutId) ?? [],
       });
     }
   }
