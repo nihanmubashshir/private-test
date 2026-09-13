@@ -148,3 +148,4 @@ Components, variants, and tokens added by agents beyond the handoff. Add a row f
 | Added in | Name | Purpose | Key values |
 |----------|------|---------|------------|
 | US-001 | `--text-body-sm`, `--text-control`, `--color-surface-sunken`, `--color-surface-hover`, `--color-danger-900`, `--color-skeleton-shine` | Name values the handoff uses without tokens | See §4.1 b |
+| US-001 | PWA app icons (`app/icon.tsx`, `app/apple-icon.tsx`, `app/icons/icon-192`, `app/icons/icon-512`, `app/manifest.ts`) | Installable-to-home-screen support | The gold rounded-square brand mark (`accent-500`, radius 22%) centered on the `neutral-950` ground, generated with `next/og` via the shared `src/lib/app-icon.tsx` helper — no new image assets. |

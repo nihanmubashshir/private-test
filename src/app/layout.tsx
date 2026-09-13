@@ -22,6 +22,15 @@ export const metadata: Metadata = {
   title: appName,
   description: appName,
   robots: { index: false, follow: false },
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: appName,
+  },
+  // Older iOS Safari only recognizes the legacy apple-prefixed tag;
+  // Next's appleWebApp option only emits the modern mobile-web-app-capable one.
+  other: { "apple-mobile-web-app-capable": "yes" },
 };
 
 export const viewport: Viewport = {
