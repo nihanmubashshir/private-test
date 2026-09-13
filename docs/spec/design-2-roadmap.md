@@ -47,6 +47,9 @@ Five come from the brief and are not open. Four are the implementer's call, made
 | L3 | **Architecture is the implementer's call** — take the screens and the feature set from the handoff, not its data model. |
 | L4 | **Changelog first.** Order after that is open. |
 | L5 | **Story numbering does not matter.** Renumbered in §1 above; no further effort spent on it. |
+| L6 | **A signed-in owner never sees a 404.** An unknown route inside the app bounces to Home. Plus a custom error screen — the repo has neither `not-found.tsx` nor `error.tsx` today. Built as US-007 T1–T2. |
+| L7 | **The radial menu's drawn layout is not binding.** The wheel is circular and sweeps from the bottom of the screen round to the right edge, not the draft's 200°–340° arc. US-014 designs it from the system. |
+| L8 | **Framer Motion (`motion`) is approved** as a UI dependency, overriding design-system §9.1's list. CSS stays the default for simple state transitions; Motion is for gesture-driven and orchestrated movement — the radial wheel, sheets, shared-element pushes — where hand-rolled CSS would be worse. This is a phone, so nothing animates a property that forces layout.
 
 ### 2.2 Made here (the brief's L3 delegation)
 
@@ -120,14 +123,17 @@ the code that reads it — see §5.
 
 ### US-007 — App shell rework
 
-| # | Task |
-|---|------|
-| T1 | Move Home to `(app)/page.tsx`, delete the `(tabs)` group and `shell/tab-bar.tsx`, fold the mini-bar slot into the single layout |
-| T2 | Delete `/activity`; repurpose `trackers/activity-list.tsx` as the per-tracker history list and de-duplicate the `?show=` constants |
-| T3 | Back model: `history.back()` with a fixed-parent fallback, so the Android back button and the iOS edge swipe work without exiting the PWA |
-| T4 | Home layout per the redesign: header, section slots, `max-w-md`, safe areas |
-| T5 | Entry-sheet primitive (`ui/entry-sheet.tsx`) — the bottom sheet every later story's create/edit flow uses |
-| T6 | Docs pass |
+| # | Task | Notes |
+|---|------|-------|
+| T1 | `not-found.tsx`: a signed-in owner never sees a 404 — an unknown route inside `(app)` redirects to Home (L6). The signed-out case keeps a real 404 screen | The repo has no `not-found.tsx` at all today. `notFound()` is already called in `running/[id]`, `running/[id]/edit` and `stopwatch/[kind]`, so this changes what a stale link does |
+| T2 | `error.tsx` + `global-error.tsx`: a custom error screen with Try again and Go home (L6) | Also none today — errors currently fall through to Next's default |
+| T3 | Add `motion` (L8); record it in design-system §9.1 and §8 | Dependency only, no behaviour change |
+| T4 | Move Home to `(app)/page.tsx`, delete the `(tabs)` group and `shell/tab-bar.tsx`, fold the mini-bar slot into the single layout | |
+| T5 | Delete `/activity`; repurpose `trackers/activity-list.tsx` as the per-tracker history list and de-duplicate the `?show=` constants | |
+| T6 | Back model: `history.back()` with a fixed-parent fallback, so the Android back button and the iOS edge swipe work without exiting the PWA | |
+| T7 | Home layout per the redesign: header, section slots, `max-w-md`, safe areas | |
+| T8 | Entry-sheet primitive (`ui/entry-sheet.tsx`) — the bottom sheet every later story's create/edit flow uses, with Motion-driven drag-to-dismiss | |
+| T9 | Docs pass | |
 
 ### US-008 — App-wide time zone
 
@@ -203,10 +209,13 @@ the code that reads it — see §5.
 | # | Task |
 |---|------|
 | T1 | The button: fixed corner, tap-to-Home, placement and hide rules |
-| T2 | The wheel: press-and-hold, six nodes, drag-to-highlight, release-to-commit |
-| T3 | Wire the six actions, with disabled states |
+| T2 | The wheel: press-and-hold, nodes on a **circular sweep from the bottom edge round to the right edge** (L7), drag-to-highlight, release-to-commit, Motion-driven |
+| T3 | Wire the actions, with disabled states |
 | T4 | Keyboard equivalent and `prefers-reduced-motion` |
 | T5 | Docs pass |
+
+The draft's 200°–340° arc is not built. The owner's call (L7) is a true circle swept from the
+bottom of the screen to the right edge, which is also the arc a right thumb actually travels.
 
 ## 5. Definition of done — per task
 

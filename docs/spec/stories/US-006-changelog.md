@@ -140,12 +140,15 @@ src/components/shell/tab-bar.tsx                  T2  Account item → Settings
 src/app/(app)/(tabs)/page.tsx                     T2  header gear
 src/components/settings/settings-group.tsx        T2  eyebrow + card + rows
 src/components/settings/settings-row.tsx          T2
-src/app/(app)/(stack)/settings/whats-new/page.tsx T3
-src/app/(app)/(stack)/settings/whats-new/loading.tsx T3
-src/components/changelog/release-accordion.tsx    T3
-src/components/changelog/change-badge.tsx         T3
-src/components/changelog/mark-seen.tsx            T4
-src/components/changelog/unseen-dot.tsx           T4
+src/components/shell/settings-button.tsx          T2  gear, shared with Home's loading.tsx
+src/app/(app)/(tabs)/loading.tsx                  T2  gear, so the header doesn't reflow
+src/app/(app)/(stack)/settings/whats-new/page.tsx T2
+src/app/(app)/(stack)/settings/whats-new/loading.tsx T2
+src/components/changelog/release-accordion.tsx    T2
+src/components/changelog/change-badge.tsx         T2
+src/components/changelog/release-list.tsx         T3  reads and clears the watermark together
+src/components/changelog/use-unseen.ts            T3
+src/components/changelog/unseen-dot.tsx           T3
 ```
 
 ## 8. Tasks (in order)
@@ -201,4 +204,6 @@ At 375px, and 320px for the accordion headers:
 | D1 | The draft's unit test for changelog ordering is replaced by a module-scope invariant that throws at import time (§4.1) | This repo has no test runner — ESLint, Vitest and Playwright were removed deliberately (US-001 Deviations). A module-scope throw is enforced by `pnpm build`, so it gates the deploy rather than a suite nobody runs. |
 | D2 | This story also builds `/settings`, which the draft assumed already existed | `/settings` does not exist; `/account` is a stub (US-005 §6.7). Building it as a stack screen now keeps the changelog off the shell rework's critical path, and US-007 deletes the tab bar around it without touching it (roadmap C4). |
 | D3 | The draft's Settings groups are only partly filled | Time zone arrives in US-008 and Requests in US-013. A group with no rows is not rendered, rather than shipping controls that do nothing. |
+| D5 | The accordion body does not animate its height; only the chevron rotates | Animating a `<details>` open needs `::details-content` + `interpolate-size`, which is not in Safari yet, or JS — which would cost the no-JS guarantee (AC 4) for a cosmetic 180ms. The chevron carries the state change instead. |
+| D6 | `MarkSeen` as a standalone component was replaced by `ReleaseList` doing both | Reading the watermark and clearing it in two separate effects races: the visit that should show `NEW` badges is exactly the one that clears the value they are compared against. |
 | D4 | Changelog dates bypass `src/lib/time/` | They are calendar dates, not instants — no device, no zone, no conversion (§5.3). Overview §6.2 governs instants. |

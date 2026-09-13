@@ -251,3 +251,7 @@ There is no `tests/` directory — no automated test suite is maintained (see US
 | [US-003](stories/US-003-global-stopwatch.md) | Global stopwatch pattern | Ready |
 | [US-004](stories/US-004-running-tracker.md) | Running tracker | Ready (after US-003) |
 | [US-005](stories/US-005-mobile-redesign.md) | Mobile-first redesign (Wise-inspired UX, shadcn/Radix, PWA loading) | Implemented (T1–T13) — pending your 375px/real-device check |
+| [US-006](stories/US-006-changelog.md) | What's new (changelog) and the Settings screen | Ready |
+
+The stories from US-006 on are the **design-2 wave**. Their order, the decisions behind them, and
+the task breakdown live in [`design-2-roadmap.md`](design-2-roadmap.md); read it before picking one up.
