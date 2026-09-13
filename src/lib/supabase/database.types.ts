@@ -63,6 +63,56 @@ export type Database = {
         }
         Relationships: []
       }
+      gym_sessions: {
+        Row: {
+          created_at: string
+          duration_seconds: number | null
+          ended_at: string | null
+          id: string
+          name: string
+          note: string | null
+          owner_id: string
+          plan_day_id: string | null
+          started_at: string
+          time_zone: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          name: string
+          note?: string | null
+          owner_id?: string
+          plan_day_id?: string | null
+          started_at: string
+          time_zone: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          name?: string
+          note?: string | null
+          owner_id?: string
+          plan_day_id?: string | null
+          started_at?: string
+          time_zone?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gym_sessions_plan_day_id_fkey"
+            columns: ["plan_day_id"]
+            isOneToOne: false
+            referencedRelation: "plan_days"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       plan_days: {
         Row: {
           created_at: string
@@ -223,6 +273,69 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      set_logs: {
+        Row: {
+          completed_at: string
+          created_at: string
+          distance_m: number | null
+          duration_s: number | null
+          id: string
+          is_warmup: boolean
+          owner_id: string
+          position: number
+          reps: number | null
+          session_id: string
+          updated_at: string
+          weight: number | null
+          workout_id: string
+        }
+        Insert: {
+          completed_at: string
+          created_at?: string
+          distance_m?: number | null
+          duration_s?: number | null
+          id?: string
+          is_warmup?: boolean
+          owner_id?: string
+          position: number
+          reps?: number | null
+          session_id: string
+          updated_at?: string
+          weight?: number | null
+          workout_id: string
+        }
+        Update: {
+          completed_at?: string
+          created_at?: string
+          distance_m?: number | null
+          duration_s?: number | null
+          id?: string
+          is_warmup?: boolean
+          owner_id?: string
+          position?: number
+          reps?: number | null
+          session_id?: string
+          updated_at?: string
+          weight?: number | null
+          workout_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "set_logs_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "gym_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "set_logs_workout_id_fkey"
+            columns: ["workout_id"]
+            isOneToOne: false
+            referencedRelation: "workouts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       weigh_ins: {
         Row: {

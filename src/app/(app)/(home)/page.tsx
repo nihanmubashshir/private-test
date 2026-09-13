@@ -18,7 +18,10 @@ const SPARKLINE_DAYS = 31;
 
 export default async function HomePage() {
   const supabase = await requireFull();
-  const kinds = Object.keys(stopwatchKinds) as StopwatchKind[];
+  // Kinds with their own Home card (gym) are excluded here and rendered by that card instead.
+  const kinds = (Object.keys(stopwatchKinds) as StopwatchKind[]).filter(
+    (kind) => !stopwatchKinds[kind].hasCustomHomeCard,
+  );
 
   const since = new Date(Date.now() - SPARKLINE_DAYS * 86_400_000).toISOString();
 

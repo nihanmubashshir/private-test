@@ -1,4 +1,4 @@
-import { Footprints, type LucideIcon } from "lucide-react";
+import { Dumbbell, Footprints, type LucideIcon } from "lucide-react";
 import type { Database } from "@/lib/supabase/database.types";
 
 type PublicTables = Database["public"]["Tables"];
@@ -42,6 +42,15 @@ export interface StopwatchKindConfig {
   detailHref: (id: string) => string;
   /** The edit form, e.g. "/running/{id}/edit". Built in US-005 T9. */
   editHref: (id: string) => string;
+  /**
+   * True when the kind draws its own card on Home instead of the generic `TrackerCard`, and runs
+   * its own start flow instead of the registry's. Gym needs both: starting a session writes
+   * `plan_day_id` and `name`, which the registry's generic insert has no way to know about.
+   *
+   * The kind still appears in recent activity and the mini "still running" bar, which is the whole
+   * reason it is registered (US-011 §3).
+   */
+  hasCustomHomeCard: boolean;
 }
 
 export const stopwatchKinds = {
@@ -55,6 +64,21 @@ export const stopwatchKinds = {
     newHref: "/running/new",
     detailHref: (id: string) => `/running/${id}`,
     editHref: (id: string) => `/running/${id}/edit`,
+    // Stated rather than omitted: `satisfies` keeps each entry's literal type, so an absent key
+    // is absent from the union and unreadable without narrowing.
+    hasCustomHomeCard: false,
+  },
+  gym: {
+    table: "gym_sessions",
+    label: "session",
+    activeLabel: "Gym session",
+    href: "/gym/session",
+    name: "Gym",
+    icon: Dumbbell,
+    newHref: "/gym/plans",
+    detailHref: (id: string) => `/gym/sessions/${id}`,
+    editHref: (id: string) => `/gym/sessions/${id}`,
+    hasCustomHomeCard: true,
   },
 } satisfies Record<string, StopwatchKindConfig>;
 
