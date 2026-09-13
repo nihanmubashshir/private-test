@@ -4,6 +4,7 @@ import { getActiveStopwatches, listCompletedSessions } from "@/lib/stopwatch/ser
 import { stopwatchKinds, type StopwatchKind } from "@/lib/stopwatch/registry";
 import { LargeTitle } from "@/components/shell/large-title";
 import { TodayEyebrow } from "@/components/shell/today-eyebrow";
+import { PullToRefresh } from "@/components/shell/pull-to-refresh";
 import { Button } from "@/components/ui/button";
 import { TrackerCard } from "@/components/trackers/tracker-card";
 import { RecentActivity } from "@/components/trackers/recent-activity";
@@ -21,32 +22,34 @@ export default async function HomePage() {
   ]);
 
   return (
-    <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
-      <LargeTitle title="Home" eyebrow={<TodayEyebrow />} />
+    <PullToRefresh>
+      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
+        <LargeTitle title="Home" eyebrow={<TodayEyebrow />} />
 
-      <div className="flex flex-col gap-4">
-        {kinds.map((kind, index) => (
-          <TrackerCard
-            key={kind}
-            kind={kind}
-            active={actives.find((active) => active.kind === kind) ?? null}
-            lastCompleted={lastByKind[index][0] ?? null}
-            primaryAction={index === 0}
-          />
-        ))}
-      </div>
-
-      {recent.length > 0 && (
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-h2 text-neutral-50">Recent activity</h2>
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/activity">See all</Link>
-            </Button>
-          </div>
-          <RecentActivity sessions={recent} />
+        <div className="flex flex-col gap-4">
+          {kinds.map((kind, index) => (
+            <TrackerCard
+              key={kind}
+              kind={kind}
+              active={actives.find((active) => active.kind === kind) ?? null}
+              lastCompleted={lastByKind[index][0] ?? null}
+              primaryAction={index === 0}
+            />
+          ))}
         </div>
-      )}
-    </div>
+
+        {recent.length > 0 && (
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-h2 text-neutral-50">Recent activity</h2>
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/activity">See all</Link>
+              </Button>
+            </div>
+            <RecentActivity sessions={recent} />
+          </div>
+        )}
+      </div>
+    </PullToRefresh>
   );
 }
