@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ChevronDown, Check, Plus, Trash2 } from "lucide-react";
 import type { GymSession, SessionExercise, SetLog } from "@/lib/gym/session-types";
@@ -15,6 +16,7 @@ import {
   logSet,
   type SessionActionResult,
 } from "@/app/(app)/gym/session/actions";
+import { runOrThrow } from "@/lib/action-result";
 import { StopwatchElapsed } from "@/components/stopwatch/stopwatch-elapsed";
 import { SetInputs, describeSet, type SetValues } from "@/components/gym/set-inputs";
 import { RestTimer } from "@/components/gym/rest-timer";
@@ -48,63 +50,128 @@ function prefillFor(exercise: SessionExercise, lastSet: SetLog | undefined): Set
   return values;
 }
 
+const parseNumber = (value: FormDataEntryValue | null) => {
+  const text = typeof value === "string" ? value.trim() : "";
+  return text === "" ? null : Number(text);
+};
+
 /**
  * The active session (US-011 §5).
  *
  * **No back chevron.** Leaving is Minimise, which returns to Home with the session still running —
  * a back button here would read as "cancel", and the mini bar is what brings you back.
+ *
+ * Sets and exercises render from `exercises` local state, not the `session` prop directly, so a
+ * log/delete/add shows up the instant it's tapped instead of waiting on the Server Action round
+ * trip and the `revalidatePath` refresh behind it (AGENTS.md's Server Action UX note). The state
+ * re-syncs to the prop whenever the server sends fresh data, which reconciles any optimistic id
+ * with the real one.
  */
 export function SessionScreen({ session, lastSets, workouts }: SessionScreenProps) {
   const router = useRouter();
+  const [exercises, setExercises] = useState(session.exercises);
   const [expanded, setExpanded] = useState<string | null>(session.exercises[0]?.workoutId ?? null);
   const [restSince, setRestSince] = useState<number | null>(null);
   const [confirmFinish, setConfirmFinish] = useState(false);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
-
-  const [logState, logAction, logPending] = useActionState(logSet, INITIAL);
-  const [deleteSetState, deleteSetAction, deleteSetPending] = useActionState(deleteSet, INITIAL);
   const [deletingSetId, setDeletingSetId] = useState<string | null>(null);
-  const [finishState, finishAction, finishPending] = useActionState(finishSession, INITIAL);
-  const [addState, addAction, addPending] = useActionState(addSessionExercise, INITIAL);
 
-  // Keyed on the action state alone. On success, close the picker and open the new exercise, so
-  // logging its first set is one tap away.
-  useEffect(() => {
-    if (!addState.ok && addState.message) toast.error(addState.message);
-    if (addState.ok && addState.id) {
-      setExpanded(addState.id);
+  useEffect(() => setExercises(session.exercises), [session.exercises]);
+
+  const logSetMutation = useMutation({
+    mutationFn: (form: FormData) => runOrThrow(logSet(INITIAL, form)),
+    onMutate: async (form) => {
+      const workoutId = String(form.get("workoutId"));
+      const optimisticSet: SetLog = {
+        id: `optimistic-${crypto.randomUUID()}`,
+        workoutId,
+        position: (exercises.find((e) => e.workoutId === workoutId)?.sets.length ?? 0) + 1,
+        reps: parseNumber(form.get("reps")),
+        weight: parseNumber(form.get("weight")),
+        durationS: parseNumber(form.get("durationS")),
+        distanceM: parseNumber(form.get("distanceM")),
+        completedAt: String(form.get("completedAt")),
+        isWarmup: form.get("isWarmup") === "true",
+      };
+      setExercises((prev) =>
+        prev.map((exercise) =>
+          exercise.workoutId === workoutId ? { ...exercise, sets: [...exercise.sets, optimisticSet] } : exercise,
+        ),
+      );
+      setRestSince(Date.now());
+      return { workoutId, optimisticId: optimisticSet.id };
+    },
+    onError: (error, _form, context) => {
+      if (!context) return;
+      setExercises((prev) =>
+        prev.map((exercise) =>
+          exercise.workoutId === context.workoutId
+            ? { ...exercise, sets: exercise.sets.filter((set) => set.id !== context.optimisticId) }
+            : exercise,
+        ),
+      );
+      toast.error(error instanceof Error ? error.message : "Couldn't log that set. Try again.");
+    },
+  });
+
+  const deleteSetMutation = useMutation({
+    mutationFn: (form: FormData) => runOrThrow(deleteSet(INITIAL, form)),
+    onMutate: async (form) => {
+      const id = String(form.get("id"));
+      setDeletingSetId(id);
+      const snapshot = exercises;
+      setExercises((prev) => prev.map((exercise) => ({ ...exercise, sets: exercise.sets.filter((set) => set.id !== id) })));
+      return { snapshot };
+    },
+    onError: (error, _form, context) => {
+      if (context) setExercises(context.snapshot);
+      toast.error(error instanceof Error ? error.message : "Couldn't delete that set. Try again.");
+    },
+    onSettled: () => setDeletingSetId(null),
+  });
+
+  const addExerciseMutation = useMutation({
+    mutationFn: (form: FormData) => runOrThrow(addSessionExercise(INITIAL, form)),
+    onMutate: async (form) => {
+      const workoutId = String(form.get("workoutId"));
+      const workout = workouts.find((w) => w.id === workoutId);
+      if (!workout) return null;
+      const optimisticExercise: SessionExercise = {
+        workoutId: workout.id,
+        name: workout.name,
+        tracks: workout.tracks,
+        targetSets: null,
+        targetReps: null,
+        targetWeight: null,
+        sets: [],
+      };
+      setExercises((prev) => [...prev, optimisticExercise]);
+      setExpanded(workoutId);
       setPickerOpen(false);
-    }
-  }, [addState]);
+      return { workoutId };
+    },
+    onError: (error, _form, context) => {
+      if (!context) return;
+      setExercises((prev) => prev.filter((exercise) => exercise.workoutId !== context.workoutId));
+      toast.error(error instanceof Error ? error.message : "Couldn't add that exercise. Try again.");
+    },
+  });
 
-  // Only cleared on failure — on success the set drops out of `session.exercises` once
-  // `revalidatePath` re-renders, so the id naturally stops matching anything.
-  useEffect(() => {
-    if (!deleteSetState.ok && deleteSetState.message) {
-      toast.error(deleteSetState.message);
-      setDeletingSetId(null);
-    }
-  }, [deleteSetState]);
+  const finishMutation = useMutation({
+    mutationFn: (form: FormData) => runOrThrow(finishSession(INITIAL, form)),
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Couldn't finish the session. Try again."),
+  });
 
-  const [discardState, discardAction, discardPending] = useActionState(discardSession, INITIAL);
-  useEffect(() => {
-    if (!discardState.ok && discardState.message) toast.error(discardState.message);
-  }, [discardState]);
+  const discardMutation = useMutation({
+    mutationFn: (form: FormData) => runOrThrow(discardSession(INITIAL, form)),
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Couldn't discard the session. Try again."),
+  });
 
-  const setCount = sessionSetCount(session.exercises);
-  const volume = sessionVolume(session.exercises);
-  const done = session.exercises.filter((exercise) => exercise.sets.length > 0).length;
-  const untouched = session.exercises.length - done;
-
-  useEffect(() => {
-    if (!logState.ok && logState.message) toast.error(logState.message);
-    if (logState.ok && logState.id) setRestSince(Date.now());
-  }, [logState]);
-
-  useEffect(() => {
-    if (!finishState.ok && finishState.message) toast.error(finishState.message);
-  }, [finishState]);
+  const setCount = sessionSetCount(exercises);
+  const volume = sessionVolume(exercises);
+  const done = exercises.filter((exercise) => exercise.sets.length > 0).length;
+  const untouched = exercises.length - done;
 
   return (
     <div className="min-h-dvh">
@@ -123,7 +190,7 @@ export function SessionScreen({ session, lastSets, workouts }: SessionScreenProp
             type="button"
             size="sm"
             // Finishing with nothing logged would write an empty session, so it waits for a set.
-            disabled={setCount === 0 || finishPending}
+            disabled={setCount === 0 || finishMutation.isPending}
             onClick={() => (untouched > 0 ? setConfirmFinish(true) : submitFinish())}
           >
             Finish
@@ -144,7 +211,7 @@ export function SessionScreen({ session, lastSets, workouts }: SessionScreenProp
         </div>
 
         <div className="flex flex-col gap-2">
-          {session.exercises.map((exercise) => (
+          {exercises.map((exercise) => (
             <ExerciseBlock
               key={exercise.workoutId}
               exercise={exercise}
@@ -152,18 +219,17 @@ export function SessionScreen({ session, lastSets, workouts }: SessionScreenProp
               lastSet={lastSets[exercise.workoutId]}
               expanded={expanded === exercise.workoutId}
               onExpand={() => setExpanded(expanded === exercise.workoutId ? null : exercise.workoutId)}
-              onLog={logAction}
-              logPending={logPending}
-              deletingSetId={deleteSetPending ? deletingSetId : null}
+              onLog={(form) => logSetMutation.mutate(form)}
+              logPending={logSetMutation.isPending}
+              deletingSetId={deletingSetId}
               onDeleteSet={(id) => {
-                setDeletingSetId(id);
                 const form = new FormData();
                 form.set("id", id);
-                deleteSetAction(form);
+                deleteSetMutation.mutate(form);
               }}
             />
           ))}
-          {session.exercises.length === 0 && (
+          {exercises.length === 0 && (
             <p className="py-6 text-center text-body-sm text-neutral-500">
               No exercises yet. Add one below to start logging.
             </p>
@@ -183,13 +249,12 @@ export function SessionScreen({ session, lastSets, workouts }: SessionScreenProp
       <EntrySheet open={pickerOpen} onClose={() => setPickerOpen(false)} title="Add exercise" tall>
         <WorkoutPicker
           workouts={workouts}
-          disabledIds={new Set(session.exercises.map((exercise) => exercise.workoutId))}
-          pending={addPending}
+          disabledIds={new Set(exercises.map((exercise) => exercise.workoutId))}
           onPick={(workoutId) => {
             const form = new FormData();
             form.set("sessionId", session.id);
             form.set("workoutId", workoutId);
-            addAction(form);
+            addExerciseMutation.mutate(form);
           }}
         />
       </EntrySheet>
@@ -203,7 +268,7 @@ export function SessionScreen({ session, lastSets, workouts }: SessionScreenProp
         description={`${untouched} ${untouched === 1 ? "exercise" : "exercises"} not started.`}
         confirmLabel="Finish"
         confirmVariant="primary"
-        pending={finishPending}
+        pending={finishMutation.isPending}
         onConfirm={() => {
           setConfirmFinish(false);
           submitFinish();
@@ -216,11 +281,11 @@ export function SessionScreen({ session, lastSets, workouts }: SessionScreenProp
         title="Discard this session?"
         description="Every set logged in it goes too. This can't be undone."
         confirmLabel="Discard"
-        pending={discardPending}
+        pending={discardMutation.isPending}
         onConfirm={() => {
           const form = new FormData();
           form.set("id", session.id);
-          discardAction(form);
+          discardMutation.mutate(form);
         }}
       />
     </div>
@@ -232,7 +297,7 @@ export function SessionScreen({ session, lastSets, workouts }: SessionScreenProp
     // The client owns user-meaningful instants (overview §6.2); the server only sanity-checks.
     form.set("endedAt", new Date().toISOString());
     form.set("note", "");
-    finishAction(form);
+    finishMutation.mutate(form);
   }
 }
 
@@ -287,7 +352,10 @@ function ExerciseBlock({
           {exercise.sets.map((set) => {
             const deleting = deletingSetId === set.id;
             return (
-              <div key={set.id} className={cn("flex items-center gap-2 border-b border-neutral-800 pb-2", deleting && "opacity-50")}>
+              <div
+                key={set.id}
+                className={cn("flex items-center gap-2 border-b border-neutral-800 pb-2", deleting && "opacity-50")}
+              >
                 <span className="w-6 shrink-0 font-mono text-xs text-neutral-500">
                   {set.isWarmup ? "W" : set.position}
                 </span>

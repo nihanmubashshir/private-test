@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ChevronDown, ChevronUp, Dumbbell, Plus, Trash2 } from "lucide-react";
 import {
@@ -11,8 +12,9 @@ import {
   updatePlanItem,
   type GymActionResult,
 } from "@/app/(app)/gym/actions";
-import { WEEKDAY_LABELS, describeTargets, weekdayInZone, type Plan, type Workout } from "@/lib/gym/types";
+import { WEEKDAY_LABELS, describeTargets, weekdayInZone, type Plan, type PlanItem, type Workout } from "@/lib/gym/types";
 import { estimateMinutes } from "@/lib/gym/summary";
+import { runOrThrow } from "@/lib/action-result";
 import { useAppTimeZone } from "@/components/shell/app-time-zone";
 import { EntrySheet } from "@/components/ui/entry-sheet";
 import { WorkoutPicker } from "@/components/gym/workout-picker";
@@ -32,18 +34,25 @@ export interface PlanEditorProps {
  *
  * Every edit saves immediately — there is no Save button and no dirty state, because a weekly plan
  * is a list of small independent facts, not a form with a single commit.
+ *
+ * The day's exercise list renders from `items` local state, re-synced to the plan whenever fresh
+ * server data lands, so add/remove/reorder show up the instant they're tapped instead of waiting
+ * on the round trip — reorder especially, since it used to wait on N sequential row updates before
+ * the strip visibly moved (AGENTS.md's Server Action UX note).
  */
 export function PlanEditor({ plan, workouts }: PlanEditorProps) {
   const timeZone = useAppTimeZone();
   const [selected, setSelected] = useState(0);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<string | null>(null);
+  const [removingItemId, setRemovingItemId] = useState<string | null>(null);
+
+  const day = plan.days.find((d) => d.weekday === selected) ?? plan.days[0];
+  const [items, setItems] = useState<PlanItem[]>(day?.items ?? []);
+
+  useEffect(() => setItems(day?.items ?? []), [day]);
 
   const [, dayAction] = useActionState(updatePlanDay, INITIAL);
-  const [addState, addAction, addPending] = useActionState(addPlanItem, INITIAL);
-  const [removeState, removeAction, removePending] = useActionState(removePlanItem, INITIAL);
-  const [removingItemId, setRemovingItemId] = useState<string | null>(null);
-  const [, reorderAction, reorderPending] = useActionState(reorderPlanItems, INITIAL);
   const [targetState, targetAction, targetPending] = useActionState(updatePlanItem, INITIAL);
 
   // Open on today, which is the day the owner almost always wants.
@@ -52,25 +61,69 @@ export function PlanEditor({ plan, workouts }: PlanEditorProps) {
   }, [timeZone]);
 
   useEffect(() => {
-    if (!addState.ok && addState.message) toast.error(addState.message);
-  }, [addState]);
-
-  useEffect(() => {
-    if (!removeState.ok && removeState.message) {
-      toast.error(removeState.message);
-      setRemovingItemId(null);
-    }
-  }, [removeState]);
-
-  useEffect(() => {
     if (targetState.ok && targetState.id) setEditingItem(null);
   }, [targetState]);
 
-  const day = plan.days.find((d) => d.weekday === selected) ?? plan.days[0];
+  const addItemMutation = useMutation({
+    mutationFn: (form: FormData) => runOrThrow(addPlanItem(INITIAL, form)),
+    onMutate: async (form) => {
+      if (!day) return null;
+      const workoutId = String(form.get("workoutId"));
+      const workout = workouts.find((w) => w.id === workoutId);
+      if (!workout) return null;
+      const optimisticItem: PlanItem = {
+        id: `optimistic-${crypto.randomUUID()}`,
+        workoutId: workout.id,
+        workoutName: workout.name,
+        tracks: workout.tracks,
+        position: items.length,
+        targetSets: workout.defaultSets,
+        targetReps: null,
+        targetWeight: null,
+      };
+      setItems((prev) => [...prev, optimisticItem]);
+      setPickerOpen(false);
+      return { optimisticId: optimisticItem.id };
+    },
+    onError: (error, _form, context) => {
+      if (context) setItems((prev) => prev.filter((item) => item.id !== context.optimisticId));
+      toast.error(error instanceof Error ? error.message : "Couldn't add that exercise. Try again.");
+    },
+  });
+
+  const removeItemMutation = useMutation({
+    mutationFn: (form: FormData) => runOrThrow(removePlanItem(INITIAL, form)),
+    onMutate: async (form) => {
+      const id = String(form.get("id"));
+      setRemovingItemId(id);
+      const snapshot = items;
+      setItems((prev) => prev.filter((item) => item.id !== id));
+      return { snapshot };
+    },
+    onError: (error, _form, context) => {
+      if (context) setItems(context.snapshot);
+      toast.error(error instanceof Error ? error.message : "Couldn't remove that exercise. Try again.");
+    },
+    onSettled: () => setRemovingItemId(null),
+  });
+
+  const reorderMutation = useMutation({
+    mutationFn: (vars: { form: FormData; next: PlanItem[] }) => runOrThrow(reorderPlanItems(INITIAL, vars.form)),
+    onMutate: async (vars) => {
+      const snapshot = items;
+      setItems(vars.next);
+      return { snapshot };
+    },
+    onError: (error, _vars, context) => {
+      if (context) setItems(context.snapshot);
+      toast.error(error instanceof Error ? error.message : "Couldn't reorder that. Try again.");
+    },
+  });
+
   if (!day) return null;
 
   const today = timeZone ? weekdayInZone(timeZone) : -1;
-  const plannedSets = day.items.reduce((total, item) => total + (item.targetSets ?? 0), 0);
+  const plannedSets = items.reduce((total, item) => total + (item.targetSets ?? 0), 0);
   const minutes = estimateMinutes(plannedSets);
 
   const submitDay = (patch: { name?: string; isRest?: boolean }) => {
@@ -82,17 +135,17 @@ export function PlanEditor({ plan, workouts }: PlanEditorProps) {
   };
 
   const move = (index: number, direction: -1 | 1) => {
-    const next = [...day.items];
     const target = index + direction;
-    if (target < 0 || target >= next.length) return;
+    if (target < 0 || target >= items.length) return;
+    const next = [...items];
     [next[index], next[target]] = [next[target], next[index]];
     const form = new FormData();
     for (const item of next) form.append("ids", item.id);
-    reorderAction(form);
+    reorderMutation.mutate({ form, next });
   };
 
-  const alreadyAdded = new Set(day.items.map((item) => item.workoutId));
-  const editing = day.items.find((item) => item.id === editingItem) ?? null;
+  const alreadyAdded = new Set(items.map((item) => item.workoutId));
+  const editing = items.find((item) => item.id === editingItem) ?? null;
 
   return (
     <>
@@ -147,10 +200,10 @@ export function PlanEditor({ plan, workouts }: PlanEditorProps) {
 
       {/* Exercises are kept when a day is toggled to rest, just greyed and hidden from Home. */}
       <div className={cn("flex flex-col", day.isRest && "opacity-50")}>
-        {day.items.map((item, index) => {
+        {items.map((item, index) => {
           const removing = removingItemId === item.id;
           // Positions are mid-write during either action, so every row's move/remove holds off.
-          const rowBusy = reorderPending || removePending;
+          const rowBusy = reorderMutation.isPending || removeItemMutation.isPending;
           return (
             <div
               key={item.id}
@@ -183,7 +236,7 @@ export function PlanEditor({ plan, workouts }: PlanEditorProps) {
               <button
                 type="button"
                 onClick={() => move(index, 1)}
-                disabled={index === day.items.length - 1 || rowBusy}
+                disabled={index === items.length - 1 || rowBusy}
                 aria-label={`Move ${item.workoutName} down`}
                 className="flex size-tap shrink-0 items-center justify-center text-neutral-500 disabled:opacity-30"
               >
@@ -192,10 +245,9 @@ export function PlanEditor({ plan, workouts }: PlanEditorProps) {
               <button
                 type="button"
                 onClick={() => {
-                  setRemovingItemId(item.id);
                   const form = new FormData();
                   form.set("id", item.id);
-                  removeAction(form);
+                  removeItemMutation.mutate(form);
                 }}
                 disabled={rowBusy}
                 aria-label={`Remove ${item.workoutName}`}
@@ -214,7 +266,7 @@ export function PlanEditor({ plan, workouts }: PlanEditorProps) {
       </Button>
 
       <p className="text-center text-body-sm text-neutral-500">
-        {day.items.length} {day.items.length === 1 ? "exercise" : "exercises"}
+        {items.length} {items.length === 1 ? "exercise" : "exercises"}
         {plannedSets > 0 && ` · ${plannedSets} sets planned`}
         {minutes && ` · about ${minutes} min`}
       </p>
@@ -223,12 +275,11 @@ export function PlanEditor({ plan, workouts }: PlanEditorProps) {
         <WorkoutPicker
           workouts={workouts}
           disabledIds={alreadyAdded}
-          pending={addPending}
           onPick={(workoutId) => {
             const form = new FormData();
             form.set("planDayId", day.id);
             form.set("workoutId", workoutId);
-            addAction(form);
+            addItemMutation.mutate(form);
           }}
         />
       </EntrySheet>
