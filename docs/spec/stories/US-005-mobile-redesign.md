@@ -30,8 +30,8 @@ primitives** and theme it with our tokens, so we get accessible, battle-tested i
 - Install and theme **shadcn/ui (Radix)**. Refactor our primitives onto it where it adds value (§4).
 - **New app shell:** bottom tab bar (Home · Activity · Account), large-title tab headers, stack screens with a back bar, a relocated
   mini stopwatch bar, and toasts (§5).
-- **Redesigned screens:** Home hub, Activity, Running tracker, Stopwatch focus view, Run detail, Run add/edit, Account, and
-  the auth screens' UX (§6).
+- **Redesigned screens:** Home hub, Activity, Running tracker, Stopwatch focus view, Run detail, Run add/edit, and
+  the auth screens' UX (§6). Account is out of scope — see §6.7, §14 Deviations.
 - **Loading feedback:** route skeletons, streamed shell, link-pending feedback, a top progress bar, optimistic stopwatch,
   and an online/offline banner — everything a native app would show that a browser chrome normally gives you for free (§7).
 - Small generic data additions to the stopwatch registry and data layer, so screens can be tracker-agnostic (§8).
@@ -247,17 +247,11 @@ content is a single column with `max-w-md mx-auto px-4`, and 24px gaps between b
 - Delete is **not** on this screen (it lives on detail).
 - All US-004 §4.3 submit logic (zones, seconds preservation, next-day, validation messages) is unchanged.
 
-### 6.7 Account `/account` (tab)
-- LargeTitle h1 `Account`.
-- Card groups (rows 56px with a leading 20px icon, hairlines, `ChevronRight` where the row navigates):
-  1. **Profile**: `Signed in as` + email (read on the server from verified claims).
-  2. **Security**: `Two-factor authentication` + a success Badge `On`.
-  3. **This device**: `Time zone` + `Asia/Dhaka` (client). `Install app` row, shown only when **not** running standalone
-     (`matchMedia('(display-mode: standalone)')`), opens a Drawer with install steps (iOS: Share → Add to Home Screen; Android: menu →
-     Install app).
-  4. **App**: `Version` + short commit SHA (`VERCEL_GIT_COMMIT_SHA`, first 7 chars, DM Mono; `dev` locally).
-- A danger-text row `Sign out` (a form posting to `signOut`, no confirmation).
-- The top-bar Sign out button from US-001 is removed (the top bar no longer exists).
+### 6.7 Account `/account` (tab) — descoped, see §14 Deviations
+Out of scope for this story. The tab stays (T4's stub: `LargeTitle h1 "Account"` + a full-width
+`Sign out` button, no confirmation), so sign-out remains reachable now that the top-bar Sign out
+button from US-001 is gone. The full card-group design (Profile/Security/This device/App, the
+install-app Drawer) is not built here — revisit as its own story if/when it's wanted.
 
 ### 6.8 Auth screens (UX only; behavior per US-001)
 - **Shared:** content column at the top third (not vertically centered, so the keyboard doesn't cover fields). The brand row stays. The primary button is
@@ -277,7 +271,7 @@ content is a single column with `max-w-md mx-auto px-4`, and 24px gaps between b
 - Every route that awaits data has a **`loading.tsx`** with a skeleton that mirrors the final layout **exactly** (same heights, gaps, and header),
   so there is zero layout shift when content arrives:
   - `(tabs)/loading.tsx` is not shared; each tab gets its own: Home (large title + tracker card 168px + 5 rows), Activity (large title + 2 group
-    headers + 6 rows), Account (large title + 4 card groups).
+    headers + 6 rows). Account is out of scope (§6.7) — its stub needs no skeleton.
   - `(stack)/running/loading.tsx` (app bar + hero card + button + 6 rows), `running/[id]/loading.tsx` (app bar + hero + details card),
     `running/[id]/edit/loading.tsx` (app bar + duration hero + field card + sticky CTA placeholder), `stopwatch/[kind]/loading.tsx` (app
     bar + centered elapsed placeholder + CTA placeholder).
@@ -371,7 +365,7 @@ Each task ends with `pnpm typecheck` + `pnpm build` green, a manual check at 375
 | T7 | **Activity** (§6.2) + skeleton + infinite loading + pull to refresh. | Sticky day headers, relative labels, loading more without jumps, pull to refresh works in iOS standalone. |
 | T8 | **Running page + focus view + optimistic stopwatch** (§6.3, §6.4, §7.4) + skeletons. | The clock ticks at the tap instantly on a throttled network. Wake lock keeps the screen on. The failure path reverts and offers Retry. |
 | T9 | **Run detail + add/edit** (§6.5, §6.6, §5.1 redirects/toasts) + skeletons. | Presets and smart defaults work. Sticky CTA stays above the keyboard. Dirty-close confirm. Toast `View` opens the detail. |
-| T10 | **Account** (§6.7) + skeleton. | Install row only shows in the browser, not standalone. Sign out works. |
+| T10 | ~~Account~~ — descoped (§6.7, §14 Deviations). T4's stub stands as the screen. | — |
 | T11 | **Auth UX** (§6.8). | Verify auto-submits. The setup 2-step flow keeps the same secret across steps. CTAs sit above the keyboard. |
 | T12 | **View transitions** (§7.3) if stable, and a **polish pass**: every tappable element has a pressed state, no layout shift on any skeleton → content swap. | Checked on a real phone. |
 | T13 | **Docs**: 01-design-system §8 rows for every new component/token, overview §8 structure, README screenshots note, Deviations. | Rows present. |
@@ -436,6 +430,14 @@ Test on **a real iPhone with the app installed to the Home Screen** and **Androi
 | Q4 | Service worker / offline support | No, descoped entirely. A connectivity banner is the whole offline story. See §14 Deviations. |
 
 ## 14. Deviations
+
+- **T10 — the Account screen (§6.7) is descoped entirely, on direct product direction.** The full
+  card-group redesign (Profile/Security/This device/App groups, the install-app Drawer) is not
+  built. What stays: the `/account` tab and T4's stub (`LargeTitle h1 "Account"` + a full-width
+  `Sign out` button), so sign-out remains reachable now that the old top-bar Sign out button is
+  gone, and the tab bar still has 3 working destinations. AC3 and Q1 (§11, §13) are unaffected — a
+  stub screen still satisfies "one tap apart via the tab bar." Revisit the full design as its own
+  story if/when it's wanted.
 
 - **T8 — the optimistic stopwatch is per-component, not the single cross-navigation shared store
   §7.4 describes.** §7.4 says `StopwatchControl`, `TrackerCard`, the focus view, and the mini bar
