@@ -15,9 +15,5 @@ export default async function EditRunPage({ params }: { params: Promise<{ id: st
   if (!run) notFound();
   if (run.endedAt === null) redirect("/running");
 
-  return (
-    <div className="mx-auto w-full max-w-md py-7">
-      <RunForm mode="edit" run={{ id: run.id, startedAt: run.startedAt, endedAt: run.endedAt, timeZone: run.timeZone }} />
-    </div>
-  );
+  return <RunForm mode="edit" run={{ id: run.id, startedAt: run.startedAt, endedAt: run.endedAt, timeZone: run.timeZone }} />;
 }

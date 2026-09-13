@@ -5,6 +5,7 @@ import { getActiveStopwatches } from "@/lib/stopwatch/server";
 import { listCompletedRuns } from "@/lib/runs/queries";
 import { StopwatchControl } from "@/components/stopwatch/stopwatch-control";
 import { Button } from "@/components/ui/button";
+import { AppBar } from "@/components/shell/app-bar";
 import { RunList } from "./run-list";
 
 const DEFAULT_SHOW = 30;
@@ -32,21 +33,19 @@ export default async function RunningPage({
   const showMoreHref = hasMore ? `/running?show=${Math.min(show + DEFAULT_SHOW, MAX_SHOW)}` : null;
 
   return (
-    <div className="mx-auto flex w-full max-w-md flex-col gap-6 py-7">
-      <Button asChild variant="ghost" size="sm" className="self-start">
-        <Link href="/">‹ Dashboard</Link>
-      </Button>
-      <h1 className="text-h1 text-neutral-50">Running</h1>
+    <div className="min-h-dvh">
+      <AppBar title="Running" backHref="/" />
+      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
+        <StopwatchControl kind="running" active={active} labels={{ label: "run", activeLabel: "Running" }} />
 
-      <StopwatchControl kind="running" active={active} labels={{ label: "run", activeLabel: "Running" }} />
+        <Button asChild variant="secondary" fullWidth size="lg">
+          <Link href="/running/new">Add run manually</Link>
+        </Button>
 
-      <Button asChild variant="secondary" fullWidth size="lg">
-        <Link href="/running/new">Add run manually</Link>
-      </Button>
-
-      <div className="flex flex-col gap-4">
-        <p className="font-mono text-[11px] tracking-[0.1em] text-neutral-500 uppercase">RUNS</p>
-        <RunList runs={visibleRuns} showMoreHref={showMoreHref} />
+        <div className="flex flex-col gap-4">
+          <p className="font-mono text-[11px] tracking-[0.1em] text-neutral-500 uppercase">RUNS</p>
+          <RunList runs={visibleRuns} showMoreHref={showMoreHref} />
+        </div>
       </div>
     </div>
   );

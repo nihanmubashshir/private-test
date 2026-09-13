@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { StopwatchElapsed } from "./stopwatch-elapsed";
 import { useStopwatchAction } from "./use-stopwatch-action";
 import { stopStopwatchAction } from "@/lib/stopwatch/actions";
@@ -14,28 +15,35 @@ const REFRESH_THROTTLE_MS = 10_000;
 
 export interface ActiveStopwatchBarProps {
   actives: ActiveStopwatch[];
+  /** Docks above the tab bar on tab roots, or at the raw bottom (+ safe area) on stack screens. */
+  dockAboveTabBar: boolean;
 }
 
 function configFor(kind: ActiveStopwatch["kind"]): StopwatchKindConfig {
   return (stopwatchKinds as Record<string, StopwatchKindConfig>)[kind];
 }
 
+/** Hidden on the item's own tracker page/form screens (US-003 §6.6; 01-design-system.md §5.5). */
+function isOwnScreen(pathname: string, href: string): boolean {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 /**
- * Mounted globally in the app shell. Hidden entirely when there's nothing to show, and hides any
- * item whose tracker page is the current page (US-003 §6.6).
+ * Mounted in both the (tabs) and (stack) group layouts. Hidden entirely when there's nothing to
+ * show, and hides any item whose tracker page (or a form screen under it) is the current page.
  */
-export function ActiveStopwatchBar({ actives }: ActiveStopwatchBarProps) {
+export function ActiveStopwatchBar({ actives, dockAboveTabBar }: ActiveStopwatchBarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const barRef = useRef<HTMLDivElement>(null);
   const lastRefreshRef = useRef(0);
 
-  const visible = actives.filter((active) => configFor(active.kind).href !== pathname);
+  const visible = actives.filter((active) => !isOwnScreen(pathname, configFor(active.kind).href));
 
   useEffect(() => {
     const height = visible.length > 0 ? (barRef.current?.offsetHeight ?? 0) : 0;
-    document.documentElement.style.setProperty("--stopwatch-bar-height", `${height}px`);
-    return () => document.documentElement.style.setProperty("--stopwatch-bar-height", "0px");
+    document.documentElement.style.setProperty("--mini-bar-height", visible.length > 0 ? `${height + 8}px` : "0px");
+    return () => document.documentElement.style.setProperty("--mini-bar-height", "0px");
   });
 
   useEffect(() => {
@@ -59,14 +67,16 @@ export function ActiveStopwatchBar({ actives }: ActiveStopwatchBarProps) {
   return (
     <div
       ref={barRef}
-      className="fixed inset-x-0 bottom-0 z-20 border-t border-neutral-800 bg-neutral-900"
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      className={cn(
+        "fixed inset-x-0 z-20 mx-3 flex flex-col divide-y divide-neutral-800 rounded-lg border border-neutral-800 bg-neutral-900 px-3",
+        dockAboveTabBar
+          ? "bottom-[calc(3.5rem+env(safe-area-inset-bottom)+0.5rem)]"
+          : "bottom-[calc(env(safe-area-inset-bottom)+0.5rem)]",
+      )}
     >
-      <div className="mx-auto flex max-w-[1120px] flex-col divide-y divide-neutral-800 px-4">
-        {visible.map((active) => (
-          <StopwatchBarRow key={active.kind} active={active} />
-        ))}
-      </div>
+      {visible.map((active) => (
+        <StopwatchBarRow key={active.kind} active={active} />
+      ))}
     </div>
   );
 }

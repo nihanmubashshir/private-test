@@ -1,11 +1,11 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/ui/form-error";
 import { ConfirmSheet } from "@/components/ui/confirm-sheet";
+import { AppBar } from "@/components/shell/app-bar";
 import { createRun, updateRun, deleteRun, type RunActionResult } from "./actions";
 import { toIso, fromIso, addDays } from "@/lib/time/wall-time";
 import { formatDuration } from "@/lib/time/format";
@@ -103,14 +103,10 @@ export function RunForm({ mode, run }: RunFormProps) {
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <Button asChild variant="ghost" size="sm" className="self-start">
-        <Link href="/running">‹ Running</Link>
-      </Button>
+    <div className="min-h-dvh">
+      <AppBar title={mode === "new" ? "Add run" : "Edit run"} backHref="/running" mode="close" />
 
-      <h1 className="text-h1 text-neutral-50">{mode === "new" ? "Add run" : "Edit run"}</h1>
-
-      <form action={formAction} className="flex flex-col gap-5">
+      <form action={formAction} className="mx-auto flex w-full max-w-md flex-col gap-5 px-4 py-4">
         <Input
           label="Date"
           type="date"
@@ -158,7 +154,7 @@ export function RunForm({ mode, run }: RunFormProps) {
       </form>
 
       {mode === "edit" && run && (
-        <>
+        <div className="mx-auto w-full max-w-md px-4">
           <Button
             variant="danger"
             fullWidth
@@ -179,7 +175,7 @@ export function RunForm({ mode, run }: RunFormProps) {
             onConfirm={handleDeleteConfirm}
             pending={deletePending}
           />
-        </>
+        </div>
       )}
     </div>
   );
