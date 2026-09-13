@@ -16,13 +16,14 @@ function configFor(kind: CompletedSession["kind"]): StopwatchKindConfig {
 
 export interface ActivityRowProps {
   session: CompletedSession;
-  deviceTimeZone: string | null;
+  /** The app's zone. A session recorded elsewhere gets its own zone appended. */
+  appTimeZone: string | null;
   /** The 800 hairline between rows in a group, indented past the icon. Omit on a group's last row. */
   divider?: boolean;
 }
 
 /** A completed session row (01-design-system.md §6.2, §10.2). Shared by Home's Recent activity and the Activity tab. */
-export function ActivityRow({ session, deviceTimeZone, divider = false }: ActivityRowProps) {
+export function ActivityRow({ session, appTimeZone, divider = false }: ActivityRowProps) {
   const config = configFor(session.kind);
   const Icon = config.icon;
   const startsOn = dateKey(session.startedAt, session.timeZone);
@@ -43,7 +44,7 @@ export function ActivityRow({ session, deviceTimeZone, divider = false }: Activi
           <p className="font-mono text-[13px] text-neutral-400">
             {formatTime(session.startedAt, session.timeZone)} – {formatTime(session.endedAt, session.timeZone)}
             {spansNextDay && " +1"}
-            {deviceTimeZone && deviceTimeZone !== session.timeZone
+            {appTimeZone && appTimeZone !== session.timeZone
               ? ` · ${formatTimeZoneShort(session.startedAt, session.timeZone)}`
               : ""}
           </p>

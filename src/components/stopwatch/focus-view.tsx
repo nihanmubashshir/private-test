@@ -16,7 +16,7 @@ import { startStopwatchAction, stopStopwatchAction, discardStopwatchAction } fro
 import type { ActiveStopwatch } from "@/lib/stopwatch/server";
 import { stopwatchKinds, type StopwatchKind, type StopwatchKindConfig } from "@/lib/stopwatch/registry";
 import { formatDuration, formatTime } from "@/lib/time/format";
-import { getDeviceTimeZone } from "@/lib/time/zone";
+import { useWriteTimeZone } from "@/components/shell/app-time-zone";
 
 function capitalize(value: string) {
   return value.length ? value.charAt(0).toUpperCase() + value.slice(1) : value;
@@ -42,6 +42,7 @@ export function FocusView({ kind, active }: FocusViewProps) {
 
   const [optimisticActive, setOptimisticActive] = useOptimistic<ActiveStopwatch | null>(active);
 
+  const writeTimeZone = useWriteTimeZone();
   const startAction = useStopwatchAction(startStopwatchAction, { kind }, (fields) => {
     setOptimisticActive({ kind, id: "optimistic", startedAt: fields.at, timeZone: fields.timeZone });
   });
@@ -122,7 +123,7 @@ export function FocusView({ kind, active }: FocusViewProps) {
 
   const handleStart = () => {
     setLastAction("start");
-    startAction.run({ timeZone: getDeviceTimeZone() });
+    startAction.run({ timeZone: writeTimeZone() });
   };
   const handleStop = () => {
     setLastAction("stop");

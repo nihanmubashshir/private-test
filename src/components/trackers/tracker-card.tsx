@@ -13,7 +13,7 @@ import { stopwatchKinds, type StopwatchKind, type StopwatchKindConfig } from "@/
 import type { ActiveStopwatch } from "@/lib/stopwatch/server";
 import type { CompletedSession } from "@/lib/stopwatch/server";
 import { formatRelativeDay, formatDuration, formatTime } from "@/lib/time/format";
-import { getDeviceTimeZone } from "@/lib/time/zone";
+import { useWriteTimeZone } from "@/components/shell/app-time-zone";
 
 export interface TrackerCardProps {
   kind: StopwatchKind;
@@ -42,6 +42,7 @@ export function TrackerCard({ kind, active, lastCompleted, primaryAction = true 
   // instead, typically well under a second, not instantly).
   const [optimisticActive, setOptimisticActive] = useOptimistic<ActiveStopwatch | null>(active);
 
+  const writeTimeZone = useWriteTimeZone();
   const startAction = useStopwatchAction(startStopwatchAction, { kind }, (fields) => {
     setOptimisticActive({ kind, id: "optimistic", startedAt: fields.at, timeZone: fields.timeZone });
   });
@@ -114,7 +115,7 @@ export function TrackerCard({ kind, active, lastCompleted, primaryAction = true 
               className="flex-1"
               variant={primaryAction ? "primary" : "secondary"}
               pending={startAction.pending}
-              onClick={() => startAction.run({ timeZone: getDeviceTimeZone() })}
+              onClick={() => startAction.run({ timeZone: writeTimeZone() })}
             >
               {startAction.pending ? "Starting…" : `Start ${config.label}`}
             </Button>

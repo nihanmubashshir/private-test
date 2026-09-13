@@ -4,6 +4,8 @@ import { requireFull } from "@/lib/auth/require-full";
 import { Toaster } from "@/components/ui/toaster";
 import { NavigationProgressProvider } from "@/components/shell/navigation-progress";
 import { NavigationDepthProvider } from "@/components/shell/navigation-depth";
+import { AppTimeZoneProvider } from "@/components/shell/app-time-zone";
+import { getAppSettings } from "@/lib/settings/server";
 import { ActiveStopwatchSlot } from "@/components/stopwatch/active-stopwatch-slot";
 
 /**
@@ -21,17 +23,20 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   // Defense in depth: src/proxy.ts already guards this route, but every
   // protected layout re-checks FULL itself (US-001 §4.2).
   await requireFull();
+  const { timeZone } = await getAppSettings();
 
   return (
     <NavigationProgressProvider>
       <NavigationDepthProvider>
+        <AppTimeZoneProvider configured={timeZone}>
         <div className="min-h-dvh" style={{ paddingBottom: "var(--mini-bar-height, 0px)" }}>
           {children}
           <Suspense fallback={null}>
             <ActiveStopwatchSlot />
           </Suspense>
         </div>
-        <Toaster position="bottom-center" />
+          <Toaster position="bottom-center" />
+        </AppTimeZoneProvider>
       </NavigationDepthProvider>
     </NavigationProgressProvider>
   );

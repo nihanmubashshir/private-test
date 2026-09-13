@@ -13,7 +13,7 @@ import { createRun, updateRun, type RunActionResult } from "./actions";
 import { toIso, fromIso, addDays } from "@/lib/time/wall-time";
 import { formatDuration } from "@/lib/time/format";
 import { APP_LOCALE } from "@/lib/time/locale";
-import { getDeviceTimeZone } from "@/lib/time/zone";
+import { useWriteTimeZone } from "@/components/shell/app-time-zone";
 
 const INITIAL_STATE: RunActionResult = { ok: true, message: null };
 const DURATION_PRESETS: { label: string; minutes: number }[] = [
@@ -71,7 +71,8 @@ function roundedNow(): Date {
 export function RunForm({ mode, run }: RunFormProps) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
-  const [deviceTimeZone, setDeviceTimeZone] = useState<string | null>(null);
+  // The zone a new run is stamped with: the app's, not the device's (US-008).
+  const [formTimeZone, setFormTimeZone] = useState<string | null>(null);
   const [closeConfirmOpen, setCloseConfirmOpen] = useState(false);
 
   const initial =
@@ -83,13 +84,14 @@ export function RunForm({ mode, run }: RunFormProps) {
         }
       : { date: "", start: "", stop: "" };
 
+  const writeTimeZone = useWriteTimeZone();
   const [date, setDate] = useState(initial.date);
   const [start, setStart] = useState(initial.start);
   const [stop, setStop] = useState(initial.stop);
 
   useEffect(() => {
-    const tz = getDeviceTimeZone();
-    setDeviceTimeZone(tz);
+    const tz = writeTimeZone();
+    setFormTimeZone(tz);
     if (mode === "new") {
       // Smart defaults (US-005 §6.6): stop = now rounded down, start = stop − 30m.
       const stopDate = roundedNow();
@@ -105,7 +107,7 @@ export function RunForm({ mode, run }: RunFormProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const timeZone = mode === "edit" && run ? run.timeZone : (deviceTimeZone ?? "");
+  const timeZone = mode === "edit" && run ? run.timeZone : (formTimeZone ?? "");
   const isDirty = date !== initial.date || start !== initial.start || stop !== initial.stop;
   const closeHref = mode === "edit" && run ? `/running/${run.id}` : "/running";
 
@@ -113,7 +115,7 @@ export function RunForm({ mode, run }: RunFormProps) {
     const enteredDate = String(formData.get("date") ?? "");
     const enteredStart = String(formData.get("start") ?? "");
     const enteredStop = String(formData.get("stop") ?? "");
-    const zone = mode === "edit" && run ? run.timeZone : getDeviceTimeZone();
+    const zone = mode === "edit" && run ? run.timeZone : writeTimeZone();
 
     // Seconds preservation (US-004 §4.3): the date can move (e.g. correcting which day a
     // stopwatch run belongs to) without losing the stopwatch's sub-minute precision, as long as
@@ -194,8 +196,8 @@ export function RunForm({ mode, run }: RunFormProps) {
 
         <p className="text-sm text-neutral-500">
           {mode === "new"
-            ? mounted && deviceTimeZone
-              ? `Times in ${deviceTimeZone} (this device)`
+            ? mounted && formTimeZone
+              ? `Times in ${formTimeZone}`
               : " "
             : `Times in ${timeZone}`}
         </p>

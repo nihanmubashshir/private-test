@@ -20,7 +20,7 @@ import {
 import type { ActiveStopwatch } from "@/lib/stopwatch/server";
 import { stopwatchKinds, type StopwatchKind, type StopwatchKindConfig } from "@/lib/stopwatch/registry";
 import { formatDuration, formatTime, formatTimeZoneShort } from "@/lib/time/format";
-import { getDeviceTimeZone } from "@/lib/time/zone";
+import { useAppTimeZone, useWriteTimeZone } from "@/components/shell/app-time-zone";
 
 const REFRESH_THROTTLE_MS = 10_000;
 
@@ -41,7 +41,8 @@ export function StopwatchControl({ kind, active }: StopwatchControlProps) {
   const config = (stopwatchKinds as Record<string, StopwatchKindConfig>)[kind];
   const router = useRouter();
   const [hydrated, setHydrated] = useState(false);
-  const [deviceTimeZone, setDeviceTimeZone] = useState<string | null>(null);
+  const appTimeZone = useAppTimeZone();
+  const writeTimeZone = useWriteTimeZone();
   const [discardOpen, setDiscardOpen] = useState(false);
   const [lastAction, setLastAction] = useState<"start" | "stop" | "discard" | null>(null);
   const lastRefreshRef = useRef(0);
@@ -61,7 +62,6 @@ export function StopwatchControl({ kind, active }: StopwatchControlProps) {
 
   useEffect(() => {
     setHydrated(true);
-    setDeviceTimeZone(getDeviceTimeZone());
   }, []);
 
   useEffect(() => {
@@ -113,7 +113,7 @@ export function StopwatchControl({ kind, active }: StopwatchControlProps) {
 
   const handleStart = () => {
     setLastAction("start");
-    startAction.run({ timeZone: getDeviceTimeZone() });
+    startAction.run({ timeZone: writeTimeZone() });
   };
   const handleStop = () => {
     setLastAction("stop");
@@ -148,7 +148,7 @@ export function StopwatchControl({ kind, active }: StopwatchControlProps) {
       {optimisticActive && (
         <p className="text-body-sm text-center text-neutral-400">
           Started {formatTime(optimisticActive.startedAt, optimisticActive.timeZone)}
-          {deviceTimeZone && deviceTimeZone !== optimisticActive.timeZone
+          {appTimeZone && appTimeZone !== optimisticActive.timeZone
             ? ` · ${formatTimeZoneShort(optimisticActive.startedAt, optimisticActive.timeZone)}`
             : ""}
         </p>

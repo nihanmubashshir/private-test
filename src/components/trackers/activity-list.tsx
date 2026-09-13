@@ -7,7 +7,7 @@ import { DayGroupHeader } from "./day-group-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { dateKey } from "@/lib/time/format";
-import { getDeviceTimeZone } from "@/lib/time/zone";
+import { useAppTimeZone } from "@/components/shell/app-time-zone";
 import { useNavigationProgress } from "@/components/shell/navigation-progress";
 import type { CompletedSession } from "@/lib/stopwatch/server";
 
@@ -44,12 +44,8 @@ export function ActivityList({ sessions, show, pageSize, hasMore }: ActivityList
   const router = useRouter();
   const report = useNavigationProgress();
   const [pending, startTransition] = useTransition();
-  const [deviceTimeZone, setDeviceTimeZone] = useState<string | null>(null);
+  const appTimeZone = useAppTimeZone();
   const sentinelRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setDeviceTimeZone(getDeviceTimeZone());
-  }, []);
 
   useEffect(() => {
     report(pending);
@@ -89,7 +85,7 @@ export function ActivityList({ sessions, show, pageSize, hasMore }: ActivityList
                 <ActivityRow
                   key={session.id}
                   session={session}
-                  deviceTimeZone={deviceTimeZone}
+                  appTimeZone={appTimeZone}
                   divider={index < group.sessions.length - 1}
                 />
               ))}

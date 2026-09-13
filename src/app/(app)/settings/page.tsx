@@ -2,6 +2,7 @@ import { Sparkles } from "lucide-react";
 import { requireFull } from "@/lib/auth/require-full";
 import { AppBar } from "@/components/shell/app-bar";
 import { SettingsGroup } from "@/components/settings/settings-group";
+import { TimeZoneRow } from "@/components/settings/time-zone-row";
 import { SettingsRow } from "@/components/settings/settings-row";
 import { UnseenDot } from "@/components/changelog/unseen-dot";
 import { SignOutForm } from "@/components/sign-out-form";
@@ -11,8 +12,8 @@ import { CHANGELOG, LATEST_VERSION } from "@/content/changelog";
  * Settings (US-006 §5.1). A stack screen from the start, which is the shape it keeps after the
  * shell rework removes the tab bar (US-007) — nothing here is rebuilt by that story.
  *
- * The Preferences group arrives with the time-zone setting in US-008, and a Requests row in
- * US-013. A group with no rows is not rendered.
+ * Preferences holds the app-wide time zone (US-008); a Requests row joins App in US-013. A group
+ * with no rows is not rendered.
  */
 export default async function SettingsPage() {
   await requireFull();
@@ -21,7 +22,11 @@ export default async function SettingsPage() {
     <div className="min-h-dvh">
       <AppBar title="Settings" backHref="/" />
       <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
-        <SettingsGroup label="App">
+        <SettingsGroup label="Preferences">
+          <TimeZoneRow />
+        </SettingsGroup>
+
+        <SettingsGroup label="App" index={1}>
           <SettingsRow
             icon={Sparkles}
             label="What's new"
