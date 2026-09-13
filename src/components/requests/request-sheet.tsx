@@ -45,8 +45,8 @@ export function RequestSheet({ open, onClose, onSubmit, pending }: RequestSheetP
 
   return (
     <EntrySheet open={open} onClose={onClose} title="Add request" tall>
-      <form onSubmit={save} className="flex min-h-0 flex-1 flex-col gap-4">
-        <label className="flex shrink-0 flex-col gap-1.5">
+      <form onSubmit={save} className="flex flex-col gap-4">
+        <label className="flex flex-col gap-1.5">
           <span className="text-body-sm text-neutral-400">Name</span>
           <input
             autoFocus
@@ -59,18 +59,21 @@ export function RequestSheet({ open, onClose, onSubmit, pending }: RequestSheetP
           />
         </label>
 
-        <label className="flex min-h-0 flex-1 flex-col gap-1.5">
+        <label className="flex flex-col gap-1.5">
           <span className="text-body-sm text-neutral-400">Details</span>
           <textarea
             value={note}
             onChange={(event) => setNote(event.target.value)}
             maxLength={500}
+            rows={8}
             placeholder="Anything that makes the idea clearer (optional)"
-            className="w-full min-h-32 flex-1 resize-none rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2.5 text-base text-neutral-50 placeholder:text-neutral-600"
+            className="w-full resize-none rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2.5 text-base text-neutral-50 placeholder:text-neutral-600"
           />
         </label>
 
-        <Button type="submit" fullWidth size="lg" className="h-13 shrink-0" pending={pending} disabled={title.trim() === ""}>
+        {/* Flows after the fields rather than pinned to the bottom edge — on a short sheet it
+            just sits below the textarea; on a long one it scrolls with everything else. */}
+        <Button type="submit" fullWidth size="lg" className="h-13" pending={pending} disabled={title.trim() === ""}>
           Save
         </Button>
       </form>

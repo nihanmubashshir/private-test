@@ -19,7 +19,7 @@ export interface EntrySheetProps {
   pending?: boolean;
   /** "Cancel" by default; becomes "Done" once a picker-style sheet has changed something. */
   cancelLabel?: string;
-  /** Fills most of the viewport, for long lists. Otherwise the sheet fits its content, up to 88vh. */
+  /** Fills 90vh, for long lists or forms. Otherwise the sheet sizes to its content, between 60vh and 85vh. */
   tall?: boolean;
   children: ReactNode;
 }
@@ -38,9 +38,9 @@ export interface EntrySheetProps {
  * thumb and reads as a choice. The CTA is padded past the home indicator, so it stays above the
  * keyboard on a phone.
  *
- * The body always scrolls, inside the Drawer's own 80vh cap. A sheet that merely "fits its
- * content" is fine until the content is a keypad plus a date row on a short phone, at which point
- * the bottom — including the Save button — is simply unreachable.
+ * The body always scrolls, inside the sheet's own height cap (85vh normally, 90vh for `tall`). A
+ * sheet that merely "fits its content" is fine until the content is a keypad plus a date row on a
+ * short phone, at which point the bottom — including the Save button — is simply unreachable.
  */
 export function EntrySheet({
   open,
@@ -93,7 +93,10 @@ export function EntrySheet({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent
           showCloseButton={false}
-          className={cn("flex max-h-[85vh] min-h-[60vh] flex-col gap-4", tall && "h-[85vh]")}
+          className={cn(
+            "flex max-h-[85vh] min-h-[60vh] flex-col gap-4",
+            tall && "h-[90vh] max-h-[90vh]",
+          )}
         >
           {body}
         </DialogContent>
@@ -106,7 +109,10 @@ export function EntrySheet({
       <DrawerContent
         className={cn(
           "min-h-[60vh] gap-4 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]",
-          tall && "h-[85vh]",
+          // The base bottom/top variants cap at 80vh — override that cap explicitly, same
+          // variant, so it wins the merge instead of losing to source order.
+          tall &&
+            "h-[90vh] data-[vaul-drawer-direction=bottom]:max-h-[90vh] data-[vaul-drawer-direction=top]:max-h-[90vh]",
         )}
       >
         {body}

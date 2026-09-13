@@ -195,4 +195,21 @@
   [role="button"] {
     user-select: none;
   }
+  /* Thin, rounded, accent-colored scrollbars everywhere a container actually scrolls — the
+     default browser bar is thick, square and gray, and stands out against the design system. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-accent-500) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--color-accent-500);
+    border-radius: 9999px;
+  }
 }
