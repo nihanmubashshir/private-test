@@ -43,11 +43,15 @@ export async function createRun(_prevState: RunActionResult, formData: FormData)
   const rangeError = validateRange(parsed.data.startedAt, parsed.data.endedAt);
   if (rangeError) return { ok: false, message: rangeError };
 
-  const { error } = await supabase.from("runs").insert({
-    started_at: parsed.data.startedAt.toISOString(),
-    ended_at: parsed.data.endedAt.toISOString(),
-    time_zone: parsed.data.timeZone,
-  });
+  const { data, error } = await supabase
+    .from("runs")
+    .insert({
+      started_at: parsed.data.startedAt.toISOString(),
+      ended_at: parsed.data.endedAt.toISOString(),
+      time_zone: parsed.data.timeZone,
+    })
+    .select("id")
+    .single();
 
   if (error) {
     if (error.code === "23P01") return { ok: false, message: "This overlaps another run." };
@@ -57,7 +61,7 @@ export async function createRun(_prevState: RunActionResult, formData: FormData)
 
   revalidatePath("/running");
   revalidatePath("/");
-  redirect("/running");
+  redirect(`/running/${data.id}?saved=1`);
 }
 
 export async function updateRun(_prevState: RunActionResult, formData: FormData): Promise<RunActionResult> {
@@ -96,7 +100,7 @@ export async function updateRun(_prevState: RunActionResult, formData: FormData)
 
   revalidatePath("/running");
   revalidatePath("/");
-  redirect("/running");
+  redirect(`/running/${parsed.data.id}?updated=1`);
 }
 
 export async function deleteRun(_prevState: RunActionResult, formData: FormData): Promise<RunActionResult> {
@@ -117,5 +121,5 @@ export async function deleteRun(_prevState: RunActionResult, formData: FormData)
 
   revalidatePath("/running");
   revalidatePath("/");
-  redirect("/running");
+  redirect("/running?deleted=1");
 }

@@ -7,6 +7,7 @@ import { StopwatchControl } from "@/components/stopwatch/stopwatch-control";
 import { Button } from "@/components/ui/button";
 import { AppBar } from "@/components/shell/app-bar";
 import { PullToRefresh } from "@/components/shell/pull-to-refresh";
+import { ToastOnParam } from "@/components/shell/toast-on-param";
 import { ActivityList } from "@/components/trackers/activity-list";
 
 const DEFAULT_SHOW = 30;
@@ -35,6 +36,7 @@ export default async function RunningPage({
   return (
     <PullToRefresh>
       <div className="min-h-dvh">
+        <ToastOnParam param="deleted" message="Run deleted" />
         <AppBar title="Running" backHref="/" />
         <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
           <StopwatchControl kind="running" active={active} />

@@ -11,10 +11,15 @@ export interface AppBarProps {
   backHref: string;
   mode?: "back" | "close";
   rightSlot?: ReactNode;
+  /**
+   * Intercepts the close/back tap instead of navigating directly — e.g. a dirty-form confirm
+   * (01-design-system.md §6.6). The caller is responsible for navigating to `backHref` itself.
+   */
+  onBeforeNavigate?: () => void;
 }
 
 /** Stack-screen top bar (01-design-system.md §5.4). */
-export function AppBar({ title, backHref, mode = "back", rightSlot }: AppBarProps) {
+export function AppBar({ title, backHref, mode = "back", rightSlot, onBeforeNavigate }: AppBarProps) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -25,6 +30,8 @@ export function AppBar({ title, backHref, mode = "back", rightSlot }: AppBarProp
   }, []);
 
   const Icon = mode === "close" ? X : ChevronLeft;
+  const label = mode === "close" ? "Close" : "Back";
+  const iconButtonClass = "flex h-tap w-tap shrink-0 items-center justify-center text-neutral-50 active:text-neutral-300";
 
   return (
     <div
@@ -33,13 +40,15 @@ export function AppBar({ title, backHref, mode = "back", rightSlot }: AppBarProp
         scrolled && "border-b border-neutral-800",
       )}
     >
-      <Link
-        href={backHref}
-        aria-label={mode === "close" ? "Close" : "Back"}
-        className="flex h-tap w-tap shrink-0 items-center justify-center text-neutral-50 active:text-neutral-300"
-      >
-        <Icon className="size-5" strokeWidth={1.75} aria-hidden />
-      </Link>
+      {onBeforeNavigate ? (
+        <button type="button" onClick={onBeforeNavigate} aria-label={label} className={iconButtonClass}>
+          <Icon className="size-5" strokeWidth={1.75} aria-hidden />
+        </button>
+      ) : (
+        <Link href={backHref} aria-label={label} className={iconButtonClass}>
+          <Icon className="size-5" strokeWidth={1.75} aria-hidden />
+        </Link>
+      )}
       <p className="flex-1 truncate text-center text-control font-semibold text-neutral-50">{title}</p>
       <div className="flex h-tap w-tap shrink-0 items-center justify-center">{rightSlot}</div>
     </div>

@@ -31,6 +31,17 @@ export function formatFullDate(iso: string, timeZone: string): string {
   }).format(new Date(iso));
 }
 
+/** `Sunday, 13 September 2026` — the run detail hero (US-005 §6.5). */
+export function formatFullDateWithYear(iso: string, timeZone: string): string {
+  return new Intl.DateTimeFormat(APP_LOCALE, {
+    timeZone,
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(iso));
+}
+
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 /** `Today` / `Yesterday` / `formatShortDate(...)`, relative to `now` in the given zone. */
