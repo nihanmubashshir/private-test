@@ -23,7 +23,7 @@ TypeScript), Tailwind CSS, and Supabase. See [`AGENTS.md`](AGENTS.md) and
    `SUPABASE_SECRET_KEY` with the values `supabase start` printed.
 4. Apply migrations:
    ```bash
-   pnpm db:reset
+   pnpm db push --local
    ```
 5. Create the owner account (you'll be prompted for a password, hidden, entered twice):
    ```bash
@@ -48,12 +48,18 @@ See [`docs/setup.md`](docs/setup.md) for lockout recovery (`pnpm owner:reset-pas
 | `pnpm dev` | Run the app on http://localhost:3000 |
 | `pnpm build` / `pnpm start` | Production build / run |
 | `pnpm typecheck` | `tsc --noEmit` |
-| `supabase start` / `supabase stop` | Local Supabase (Docker) |
-| `pnpm db:reset` | Re-apply all migrations to the local DB |
-| `pnpm db:types` | Regenerate `src/lib/supabase/database.types.ts` from a local stack |
-| `pnpm db:types:remote` | Regenerate types from the hosted project instead (`supabase login` first) |
+| `pnpm db status` | Compare local migrations against the target database |
+| `pnpm db new <name>` | Create a migration in `supabase/migrations/` |
+| `pnpm db push` | Apply pending migrations (hosted by default; `--local` for the Docker stack) |
+| `pnpm db types` | Regenerate `src/lib/supabase/database.types.ts` |
+| `pnpm db reset --local` | Drop and re-apply every migration locally (destructive) |
+| `pnpm exec supabase start` / `stop` | Local Supabase (Docker) |
 | `pnpm owner:create` | Create the single owner account |
 | `pnpm owner:reset-password` / `pnpm owner:reset-mfa` | Operator lockout recovery |
+
+`pnpm db` is the single entry point for migrations, hosted or local — see
+[`docs/setup.md`](docs/setup.md#running-migrations). The Supabase CLI is a devDependency, so there
+is nothing to install globally.
 
 There is no lint step and no automated test suite in this project (see US-001 §12 Deviations);
 `pnpm typecheck` is the only automated check.

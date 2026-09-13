@@ -16,31 +16,33 @@ export type Database = {
     Tables: {
       runs: {
         Row: {
+          created_at: string
+          duration_seconds: number | null
+          ended_at: string | null
           id: string
           owner_id: string
           started_at: string
-          ended_at: string | null
           time_zone: string
-          duration_seconds: number | null
-          created_at: string
           updated_at: string
         }
         Insert: {
+          created_at?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
           id?: string
           owner_id?: string
           started_at: string
-          ended_at?: string | null
           time_zone: string
-          created_at?: string
           updated_at?: string
         }
         Update: {
+          created_at?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
           id?: string
           owner_id?: string
           started_at?: string
-          ended_at?: string | null
           time_zone?: string
-          created_at?: string
           updated_at?: string
         }
         Relationships: []

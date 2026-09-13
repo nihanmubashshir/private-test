@@ -35,13 +35,18 @@ URL, per the `docs/setup.md` hosted checklist.
 | `pnpm dev` | Run the app on http://localhost:3000 |
 | `pnpm build` | Production build |
 | `pnpm typecheck` | `tsc --noEmit` |
-| `supabase start` / `supabase stop` | Local Supabase (Docker) |
-| `pnpm db:reset` | Re-apply all migrations to local DB |
-| `pnpm db:types` | Regenerate `src/lib/supabase/database.types.ts` |
+| `pnpm db status` | Compare local migrations against the target database — run before any schema work |
+| `pnpm db new <name>` | Create a migration in `supabase/migrations/` |
+| `pnpm db push` | Apply pending migrations (hosted by default, `--local` for the Docker stack) |
+| `pnpm db types` | Regenerate `src/lib/supabase/database.types.ts` |
+| `pnpm db reset --local` | Drop and re-apply every migration locally (destructive, local only) |
+| `pnpm exec supabase start` / `stop` | Local Supabase (Docker). The CLI is a devDependency — do not install it globally |
 | `pnpm owner:create --email <email>` | Create the single owner account (password is prompted, never passed as a flag) |
 | `pnpm owner:reset-password` / `pnpm owner:reset-mfa` | Operator lockout recovery (the only way to change the password until US-002) |
 
-(These commands are created in US-001 T1–T3.)
+(The `owner:*` commands are created in US-001 T1–T3. `pnpm db` is the single entry point for
+migrations — see [`docs/setup.md`](docs/setup.md#running-migrations). It targets the **hosted**
+project unless given `--local`, so read what it prints before confirming.)
 
 ## Hard rules
 

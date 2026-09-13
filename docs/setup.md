@@ -21,7 +21,7 @@
    - `NEXT_PUBLIC_APP_NAME` — defaults to `Personal Dashboard`
 4. Apply migrations to the local database:
    ```bash
-   pnpm db:reset
+   pnpm db reset --local
    ```
 5. Create the owner account:
    ```bash
@@ -48,7 +48,7 @@
 
 After any migration:
 ```bash
-pnpm db:types
+pnpm db types --local     # or: pnpm db types   (hosted)
 ```
 
 ## Hosted Supabase project checklist
@@ -69,11 +69,70 @@ Apply these in the hosted project's dashboard (Authentication → Settings, unle
   `supabase/config.toml`.
 - [ ] **Site URL.** Authentication → URL Configuration → Site URL is set to the production domain
   (not `localhost`).
-- [ ] **Migrations applied.** Every file in `supabase/migrations/` has been run against the hosted
-  database (`supabase link` + `supabase db push`, or applied by hand via the SQL Editor).
+- [ ] **Migrations applied.** `pnpm db status` shows every local migration as applied. See
+  [Running migrations](#running-migrations).
 - [ ] **Environment variables** set wherever the app is hosted: `NEXT_PUBLIC_SUPABASE_URL`,
-  `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_APP_NAME`. `SUPABASE_SECRET_KEY` is needed
-  only wherever the operator scripts run (a terminal with access to the hosted project), never in
-  the deployed app's own environment.
+  `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_APP_NAME`. `SUPABASE_SECRET_KEY` and
+  `SUPABASE_DB_URL` are needed only wherever the operator scripts run (a terminal with access to the
+  hosted project), never in the deployed app's own environment.
 - [ ] **`pnpm owner:create`** run once, from a terminal with `SUPABASE_SECRET_KEY` set to the hosted
   project's secret key, to create the single owner account.
+
+## Running migrations
+
+Every schema change is a file in `supabase/migrations/`, applied in filename order. One command
+drives all of it:
+
+```bash
+pnpm db <command> [--local]
+```
+
+The target is the **hosted** project by default, via `SUPABASE_DB_URL`. Add `--local` to hit the
+CLI's Docker stack instead. There is no `supabase link` step and no access token — the connection
+string is the only credential, and it lives in `.env.local`.
+
+| Command | What it does |
+|---------|--------------|
+| `pnpm db status` | Lists local migrations beside those the target database has applied. **Run this first, always.** |
+| `pnpm db new <name>` | Creates `supabase/migrations/<timestamp>_<name>.sql` |
+| `pnpm db push --dry-run` | Prints what would be applied, changes nothing |
+| `pnpm db push` | Applies pending migrations (prompts before touching the hosted database) |
+| `pnpm db types` | Regenerates `src/lib/supabase/database.types.ts` |
+| `pnpm db baseline` | Marks every local migration as applied **without running it** — see below |
+| `pnpm db reset --local` | Drops the local database and re-applies everything. Local only; refuses to run against hosted |
+
+### The normal loop
+
+```bash
+pnpm db new weight_tracker      # write the SQL in the file it creates
+pnpm db push --local            # try it locally first
+pnpm db types --local           # regenerate types
+pnpm typecheck
+pnpm db push                    # then the hosted project
+```
+
+`pnpm db reset --local` is the local escape hatch when a migration needs reworking: edit the file
+in place and reset, rather than stacking a fix-up migration. It wipes the local database, so
+re-run `pnpm owner:create` afterwards. Never rewrite a migration that has already been pushed to
+hosted — write a new one.
+
+### Baselining
+
+`pnpm db baseline` tells the migration history "these files are already applied" without executing
+them. It exists for one situation: the schema was created by hand in the SQL Editor, so the objects
+exist but `supabase_migrations.schema_migrations` is empty and the next `push` would try to
+re-create them and fail.
+
+Only baseline a database whose schema genuinely matches the files. Baselining one that is missing
+those objects makes `push` skip them permanently, and the schema silently stays behind.
+
+### Migration ordering
+
+Filenames are UTC timestamps and apply in lexical order, so a new migration must sort *after* every
+migration already applied to hosted. `db push` refuses to run out-of-order files rather than
+applying them in the wrong sequence.
+
+If you hit this — usually because a migration was hand-stamped with a timestamp ahead of the wall
+clock — rename the offending file to a later timestamp. That is only safe while no database has
+recorded the old version; once it has been pushed anywhere, `supabase db push --include-all` is the
+escape hatch instead.

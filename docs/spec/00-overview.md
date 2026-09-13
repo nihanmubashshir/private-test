@@ -113,7 +113,8 @@ Commit `.env.example` with every variable and no values. Commit `.env.local` nev
 
 ### 6.1 Table template and migrations
 
-- Every schema change is a migration in `supabase/migrations/` (`supabase migration new <name>`).
+- Every schema change is a migration in `supabase/migrations/` (`pnpm db new <name>`), applied with `pnpm db push`.
+  See [`docs/setup.md`](../setup.md#running-migrations) for the full loop.
 - Every table in `public` must follow this template:
 
 ```sql
@@ -138,7 +139,7 @@ create policy "require aal2"
 ```
 
 - Grant nothing to `anon`.
-- Generate types after each migration (`pnpm db:types` locally, or `supabase gen types typescript --project-id <ref>` against the hosted project).
+- Generate types after each migration: `pnpm db types --local`, or `pnpm db types` against the hosted project.
 
 ### 6.2 Time handling (all features)
 

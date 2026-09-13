@@ -233,3 +233,32 @@ Mobile viewport (375px, then 320px) against the hosted project:
   US-001's and US-003's Deviations), `supabase/migrations/20260913130000_runs.sql` was written but not run. The
   operator applies it via the hosted project's SQL Editor, then confirms (US-003 §5.1) that an `authenticated`
   update still fires `private.set_updated_at()`.
+
+### Follow-up: migration tooling (added later)
+
+Both deviations above were caused by having no usable Supabase CLI. That is fixed — the CLI is now a
+devDependency and `pnpm db` drives migrations against the hosted project over `SUPABASE_DB_URL`, with
+no `supabase login` and no Docker (see [`docs/setup.md`](../../setup.md#running-migrations)).
+
+Resolved since:
+
+- **`database.types.ts` regenerated.** It now holds exactly what the generator produces. The
+  hand-written version was almost correct — the drift was key ordering plus a missing
+  `duration_seconds` in `Insert`/`Update` (the generator includes generated columns there even
+  though Postgres rejects writing them). `Relationships: []` was right.
+- **Migrations renumbered.** `20260913120000_timed_entity_support` and `20260913130000_runs` were
+  hand-stamped ahead of the wall clock, so any new migration would have sorted in front of them and
+  `db push` would have refused it. They are now `20260913000100` and `20260913000200`. Safe to
+  rename because no migration history referenced them anywhere.
+
+Still outstanding, and it needs the operator:
+
+- **Hosted migration history is empty.** All three migrations were applied by hand in the SQL Editor,
+  so `supabase_migrations.schema_migrations` does not exist and the next `pnpm db push` would try to
+  re-create existing objects and fail. Run `pnpm db baseline` once.
+
+  The hosted schema was verified object-by-object against the three files first — `runs`' eight
+  columns and their defaults, the generated `duration_seconds`, all five constraints (including the
+  gist exclusion), both indexes, both policies and their permissive/restrictive split, RLS, both
+  `private` functions and both triggers. It matches, so baselining records the truth rather than
+  papering over drift.
