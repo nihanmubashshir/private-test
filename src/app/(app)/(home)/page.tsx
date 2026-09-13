@@ -40,6 +40,8 @@ export default async function HomePage() {
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
       <ToastOnParam param="missing" message="That page doesn't exist." tone="warning" />
+      <ToastOnParam param="discarded" message="Session discarded" />
+      <ToastOnParam param="deleted" message="Session deleted" />
       <LargeTitle title="Home" eyebrow={<TodayEyebrow />} rightSlot={<SettingsButton />} />
 
       <div className="flex flex-col gap-4">
@@ -53,7 +55,7 @@ export default async function HomePage() {
           />
         ))}
 
-        <TodayGymCard plan={activePlan} />
+        <TodayGymCard plan={activePlan} running={actives.find((a) => a.kind === "gym") ?? null} />
 
         <WeightCard latest={weighIns[0] ?? null} recent={weighIns} />
       </div>

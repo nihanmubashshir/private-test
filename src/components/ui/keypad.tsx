@@ -1,7 +1,7 @@
 "use client";
 
 import { Delete } from "lucide-react";
-import { pressBackspace, pressDecimalPoint, pressDigit } from "@/lib/weight/keypad";
+import { pressBackspace, pressDecimalPoint, pressDigit, type KeypadRules } from "@/lib/weight/keypad";
 import { cn } from "@/lib/utils";
 
 /** A short tick where the API exists. Silent everywhere else — never a fallback sound. */
@@ -12,19 +12,23 @@ function haptic() {
 export interface KeypadProps {
   value: string;
   onChange: (next: string) => void;
+  rules: KeypadRules;
 }
 
 const DIGITS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
 /**
- * A purpose-built decimal keypad (US-009 §5.2).
+ * A purpose-built numeric keypad (US-009 §5.2).
  *
  * Buttons, not an `<input>`: the OS keyboard must never open, and `inputMode="decimal"` only
  * *suggests* a numeric keyboard — it still opens one, still covers half the screen, and still lets
  * a second decimal point through. Keys are 56px so the grid fits at 320px without shrinking below
  * the touch minimum.
+ *
+ * The decimal key is replaced by a dead spacer when the rules are integer-only, so the 3×4 grid
+ * keeps its shape and the 0 key never moves between contexts.
  */
-export function Keypad({ value, onChange }: KeypadProps) {
+export function Keypad({ value, onChange, rules }: KeypadProps) {
   const press = (next: string) => {
     if (next !== value) haptic();
     onChange(next);
@@ -36,19 +40,23 @@ export function Keypad({ value, onChange }: KeypadProps) {
   return (
     <div className="grid grid-cols-3 gap-2" role="group" aria-label="Number keypad">
       {DIGITS.map((digit) => (
-        <button key={digit} type="button" className={keyClass} onClick={() => press(pressDigit(value, digit))}>
+        <button key={digit} type="button" className={keyClass} onClick={() => press(pressDigit(value, digit, rules))}>
           {digit}
         </button>
       ))}
-      <button
-        type="button"
-        className={keyClass}
-        onClick={() => press(pressDecimalPoint(value))}
-        aria-label="Decimal point"
-      >
-        .
-      </button>
-      <button type="button" className={keyClass} onClick={() => press(pressDigit(value, "0"))}>
+      {rules.maxDecimals > 0 ? (
+        <button
+          type="button"
+          className={keyClass}
+          onClick={() => press(pressDecimalPoint(value, rules))}
+          aria-label="Decimal point"
+        >
+          .
+        </button>
+      ) : (
+        <span aria-hidden />
+      )}
+      <button type="button" className={keyClass} onClick={() => press(pressDigit(value, "0", rules))}>
         0
       </button>
       <button

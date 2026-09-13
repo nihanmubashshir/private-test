@@ -11,7 +11,7 @@ import { EntrySheet } from "@/components/ui/entry-sheet";
 import { Keypad } from "@/components/ui/keypad";
 import { FormError } from "@/components/ui/form-error";
 import { Button } from "@/components/ui/button";
-import { isComplete, parseValue } from "@/lib/weight/keypad";
+import { isComplete, parseValue, WEIGHT_RULES } from "@/lib/weight/keypad";
 
 const INITIAL: WeightActionResult = { ok: true, message: null };
 
@@ -71,10 +71,10 @@ export function LogWeightSheet({ open, onClose, lastValueKg, editing }: LogWeigh
   // Range is checked when Save is pressed, never while typing: on the way to "82" the value
   // passes through "8", and flashing "must be at least 20 kg" at someone mid-entry reads as the
   // keypad rejecting the keypress.
-  const canSave = isComplete(value);
+  const canSave = isComplete(value, WEIGHT_RULES);
 
   const validate = (): boolean => {
-    const parsed = parseValue(value);
+    const parsed = parseValue(value, WEIGHT_RULES);
     if (parsed === null) return false;
     if (parsed < MIN_KG || parsed > MAX_KG) {
       setRangeError(`Weight must be between ${MIN_KG} and ${MAX_KG} kg.`);
@@ -113,7 +113,7 @@ export function LogWeightSheet({ open, onClose, lastValueKg, editing }: LogWeigh
           <span className="text-control text-neutral-400">kg</span>
         </div>
 
-        <Keypad value={value} onChange={setValue} />
+        <Keypad value={value} onChange={setValue} rules={WEIGHT_RULES} />
 
         <div className="flex items-center gap-2">
           <input
