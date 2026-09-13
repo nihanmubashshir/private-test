@@ -72,6 +72,7 @@
 
   /* ---- control sizing ---- */
   --spacing-tap: 2.75rem; /* 44px minimum target */
+  --spacing-cta: 3.75rem; /* 60px — the focus view's primary Start/Stop (US-005 §6.4) */
 }
 
 /* next/font hashes the family names, so map the tokens to its CSS variables. */

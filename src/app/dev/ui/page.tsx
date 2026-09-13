@@ -27,11 +27,7 @@ import { ToasterDemo } from "./toaster-demo";
 
 export const dynamic = "force-dynamic";
 
-// No kind is registered yet (US-003 ships before any tracker) — this cast stands in for one so
-// the gallery below can demo the control's states. StopwatchControl never looks the kind up in
-// the registry itself (it only forwards it to the Server Actions, which validate it), so this is
-// safe here even though it wouldn't be a real, resolvable kind.
-const DEMO_KIND = "demo" as unknown as StopwatchKind;
+const DEMO_KIND: StopwatchKind = "running";
 
 function MockStopwatchPanel({
   heading,
@@ -249,11 +245,7 @@ export default function DevUiPage() {
 
       <Section title="StopwatchControl">
         <Row label="idle">
-          <StopwatchControl
-            kind={DEMO_KIND}
-            active={null}
-            labels={{ label: "run", activeLabel: "Running" }}
-          />
+          <StopwatchControl kind={DEMO_KIND} active={null} />
         </Row>
         <Row label="running">
           <StopwatchControl
@@ -264,7 +256,6 @@ export default function DevUiPage() {
               startedAt: new Date(Date.now() - 5 * 60_000).toISOString(),
               timeZone: "Asia/Dhaka",
             }}
-            labels={{ label: "run", activeLabel: "Running" }}
           />
         </Row>
         <Row label="pending (mocked — the real control only shows this mid-request)">

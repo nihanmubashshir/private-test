@@ -7,11 +7,12 @@ import { cn } from "@/lib/utils";
 const SIZE_CLASSES = {
   display: "text-display text-center",
   bar: "text-xl",
+  focus: "text-[clamp(3.5rem,18vw,6rem)] text-center",
 } as const;
 
 export interface StopwatchElapsedProps {
   startedAt: string | null;
-  size: "display" | "bar";
+  size: "display" | "bar" | "focus";
 }
 
 /**

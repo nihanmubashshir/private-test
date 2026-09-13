@@ -21,8 +21,16 @@ const PLACEHOLDER_PREV_STATE: StopwatchActionResult = {
  * Wraps a stopwatch Server Action, capturing `at` at the moment of the tap rather than the moment
  * the request resolves (US-003 §6.6). A network error or thrown exception surfaces as a
  * `networkError` result instead of rejecting, so the caller can offer Retry with the same `at`.
+ *
+ * `onOptimistic`, if given, runs synchronously as the first thing inside the transition — the
+ * right place to call a `useOptimistic` setter, so the optimistic value is scoped to this same
+ * transition and automatically reverts once it settles (US-005 §7.4).
  */
-export function useStopwatchAction(action: StopwatchServerAction, baseFields: Record<string, string>) {
+export function useStopwatchAction(
+  action: StopwatchServerAction,
+  baseFields: Record<string, string>,
+  onOptimistic?: (fields: Record<string, string>) => void,
+) {
   const [pending, startTransition] = useTransition();
   const [result, setResult] = useState<StopwatchRunResult | null>(null);
   const lastFieldsRef = useRef<Record<string, string> | null>(null);
@@ -30,6 +38,7 @@ export function useStopwatchAction(action: StopwatchServerAction, baseFields: Re
   const execute = (fields: Record<string, string>) => {
     lastFieldsRef.current = fields;
     startTransition(async () => {
+      onOptimistic?.(fields);
       const formData = new FormData();
       for (const [key, value] of Object.entries(fields)) {
         formData.set(key, value);

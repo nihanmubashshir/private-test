@@ -6,7 +6,7 @@ import { createCn } from "cn/config";
 export const cn = createCn({
   extend: {
     theme: {
-      spacing: ["tap"],
+      spacing: ["tap", "cta"],
     },
     classGroups: {
       "font-size": [{ text: ["display", "h1", "h2", "body-sm", "control", "otp"] }],

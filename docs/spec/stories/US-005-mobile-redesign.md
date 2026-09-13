@@ -437,6 +437,25 @@ Test on **a real iPhone with the app installed to the Home Screen** and **Androi
 
 ## 14. Deviations
 
+- **T8 — the optimistic stopwatch is per-component, not the single cross-navigation shared store
+  §7.4 describes.** §7.4 says `StopwatchControl`, `TrackerCard`, the focus view, and the mini bar
+  should share one `useOptimistic` store (context, seeded by the server `actives`) so starting a
+  stopwatch from any surface instantly updates all of them, including the mini bar on other
+  screens. Implemented instead: each of `StopwatchControl`, `TrackerCard`, and `FocusView` runs
+  its **own** `useOptimistic(active, ...)` seeded from its own server-provided `active` prop, so
+  the tapped control's own clock starts ticking at the tap instant (the acceptance-critical part —
+  AC10's "started_at equals the tap time" and the revert-on-failure/Retry behavior both work
+  exactly as specified). What's simplified: the mini bar and any *other* surface reconcile only
+  once the Server Action's `revalidatePath("/", "layout")` lands and that surface's own server data
+  re-fetches — typically well under a second, but not instant, and not literally the same shared
+  client state.
+  - Why: a true shared store needs the actives promise to cross (app)/layout.tsx (which must not
+    block on it, per §5.7) down to scattered, independently-Suspense-boundaried consumers on
+    different pages — correct with React 19's `use()` plus per-consumer Suspense wrapping, but a
+    meaningfully riskier pattern to get right without being able to test it in a browser myself,
+    for a polish win (instant-everywhere vs. instant-where-tapped) rather than a correctness one.
+  - Revisit if the mini bar's reconcile lag is ever visibly annoying in practice.
+
 - **T3 — offline support descoped to a connectivity banner, on direct product direction.** §7.5's original scope (a hand-written
   service worker, an `/offline` fallback page, and generated iOS startup images) is dropped entirely. Reasoning given: this app
   has no meaningful offline use case (every screen is a live Server Component/Action over Supabase — there's nothing useful to

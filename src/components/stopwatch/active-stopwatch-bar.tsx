@@ -23,9 +23,13 @@ function configFor(kind: ActiveStopwatch["kind"]): StopwatchKindConfig {
   return (stopwatchKinds as Record<string, StopwatchKindConfig>)[kind];
 }
 
-/** Hidden on the item's own tracker page/form screens (US-003 §6.6; 01-design-system.md §5.5). */
-function isOwnScreen(pathname: string, href: string): boolean {
-  return pathname === href || pathname.startsWith(`${href}/`);
+/**
+ * Hidden on the item's own tracker/form screens and its focus view (US-003 §6.6;
+ * 01-design-system.md §5.5).
+ */
+function isOwnScreen(pathname: string, active: ActiveStopwatch): boolean {
+  const href = configFor(active.kind).href;
+  return pathname === href || pathname.startsWith(`${href}/`) || pathname === `/stopwatch/${active.kind}`;
 }
 
 /**
@@ -38,7 +42,7 @@ export function ActiveStopwatchBar({ actives, dockAboveTabBar }: ActiveStopwatch
   const barRef = useRef<HTMLDivElement>(null);
   const lastRefreshRef = useRef(0);
 
-  const visible = actives.filter((active) => !isOwnScreen(pathname, configFor(active.kind).href));
+  const visible = actives.filter((active) => !isOwnScreen(pathname, active));
 
   useEffect(() => {
     const height = visible.length > 0 ? (barRef.current?.offsetHeight ?? 0) : 0;
@@ -88,7 +92,7 @@ function StopwatchBarRow({ active }: { active: ActiveStopwatch }) {
   return (
     <div className="flex min-h-14 items-center gap-3">
       <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-full bg-success-400" />
-      <Link href={config.href} className="flex min-h-11 flex-1 items-center gap-3">
+      <Link href={`/stopwatch/${active.kind}`} className="flex min-h-11 flex-1 items-center gap-3">
         <span className="text-body-sm font-semibold text-neutral-50">{config.activeLabel}</span>
         <StopwatchElapsed startedAt={active.startedAt} size="bar" />
       </Link>

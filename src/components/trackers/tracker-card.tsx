@@ -1,6 +1,9 @@
 "use client";
 
+import { useEffect, useOptimistic } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StopwatchElapsed } from "@/components/stopwatch/stopwatch-elapsed";
@@ -20,6 +23,10 @@ export interface TrackerCardProps {
   primaryAction?: boolean;
 }
 
+function capitalize(value: string): string {
+  return value.length ? value.charAt(0).toUpperCase() + value.slice(1) : value;
+}
+
 /**
  * The Home hub's entry point for a tracker (01-design-system.md §6.1). One per registry kind.
  * Looks up its own config from `kind` (rather than receiving it as a prop) because the config
@@ -28,12 +35,34 @@ export interface TrackerCardProps {
  */
 export function TrackerCard({ kind, active, lastCompleted, primaryAction = true }: TrackerCardProps) {
   const config = (stopwatchKinds as Record<string, StopwatchKindConfig>)[kind];
-  const startAction = useStopwatchAction(startStopwatchAction, { kind });
-  const stopAction = useStopwatchAction(stopStopwatchAction, { kind, id: active?.id ?? "" });
+  const router = useRouter();
+
+  // Optimistic per this card only — see US-005 §14 Deviations for why this isn't the single
+  // cross-navigation shared store §7.4 describes (the mini bar reconciles via revalidatePath
+  // instead, typically well under a second, not instantly).
+  const [optimisticActive, setOptimisticActive] = useOptimistic<ActiveStopwatch | null>(active);
+
+  const startAction = useStopwatchAction(startStopwatchAction, { kind }, (fields) => {
+    setOptimisticActive({ kind, id: "optimistic", startedAt: fields.at, timeZone: fields.timeZone });
+  });
+  const stopAction = useStopwatchAction(stopStopwatchAction, { kind, id: active?.id ?? "" }, () => {
+    setOptimisticActive(null);
+  });
 
   const current = active ? stopAction : startAction;
   const errorMessage =
     current.result && !current.result.ok && "message" in current.result ? current.result.message : null;
+
+  useEffect(() => {
+    const result = stopAction.result;
+    if (result?.ok && result.status === "stopped" && result.session) {
+      const { session } = result;
+      toast.success(`${capitalize(config.label)} saved · ${formatDuration(session.durationSeconds)}`, {
+        action: { label: "View", onClick: () => router.push(config.detailHref(session.id)) },
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stopAction.result]);
 
   const Icon = config.icon;
 
@@ -47,11 +76,13 @@ export function TrackerCard({ kind, active, lastCompleted, primaryAction = true 
         <ChevronRight className="size-5 shrink-0 text-neutral-500" strokeWidth={1.75} aria-hidden />
       </Link>
 
-      {active ? (
+      {optimisticActive ? (
         <>
           <div className="flex flex-col items-center gap-1">
-            <StopwatchElapsed startedAt={active.startedAt} size="display" />
-            <p className="text-body-sm text-neutral-400">Started {formatTime(active.startedAt, active.timeZone)}</p>
+            <StopwatchElapsed startedAt={optimisticActive.startedAt} size="display" />
+            <p className="text-body-sm text-neutral-400">
+              Started {formatTime(optimisticActive.startedAt, optimisticActive.timeZone)}
+            </p>
           </div>
           {errorMessage && <p className="text-body-sm text-danger-400">{errorMessage}</p>}
           <div className="flex gap-2">
@@ -65,7 +96,7 @@ export function TrackerCard({ kind, active, lastCompleted, primaryAction = true 
               {stopAction.pending ? "Stopping…" : "Stop"}
             </Button>
             <Button asChild variant="secondary">
-              <Link href={config.href}>Open</Link>
+              <Link href={`/stopwatch/${kind}`}>Open</Link>
             </Button>
           </div>
         </>
