@@ -62,11 +62,18 @@ export function LogWeightSheet({ open, onClose, lastValueKg, editing }: LogWeigh
 
   // The action returns an id only on a successful write, which is what distinguishes a real
   // success from the untouched initial state.
+  // Depends on `state` alone, reading the rest through refs. With `open` in the list, reopening the
+  // sheet after a successful save re-ran this with that old success still in state, and closed the
+  // sheet the moment it appeared -- a second save in one visit was impossible.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  const editingRef = useRef(editing);
+  editingRef.current = editing;
   useEffect(() => {
-    if (!open || !state.ok || !state.id) return;
-    toast.success(editing ? "Reading updated" : "Weight logged");
-    onClose();
-  }, [state, open, editing, onClose]);
+    if (!state.ok || !state.id) return;
+    toast.success(editingRef.current ? "Reading updated" : "Weight logged");
+    onCloseRef.current();
+  }, [state]);
 
   // Range is checked when Save is pressed, never while typing: on the way to "82" the value
   // passes through "8", and flashing "must be at least 20 kg" at someone mid-entry reads as the

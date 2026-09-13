@@ -42,11 +42,18 @@ export function WorkoutSheet({ open, onClose, editing, groups }: WorkoutSheetPro
     wasOpen.current = open;
   }, [open, editing]);
 
+  // Depends on `state` alone, reading the rest through refs. With `open` in the list, reopening the
+  // sheet after a successful save re-ran this with that old success still in state, and closed the
+  // sheet the moment it appeared -- a second save in one visit was impossible.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  const editingRef = useRef(editing);
+  editingRef.current = editing;
   useEffect(() => {
-    if (!open || !state.ok || !state.id) return;
-    toast.success(editing ? "Exercise updated" : "Exercise added");
-    onClose();
-  }, [state, open, editing, onClose]);
+    if (!state.ok || !state.id) return;
+    toast.success(editingRef.current ? "Exercise updated" : "Exercise added");
+    onCloseRef.current();
+  }, [state]);
 
   // Kept in TRACKED_FIELDS order regardless of the order they were tapped, so the set logger's
   // fields never reorder between two exercises that track the same things.

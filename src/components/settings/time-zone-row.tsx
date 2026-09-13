@@ -44,12 +44,13 @@ export function TimeZoneRow() {
     if (appTimeZone) setSelected(appTimeZone);
   }, [appTimeZone]);
 
+  // A real result is told apart from the untouched initial state by identity. A successful save
+  // returns `{ ok: true, message: null }`, equal by value to INITIAL, so the old value check returned
+  // early on exactly the success it was waiting for: the sheet never closed and never toasted.
   useEffect(() => {
-    if (state.ok && state.message === null) return;
-    if (state.ok) {
-      setOpen(false);
-      toast.success("Time zone saved");
-    }
+    if (state === INITIAL || !state.ok) return;
+    setOpen(false);
+    toast.success("Time zone saved");
   }, [state]);
 
   const deviceZone = typeof window === "undefined" ? null : getDeviceTimeZone();
