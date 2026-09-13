@@ -9,6 +9,8 @@ import { TrackerCard } from "@/components/trackers/tracker-card";
 import { RecentActivity } from "@/components/trackers/recent-activity";
 import { WeightCard } from "@/components/weight/weight-card";
 import { listWeighIns } from "@/lib/weight/queries";
+import { getActivePlan, seedGymDefaults } from "@/lib/gym/queries";
+import { TodayGymCard } from "@/components/gym/today-card";
 
 const RECENT_ACTIVITY_LIMIT = 5;
 /** The sparkline window (US-009 §5.1). One extra day so the week-ago comparison has a neighbour. */
@@ -27,6 +29,11 @@ export default async function HomePage() {
     listWeighIns(supabase, { since }),
   ]);
 
+  // Seeding is idempotent and only writes on a first-ever visit; the active plan is read after it
+  // so a brand-new install sees its starter week immediately rather than on the next load.
+  await seedGymDefaults(supabase);
+  const activePlan = await getActivePlan(supabase);
+
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
       <ToastOnParam param="missing" message="That page doesn't exist." tone="warning" />
@@ -42,6 +49,8 @@ export default async function HomePage() {
             primaryAction={index === 0}
           />
         ))}
+
+        <TodayGymCard plan={activePlan} />
 
         <WeightCard latest={weighIns[0] ?? null} recent={weighIns} />
       </div>

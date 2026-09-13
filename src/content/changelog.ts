@@ -25,6 +25,69 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.9.0",
+    date: "2026-09-13",
+    title: "Gym plans",
+    changes: [
+      {
+        kind: "added",
+        text: "An exercise library, seeded with the usual lifts, where each exercise decides what it tracks — reps, weight, duration or distance.",
+      },
+      { kind: "added", text: "Several named weekly plans, with exactly one active at a time." },
+      { kind: "added", text: "A week editor: name a day, mark it a rest day, add exercises and set targets." },
+      { kind: "added", text: "Build a new plan as a copy of an existing one." },
+      {
+        kind: "improved",
+        text: "Archiving an exercise keeps it in past sessions and existing plans instead of deleting it.",
+      },
+    ],
+  },
+  {
+    version: "0.8.0",
+    date: "2026-09-13",
+    title: "Weight tracking",
+    changes: [
+      { kind: "added", text: "Log your weight from a keypad built for it — the phone keyboard never opens." },
+      { kind: "added", text: "A weight card on Home with the latest reading, the change this week, and a sparkline." },
+      { kind: "added", text: "A weight screen with a chart, a range selector, and every reading you've logged." },
+      { kind: "added", text: "A seven-day average behind the chart line, so the trend reads through the daily noise." },
+      { kind: "added", text: "Delete a reading and undo it from the toast." },
+      { kind: "improved", text: "Weight records to four decimal places, for a scale that reads finer than one." },
+      { kind: "improved", text: "The chart never starts at zero, so a one-kilo change is actually visible." },
+    ],
+  },
+  {
+    version: "0.7.0",
+    date: "2026-09-13",
+    title: "One time zone",
+    changes: [
+      { kind: "added", text: "A time zone you set once in Settings, used for every date in the app." },
+      {
+        kind: "improved",
+        text: "Today stays today when you travel or turn on a VPN — dates no longer follow the phone.",
+      },
+    ],
+  },
+  {
+    version: "0.6.0",
+    date: "2026-09-13",
+    title: "One screen to start from",
+    changes: [
+      { kind: "added", text: "A proper screen when something goes wrong, with a way back." },
+      {
+        kind: "improved",
+        text: "The bottom tab bar is gone. Home is the only root, and everything else opens over it.",
+      },
+      {
+        kind: "improved",
+        text: "The Activity screen is gone too — recent items are on Home, and full history lives inside each tracker.",
+      },
+      { kind: "improved", text: "A dead link takes you back to Home instead of a Not Found page." },
+      { kind: "improved", text: "The Android back button and the iOS edge swipe now work." },
+      { kind: "fixed", text: "Removed pull-to-refresh, which fought with scrolling." },
+    ],
+  },
+  {
     version: "0.5.0",
     date: "2026-09-13",
     title: "What's new",
