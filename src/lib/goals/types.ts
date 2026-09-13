@@ -1,5 +1,6 @@
 import { dateKey } from "@/lib/time/format";
 import { addDays } from "@/lib/time/wall-time";
+import { WAQTS, type Waqt } from "@/lib/prayers/types";
 
 /**
  * Goals and their progress (US-012).
@@ -10,7 +11,7 @@ import { addDays } from "@/lib/time/wall-time";
  */
 
 export type GoalKind = "target" | "streak";
-export type GoalSubject = "weight" | "running" | "gym" | "workout";
+export type GoalSubject = "weight" | "running" | "gym" | "workout" | "prayer";
 export type GoalStatus = "active" | "paused" | "completed";
 export type TargetMetric = "weight" | "reps" | "volume";
 
@@ -43,6 +44,8 @@ export interface GoalInputs {
   gymTimes: string[];
   /** Per workout id: when sets were logged, and the working sets themselves. */
   workouts: Record<string, { times: string[]; sets: BestSet[] }>;
+  /** Every logged waqt, any status — Qadha still counts toward a prayer streak (US-015). */
+  prayerLogs: { at: string; waqt: Waqt }[];
 }
 
 export interface Progress {
@@ -61,6 +64,7 @@ export const SUBJECT_LABELS: Record<GoalSubject, string> = {
   running: "Running",
   gym: "Gym",
   workout: "Exercise",
+  prayer: "Prayer",
 };
 
 /** "In a row" streaks show a rolling 14-day view (US-012 §5.2). */
@@ -78,6 +82,9 @@ function timesFor(goal: Goal, inputs: GoalInputs): string[] {
       return inputs.gymTimes;
     case "workout":
       return goal.workoutId ? (inputs.workouts[goal.workoutId]?.times ?? []) : [];
+    case "prayer":
+      // Prayer streaks count waqts, not days — see prayerStreakProgress below.
+      return [];
   }
 }
 
@@ -135,7 +142,60 @@ function targetProgress(goal: Goal, inputs: GoalInputs): Progress {
   };
 }
 
+/** `${dateKey}#${waqtIndex}` — a stable slot id for one waqt on one calendar day. */
+function waqtSlotKey(day: string, waqt: Waqt): string {
+  return `${day}#${WAQTS.indexOf(waqt)}`;
+}
+
+/**
+ * A prayer streak (US-015 §goals): consecutive **logged waqts**, not qualifying days — Mosque,
+ * Home and Qadha all count (only an unlogged waqt breaks it, per the owner's call). Walks the fixed
+ * five-slot daily order backward from Isha today; today's not-yet-reached slots don't count against
+ * it since the day isn't over, exactly like the "in a row" day-streak's today exception below.
+ */
+function prayerStreakProgress(goal: Goal, inputs: GoalInputs, timeZone: string, now: Date): Progress {
+  const target = goal.targetCount ?? 1;
+  const logged = new Set(inputs.prayerLogs.map((log) => waqtSlotKey(dateKey(log.at, timeZone), log.waqt)));
+  const todayKey = dateKey(now.toISOString(), timeZone);
+
+  let run = 0;
+  let day = todayKey;
+  let seenHit = false;
+  let firstDay = true;
+  // Bounded to a year of days so an empty history can't loop forever.
+  for (let guard = 0; guard < 366; guard++) {
+    let broke = false;
+    for (let i = WAQTS.length - 1; i >= 0; i--) {
+      const hit = logged.has(waqtSlotKey(day, WAQTS[i]));
+      if (!seenHit) {
+        if (!hit) {
+          if (firstDay) continue;
+          broke = true;
+          break;
+        }
+        seenHit = true;
+      }
+      if (!hit) {
+        broke = true;
+        break;
+      }
+      run++;
+    }
+    if (broke) break;
+    firstDay = false;
+    day = addDays(day, -1);
+  }
+
+  return {
+    ratio: Math.min(1, run / target),
+    text: `${Math.min(run, target)} / ${target} waqts`,
+    spoken: `${run} waqts in a row, target ${target}`,
+  };
+}
+
 function streakProgress(goal: Goal, inputs: GoalInputs, timeZone: string, now: Date): Progress {
+  if (goal.subject === "prayer") return prayerStreakProgress(goal, inputs, timeZone, now);
+
   const target = goal.targetCount ?? 1;
   const qualifying = new Set(timesFor(goal, inputs).map((iso) => dateKey(iso, timeZone)));
   const todayKey = dateKey(now.toISOString(), timeZone);

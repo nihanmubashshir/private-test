@@ -6,7 +6,7 @@ import { listWorkouts } from "@/lib/gym/queries";
 import { AppBar } from "@/components/shell/app-bar";
 import { GoalsView } from "@/components/goals/goals-view";
 
-const subjectParam = z.enum(["weight", "running", "gym", "workout"]).nullable().catch(null);
+const subjectParam = z.enum(["weight", "running", "gym", "workout", "prayer"]).nullable().catch(null);
 const goalParam = z.uuid().nullable().catch(null);
 
 export default async function GoalsPage({

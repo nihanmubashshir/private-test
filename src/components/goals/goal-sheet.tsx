@@ -27,7 +27,9 @@ const METRICS: { label: string; value: TargetMetric }[] = [
 
 /** A target needs a single number to reach, which only weight and an exercise have (US-012 §3). */
 const TARGET_SUBJECTS: GoalSubject[] = ["weight", "workout"];
-const ALL_SUBJECTS: GoalSubject[] = ["weight", "running", "gym", "workout"];
+const ALL_SUBJECTS: GoalSubject[] = ["weight", "running", "gym", "workout", "prayer"];
+/** A prayer streak counts waqts, not days — "trailing N days" doesn't apply (US-015). */
+const NO_WINDOW_SUBJECTS: GoalSubject[] = ["prayer"];
 
 export interface GoalSheetProps {
   open: boolean;
@@ -86,10 +88,11 @@ export function GoalSheet({ open, onClose, workouts, existing, initialSubject = 
   const subjectName = subject === "workout" ? (workoutName ?? "Exercise") : SUBJECT_LABELS[subject];
 
   // A sensible default name until the owner types their own.
+  const streakUnit = subject === "prayer" ? "waqts" : "days";
   const suggested =
     kind === "target"
       ? `${subjectName} ${targetValue || "…"}${subject === "workout" && metric === "reps" ? " reps" : " kg"}`
-      : `${subjectName} ${count} ${windowDays === null ? "days in a row" : `of ${windowDays} days`}`;
+      : `${subjectName} ${count} ${windowDays === null ? `${streakUnit} in a row` : `of ${windowDays} days`}`;
   const effectiveLabel = labelEdited ? label : suggested;
 
   const duplicate = existing.some(
@@ -138,7 +141,15 @@ export function GoalSheet({ open, onClose, workouts, existing, initialSubject = 
 
         <label className="flex flex-col gap-1.5">
           <span className="text-body-sm text-neutral-400">For</span>
-          <select value={subject} onChange={(e) => setSubject(e.target.value as GoalSubject)} className={inputClass}>
+          <select
+            value={subject}
+            onChange={(e) => {
+              const next = e.target.value as GoalSubject;
+              setSubject(next);
+              if (NO_WINDOW_SUBJECTS.includes(next)) setWindowDays(null);
+            }}
+            className={inputClass}
+          >
             {subjects.map((s) => (
               <option key={s} value={s}>
                 {SUBJECT_LABELS[s]}
@@ -202,24 +213,31 @@ export function GoalSheet({ open, onClose, workouts, existing, initialSubject = 
           </>
         ) : (
           <>
-            <Segmented
-              label="Window"
-              options={WINDOWS.map((w) => ({ label: w.label, value: String(w.value) }))}
-              value={String(windowDays)}
-              onChange={(next) => {
-                const value = next === "null" ? null : Number(next);
-                setWindowDays(value);
-                if (value !== null && count > value) setCount(value);
-              }}
-            />
+            {NO_WINDOW_SUBJECTS.includes(subject) ? (
+              <p className="text-body-sm text-neutral-500">
+                Counts consecutive logged waqts — Mosque, Home or Qadha all count, so only a fully
+                unlogged waqt breaks it.
+              </p>
+            ) : (
+              <Segmented
+                label="Window"
+                options={WINDOWS.map((w) => ({ label: w.label, value: String(w.value) }))}
+                value={String(windowDays)}
+                onChange={(next) => {
+                  const value = next === "null" ? null : Number(next);
+                  setWindowDays(value);
+                  if (value !== null && count > value) setCount(value);
+                }}
+              />
+            )}
             <div className="flex items-center justify-between gap-3">
-              <span className="text-body-sm text-neutral-400">Days</span>
+              <span className="text-body-sm text-neutral-400 capitalize">{streakUnit}</span>
               <div className="flex items-center gap-2">
                 <Button
                   type="button"
                   variant="secondary"
                   size="icon"
-                  aria-label="Fewer days"
+                  aria-label={`Fewer ${streakUnit}`}
                   onClick={() => setCount((n) => Math.max(1, n - 1))}
                 >
                   <Minus className="size-4" strokeWidth={2} aria-hidden />
@@ -229,7 +247,7 @@ export function GoalSheet({ open, onClose, workouts, existing, initialSubject = 
                   type="button"
                   variant="secondary"
                   size="icon"
-                  aria-label="More days"
+                  aria-label={`More ${streakUnit}`}
                   onClick={() => setCount((n) => Math.min(maxCount, n + 1))}
                 >
                   <Plus className="size-4" strokeWidth={2} aria-hidden />

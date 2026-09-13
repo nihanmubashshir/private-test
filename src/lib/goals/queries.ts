@@ -2,6 +2,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
 import type { BestSet, Goal, GoalInputs } from "./types";
+import type { Waqt } from "@/lib/prayers/types";
 
 type Client = SupabaseClient<Database>;
 
@@ -47,7 +48,7 @@ export async function loadGoalInputs(supabase: Client, goals: Goal[]): Promise<G
   const needs = (subject: Goal["subject"]) => goals.some((goal) => goal.subject === subject);
   const workoutIds = [...new Set(goals.map((goal) => goal.workoutId).filter((id): id is string => id !== null))];
 
-  const [latestWeight, weighIns, runs, gym, sets] = await Promise.all([
+  const [latestWeight, weighIns, runs, gym, sets, prayers] = await Promise.all([
     needs("weight")
       ? supabase.from("weigh_ins").select("value_kg").order("measured_at", { ascending: false }).limit(1).maybeSingle()
       : Promise.resolve({ data: null }),
@@ -75,6 +76,9 @@ export async function loadGoalInputs(supabase: Client, goals: Goal[]): Promise<G
             is_warmup: boolean;
           }[],
         }),
+    needs("prayer")
+      ? supabase.from("prayers").select("prayed_at, waqt").gte("prayed_at", since)
+      : Promise.resolve({ data: [] as { prayed_at: string; waqt: Waqt }[] }),
   ]);
 
   const workouts: GoalInputs["workouts"] = {};
@@ -90,5 +94,6 @@ export async function loadGoalInputs(supabase: Client, goals: Goal[]): Promise<G
     runTimes: (runs.data ?? []).map((row) => row.started_at),
     gymTimes: (gym.data ?? []).map((row) => row.started_at),
     workouts,
+    prayerLogs: (prayers.data ?? []).map((row) => ({ at: row.prayed_at, waqt: row.waqt })),
   };
 }

@@ -28,7 +28,7 @@ const blankToNull = (v: FormDataEntryValue | null) => {
 const createSchema = z
   .object({
     kind: z.enum(["target", "streak"]),
-    subject: z.enum(["weight", "running", "gym", "workout"]),
+    subject: z.enum(["weight", "running", "gym", "workout", "prayer"]),
     workoutId: z.uuid().nullable(),
     label: z.string().trim().min(1, "Give the goal a name.").max(60),
     targetValue: z.coerce.number().positive("The target must be above zero.").max(100000).nullable(),
@@ -50,6 +50,9 @@ const createSchema = z
       if (v.windowDays !== null && v.targetCount !== null && v.targetCount > v.windowDays) {
         issue("That's more days than the window holds.");
       }
+      // A prayer streak counts consecutive waqts, not qualifying days — "trailing N days" has no
+      // meaning at that grain (goals_prayer_no_window, US-015).
+      if (v.subject === "prayer" && v.windowDays !== null) issue("A prayer streak is always in a row.");
     }
   });
 
