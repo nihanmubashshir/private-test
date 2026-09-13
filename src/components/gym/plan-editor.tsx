@@ -17,6 +17,7 @@ import { useAppTimeZone } from "@/components/shell/app-time-zone";
 import { EntrySheet } from "@/components/ui/entry-sheet";
 import { WorkoutPicker } from "@/components/gym/workout-picker";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 
 const INITIAL: GymActionResult = { ok: true, message: null };
@@ -39,9 +40,10 @@ export function PlanEditor({ plan, workouts }: PlanEditorProps) {
   const [editingItem, setEditingItem] = useState<string | null>(null);
 
   const [, dayAction] = useActionState(updatePlanDay, INITIAL);
-  const [addState, addAction] = useActionState(addPlanItem, INITIAL);
-  const [, removeAction] = useActionState(removePlanItem, INITIAL);
-  const [, reorderAction] = useActionState(reorderPlanItems, INITIAL);
+  const [addState, addAction, addPending] = useActionState(addPlanItem, INITIAL);
+  const [removeState, removeAction, removePending] = useActionState(removePlanItem, INITIAL);
+  const [removingItemId, setRemovingItemId] = useState<string | null>(null);
+  const [, reorderAction, reorderPending] = useActionState(reorderPlanItems, INITIAL);
   const [targetState, targetAction, targetPending] = useActionState(updatePlanItem, INITIAL);
 
   // Open on today, which is the day the owner almost always wants.
@@ -52,6 +54,13 @@ export function PlanEditor({ plan, workouts }: PlanEditorProps) {
   useEffect(() => {
     if (!addState.ok && addState.message) toast.error(addState.message);
   }, [addState]);
+
+  useEffect(() => {
+    if (!removeState.ok && removeState.message) {
+      toast.error(removeState.message);
+      setRemovingItemId(null);
+    }
+  }, [removeState]);
 
   useEffect(() => {
     if (targetState.ok && targetState.id) setEditingItem(null);
@@ -138,55 +147,65 @@ export function PlanEditor({ plan, workouts }: PlanEditorProps) {
 
       {/* Exercises are kept when a day is toggled to rest, just greyed and hidden from Home. */}
       <div className={cn("flex flex-col", day.isRest && "opacity-50")}>
-        {day.items.map((item, index) => (
-          <div key={item.id} className="flex min-h-16 items-center gap-2 border-b border-neutral-800">
-            <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-full bg-neutral-800">
-              <Dumbbell className="size-4 text-neutral-300" strokeWidth={1.75} />
-            </span>
-            <button
-              type="button"
-              onClick={() => setEditingItem(item.id)}
-              className="flex min-w-0 flex-1 flex-col gap-0.5 py-2 text-left"
+        {day.items.map((item, index) => {
+          const removing = removingItemId === item.id;
+          // Positions are mid-write during either action, so every row's move/remove holds off.
+          const rowBusy = reorderPending || removePending;
+          return (
+            <div
+              key={item.id}
+              className={cn("flex min-h-16 items-center gap-2 border-b border-neutral-800", removing && "opacity-50")}
             >
-              <span className="truncate text-control font-semibold text-neutral-50">{item.workoutName}</span>
-              <span className="truncate font-mono text-[13px] text-neutral-500">
-                {describeTargets(item) || "No targets"}
+              <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-full bg-neutral-800">
+                <Dumbbell className="size-4 text-neutral-300" strokeWidth={1.75} />
               </span>
-            </button>
-            {/* Buttons, not drag: a drag handle competes with the week strip's horizontal scroll
-                and the page's vertical scroll, and loses to both on a phone. */}
-            <button
-              type="button"
-              onClick={() => move(index, -1)}
-              disabled={index === 0}
-              aria-label={`Move ${item.workoutName} up`}
-              className="flex size-tap shrink-0 items-center justify-center text-neutral-500 disabled:opacity-30"
-            >
-              <ChevronUp className="size-4" strokeWidth={1.75} aria-hidden />
-            </button>
-            <button
-              type="button"
-              onClick={() => move(index, 1)}
-              disabled={index === day.items.length - 1}
-              aria-label={`Move ${item.workoutName} down`}
-              className="flex size-tap shrink-0 items-center justify-center text-neutral-500 disabled:opacity-30"
-            >
-              <ChevronDown className="size-4" strokeWidth={1.75} aria-hidden />
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                const form = new FormData();
-                form.set("id", item.id);
-                removeAction(form);
-              }}
-              aria-label={`Remove ${item.workoutName}`}
-              className="flex size-tap shrink-0 items-center justify-center text-neutral-500 active:text-danger-400"
-            >
-              <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
-            </button>
-          </div>
-        ))}
+              <button
+                type="button"
+                onClick={() => setEditingItem(item.id)}
+                className="flex min-w-0 flex-1 flex-col gap-0.5 py-2 text-left"
+              >
+                <span className="truncate text-control font-semibold text-neutral-50">{item.workoutName}</span>
+                <span className="truncate font-mono text-[13px] text-neutral-500">
+                  {describeTargets(item) || "No targets"}
+                </span>
+              </button>
+              {/* Buttons, not drag: a drag handle competes with the week strip's horizontal scroll
+                  and the page's vertical scroll, and loses to both on a phone. */}
+              <button
+                type="button"
+                onClick={() => move(index, -1)}
+                disabled={index === 0 || rowBusy}
+                aria-label={`Move ${item.workoutName} up`}
+                className="flex size-tap shrink-0 items-center justify-center text-neutral-500 disabled:opacity-30"
+              >
+                <ChevronUp className="size-4" strokeWidth={1.75} aria-hidden />
+              </button>
+              <button
+                type="button"
+                onClick={() => move(index, 1)}
+                disabled={index === day.items.length - 1 || rowBusy}
+                aria-label={`Move ${item.workoutName} down`}
+                className="flex size-tap shrink-0 items-center justify-center text-neutral-500 disabled:opacity-30"
+              >
+                <ChevronDown className="size-4" strokeWidth={1.75} aria-hidden />
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setRemovingItemId(item.id);
+                  const form = new FormData();
+                  form.set("id", item.id);
+                  removeAction(form);
+                }}
+                disabled={rowBusy}
+                aria-label={`Remove ${item.workoutName}`}
+                className="flex size-tap shrink-0 items-center justify-center text-neutral-500 active:text-danger-400 disabled:pointer-events-none disabled:opacity-30"
+              >
+                {removing ? <Spinner size={16} /> : <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />}
+              </button>
+            </div>
+          );
+        })}
       </div>
 
       <Button variant="secondary" fullWidth onClick={() => setPickerOpen(true)}>
@@ -204,6 +223,7 @@ export function PlanEditor({ plan, workouts }: PlanEditorProps) {
         <WorkoutPicker
           workouts={workouts}
           disabledIds={alreadyAdded}
+          pending={addPending}
           onPick={(workoutId) => {
             const form = new FormData();
             form.set("planDayId", day.id);

@@ -24,7 +24,7 @@ drafts are renumbered into this repo's sequence:
 | [US-011](stories/US-011-gym-session.md) | US-006 | Gym session — timed, per-exercise logging | Done | US-010 |
 | [US-012](stories/US-012-goals.md) | US-007 | Goals — target and streak | Done | US-009, US-011 |
 | [US-013](stories/US-013-feature-requests.md) | US-008 | Feature request log | Done | US-007 |
-| [US-014](stories/US-014-radial-menu.md) | US-009 | Radial quick-action menu | Planned | US-013 |
+| [US-014](stories/US-014-radial-menu.md) | US-009 | Radial quick-action menu | Done | US-013 |
 
 **Why this order.** US-006 is first because the owner locked it — the changelog is how they follow
 progress on their phone while the rest is built. US-008 (time zone) comes before US-009 because

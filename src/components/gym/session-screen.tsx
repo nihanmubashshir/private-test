@@ -22,6 +22,7 @@ import { ConfirmSheet } from "@/components/ui/confirm-sheet";
 import { EntrySheet } from "@/components/ui/entry-sheet";
 import { WorkoutPicker } from "@/components/gym/workout-picker";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 
 const INITIAL: SessionActionResult = { ok: true, message: null };
@@ -62,9 +63,10 @@ export function SessionScreen({ session, lastSets, workouts }: SessionScreenProp
   const [pickerOpen, setPickerOpen] = useState(false);
 
   const [logState, logAction, logPending] = useActionState(logSet, INITIAL);
-  const [, deleteSetAction] = useActionState(deleteSet, INITIAL);
+  const [deleteSetState, deleteSetAction, deleteSetPending] = useActionState(deleteSet, INITIAL);
+  const [deletingSetId, setDeletingSetId] = useState<string | null>(null);
   const [finishState, finishAction, finishPending] = useActionState(finishSession, INITIAL);
-  const [addState, addAction] = useActionState(addSessionExercise, INITIAL);
+  const [addState, addAction, addPending] = useActionState(addSessionExercise, INITIAL);
 
   // Keyed on the action state alone. On success, close the picker and open the new exercise, so
   // logging its first set is one tap away.
@@ -75,7 +77,20 @@ export function SessionScreen({ session, lastSets, workouts }: SessionScreenProp
       setPickerOpen(false);
     }
   }, [addState]);
-  const [, discardAction] = useActionState(discardSession, INITIAL);
+
+  // Only cleared on failure — on success the set drops out of `session.exercises` once
+  // `revalidatePath` re-renders, so the id naturally stops matching anything.
+  useEffect(() => {
+    if (!deleteSetState.ok && deleteSetState.message) {
+      toast.error(deleteSetState.message);
+      setDeletingSetId(null);
+    }
+  }, [deleteSetState]);
+
+  const [discardState, discardAction, discardPending] = useActionState(discardSession, INITIAL);
+  useEffect(() => {
+    if (!discardState.ok && discardState.message) toast.error(discardState.message);
+  }, [discardState]);
 
   const setCount = sessionSetCount(session.exercises);
   const volume = sessionVolume(session.exercises);
@@ -139,7 +154,9 @@ export function SessionScreen({ session, lastSets, workouts }: SessionScreenProp
               onExpand={() => setExpanded(expanded === exercise.workoutId ? null : exercise.workoutId)}
               onLog={logAction}
               logPending={logPending}
+              deletingSetId={deleteSetPending ? deletingSetId : null}
               onDeleteSet={(id) => {
+                setDeletingSetId(id);
                 const form = new FormData();
                 form.set("id", id);
                 deleteSetAction(form);
@@ -167,6 +184,7 @@ export function SessionScreen({ session, lastSets, workouts }: SessionScreenProp
         <WorkoutPicker
           workouts={workouts}
           disabledIds={new Set(session.exercises.map((exercise) => exercise.workoutId))}
+          pending={addPending}
           onPick={(workoutId) => {
             const form = new FormData();
             form.set("sessionId", session.id);
@@ -198,6 +216,7 @@ export function SessionScreen({ session, lastSets, workouts }: SessionScreenProp
         title="Discard this session?"
         description="Every set logged in it goes too. This can't be undone."
         confirmLabel="Discard"
+        pending={discardPending}
         onConfirm={() => {
           const form = new FormData();
           form.set("id", session.id);
@@ -225,6 +244,7 @@ function ExerciseBlock({
   onExpand,
   onLog,
   logPending,
+  deletingSetId,
   onDeleteSet,
 }: {
   exercise: SessionExercise;
@@ -234,6 +254,7 @@ function ExerciseBlock({
   onExpand: () => void;
   onLog: (formData: FormData) => void;
   logPending: boolean;
+  deletingSetId: string | null;
   onDeleteSet: (id: string) => void;
 }) {
   const [values, setValues] = useState<SetValues>(() => prefillFor(exercise, lastSet));
@@ -263,23 +284,27 @@ function ExerciseBlock({
         <div className="flex flex-col gap-3 border-t border-neutral-800 p-4">
           {lastSet && <p className="font-mono text-xs text-neutral-500">Last: {describeSet(lastSet)}</p>}
 
-          {exercise.sets.map((set) => (
-            <div key={set.id} className="flex items-center gap-2 border-b border-neutral-800 pb-2">
-              <span className="w-6 shrink-0 font-mono text-xs text-neutral-500">
-                {set.isWarmup ? "W" : set.position}
-              </span>
-              <span className="flex-1 font-mono text-body-sm text-neutral-50">{describeSet(set)}</span>
-              <Check className="size-4 shrink-0 text-success-400" strokeWidth={2} aria-hidden />
-              <button
-                type="button"
-                onClick={() => onDeleteSet(set.id)}
-                aria-label={`Delete set ${set.position}`}
-                className="flex size-tap shrink-0 items-center justify-center text-neutral-500 active:text-danger-400"
-              >
-                <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
-              </button>
-            </div>
-          ))}
+          {exercise.sets.map((set) => {
+            const deleting = deletingSetId === set.id;
+            return (
+              <div key={set.id} className={cn("flex items-center gap-2 border-b border-neutral-800 pb-2", deleting && "opacity-50")}>
+                <span className="w-6 shrink-0 font-mono text-xs text-neutral-500">
+                  {set.isWarmup ? "W" : set.position}
+                </span>
+                <span className="flex-1 font-mono text-body-sm text-neutral-50">{describeSet(set)}</span>
+                <Check className="size-4 shrink-0 text-success-400" strokeWidth={2} aria-hidden />
+                <button
+                  type="button"
+                  onClick={() => onDeleteSet(set.id)}
+                  disabled={deleting}
+                  aria-label={`Delete set ${set.position}`}
+                  className="flex size-tap shrink-0 items-center justify-center text-neutral-500 active:text-danger-400 disabled:pointer-events-none"
+                >
+                  {deleting ? <Spinner size={16} /> : <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />}
+                </button>
+              </div>
+            );
+          })}
 
           <SetInputs tracks={exercise.tracks} values={values} onChange={setValues} />
 

@@ -25,6 +25,23 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.13.0",
+    date: "2026-09-13",
+    title: "Quick actions",
+    changes: [
+      { kind: "added", text: "A button in the bottom-right corner on every screen. Tap it to go Home." },
+      {
+        kind: "added",
+        text: "Hold it and a wheel of actions curves from the bottom of the screen up the right side: start a session, log your weight, add a request, switch plan, or open Settings.",
+      },
+      { kind: "added", text: "Slide your thumb onto an action and let go to run it; let go anywhere else to cancel." },
+      {
+        kind: "improved",
+        text: "The button steps aside while a sheet is open, during a gym session, and on screens with a button of their own at the bottom.",
+      },
+    ],
+  },
+  {
     version: "0.12.0",
     date: "2026-09-13",
     title: "Requests",

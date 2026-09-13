@@ -49,6 +49,21 @@ URL, per the `docs/setup.md` hosted checklist.
 migrations — see [`docs/setup.md`](docs/setup.md#running-migrations). It targets the **hosted**
 project unless given `--local`, so read what it prints before confirming.)
 
+## Feature request workflow
+
+`scripts/local/` is gitignored — ad hoc scripts that use the admin client (service role, bypasses
+RLS) to talk to the hosted DB directly, outside the app. Use it, not the app UI, for these:
+
+| Command | Purpose |
+|---------|---------|
+| `pnpm exec tsx --env-file-if-exists=.env.local scripts/local/export-feature-requests.ts` | Refresh `scripts/local/feature-requests.md` — a snapshot of open/done `feature_requests` rows, so Claude can read current bugs/asks without DB access |
+| `pnpm exec tsx --env-file-if-exists=.env.local scripts/local/mark-feature-request-done.ts --id <uuid>` (or `--title <substring>`) | Mark one open request done, once its fix has shipped |
+
+When asked to "just fix [bug]" with no other framing, check `scripts/local/feature-requests.md` (or
+re-run the export first if it looks stale) for a matching open request, make the fix per the normal
+rules below, then mark that request done with the script above. Skip this if the ask isn't tied to
+an existing feature request row.
+
 ## Hard rules
 
 1. **Mobile first.** Write base styles for phones and add `sm:`/`md:`/`lg:` for larger screens. No horizontal scroll at 320px.

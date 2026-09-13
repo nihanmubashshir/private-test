@@ -7,6 +7,7 @@ import { NavigationDepthProvider } from "@/components/shell/navigation-depth";
 import { AppTimeZoneProvider } from "@/components/shell/app-time-zone";
 import { getAppSettings } from "@/lib/settings/server";
 import { ActiveStopwatchSlot } from "@/components/stopwatch/active-stopwatch-slot";
+import { RadialMenuSlot } from "@/components/shell/radial-menu-slot";
 
 /**
  * The app's only shell (US-007 §4).
@@ -29,12 +30,16 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     <NavigationProgressProvider>
       <NavigationDepthProvider>
         <AppTimeZoneProvider configured={timeZone}>
-        <div className="min-h-dvh" style={{ paddingBottom: "var(--mini-bar-height, 0px)" }}>
-          {children}
-          <Suspense fallback={null}>
-            <ActiveStopwatchSlot />
-          </Suspense>
-        </div>
+          <div className="min-h-dvh" style={{ paddingBottom: "var(--mini-bar-height, 0px)" }}>
+            {children}
+            <Suspense fallback={null}>
+              <ActiveStopwatchSlot />
+            </Suspense>
+            {/* Inside the time-zone provider: which day is "today" for Start gym session needs it. */}
+            <Suspense fallback={null}>
+              <RadialMenuSlot />
+            </Suspense>
+          </div>
           <Toaster position="bottom-center" />
         </AppTimeZoneProvider>
       </NavigationDepthProvider>

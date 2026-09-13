@@ -195,6 +195,9 @@ Components, variants, and tokens added by agents beyond the handoff. Add a row f
 
 | US-013 | `components/requests/request-list.tsx` | The feature request log | Add row sticky under the app bar (`top: var(--spacing-app-bar) + safe-area`); round checkbox with a 44px target; done rows struck through at 70% opacity inside a collapsed `<details>`; every write optimistic via `useOptimistic`, with a Retry toast on failure |
 
+| US-014 | `components/shell/radial-menu.tsx` + `radial-menu-slot.tsx` | The fixed corner quick-action button and its wheel | 52px `neutral-900` circle with a `neutral-700` ring and an `accent-500` dot, `right: 20px`, `bottom: 20px + safe-area + --mini-bar-height`. Nodes (48px) on a **true quarter circle** of radius 172px from 180° (bottom edge) to 90° (right edge), with the ring drawn; highlight `accent-950` fill + `accent-700` border (focus-like, icons stay neutral). Motion spring fan-out, 25ms stagger, `transform`/`opacity` only; reduced motion shows the final layout. Hidden while any `role="dialog"` is open and on screens whose corner holds a sticky primary action |
+| US-014 | `components/requests/quick-capture-sheet.tsx` | One-field request capture from anywhere | Title only; toast carries a View action to the full list |
+
 ## 9. shadcn/ui + Radix (added in US-005)
 
 shadcn/ui components are **copied source** in `src/components/ui/`, built on Radix primitives. They are a behavior and accessibility

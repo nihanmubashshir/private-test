@@ -2,12 +2,15 @@
 
 import { useState } from "react";
 import type { Workout } from "@/lib/gym/types";
+import { cn } from "@/lib/utils";
 
 export interface WorkoutPickerProps {
   workouts: Workout[];
   /** Shown but inert, with "Added" — already in this day or this session. */
   disabledIds: Set<string>;
   onPick: (workoutId: string) => void;
+  /** True while a pick is being saved — the whole list goes inert so a second tap can't double-add. */
+  pending?: boolean;
 }
 
 /**
@@ -16,7 +19,7 @@ export interface WorkoutPickerProps {
  * The one place the OS keyboard is correct: typing a name is faster than scrolling fourteen
  * exercises, and nothing numeric happens here.
  */
-export function WorkoutPicker({ workouts, disabledIds, onPick }: WorkoutPickerProps) {
+export function WorkoutPicker({ workouts, disabledIds, onPick, pending }: WorkoutPickerProps) {
   const [query, setQuery] = useState("");
   const needle = query.trim().toLowerCase();
   const matches = workouts.filter((workout) => workout.name.toLowerCase().includes(needle));
@@ -31,7 +34,7 @@ export function WorkoutPicker({ workouts, disabledIds, onPick }: WorkoutPickerPr
         aria-label="Search exercises"
         className="min-h-tap w-full shrink-0 rounded-md border border-neutral-700 bg-neutral-950 px-3 text-base text-neutral-50 placeholder:text-neutral-600"
       />
-      <div className="flex flex-col">
+      <div className={cn("flex flex-col", pending && "opacity-60")}>
         {matches.length === 0 && <p className="py-6 text-center text-body-sm text-neutral-500">No matches.</p>}
         {matches.map((workout) => {
           const added = disabledIds.has(workout.id);
@@ -39,7 +42,7 @@ export function WorkoutPicker({ workouts, disabledIds, onPick }: WorkoutPickerPr
             <button
               key={workout.id}
               type="button"
-              disabled={added}
+              disabled={added || pending}
               onClick={() => onPick(workout.id)}
               className="flex min-h-14 items-center gap-3 border-b border-neutral-800 text-left active:bg-surface-hover disabled:opacity-40"
             >
