@@ -6,6 +6,7 @@ import { LargeTitle } from "@/components/shell/large-title";
 import { TodayEyebrow } from "@/components/shell/today-eyebrow";
 import { SettingsButton } from "@/components/shell/settings-button";
 import { PullToRefresh } from "@/components/shell/pull-to-refresh";
+import { ToastOnParam } from "@/components/shell/toast-on-param";
 import { Button } from "@/components/ui/button";
 import { TrackerCard } from "@/components/trackers/tracker-card";
 import { RecentActivity } from "@/components/trackers/recent-activity";
@@ -25,6 +26,7 @@ export default async function HomePage() {
   return (
     <PullToRefresh>
       <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-4">
+        <ToastOnParam param="missing" message="That page doesn't exist." tone="warning" />
         <LargeTitle
           title="Home"
           eyebrow={<TodayEyebrow />}
