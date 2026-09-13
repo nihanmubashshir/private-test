@@ -1,7 +1,6 @@
 import { requireFull } from "@/lib/auth/require-full";
 import { AppBar } from "@/components/shell/app-bar";
-import { ReleaseAccordion } from "@/components/changelog/release-accordion";
-import { CHANGELOG } from "@/content/changelog";
+import { ReleaseList } from "@/components/changelog/release-list";
 
 /**
  * What's new (US-006 §5.2).
@@ -18,11 +17,7 @@ export default async function WhatsNewPage() {
       <AppBar title="What's new" backHref="/settings" />
       <div className="mx-auto flex w-full max-w-md flex-col gap-4 px-4 py-4">
         <p className="text-body-sm text-neutral-400">Everything that&apos;s shipped so far.</p>
-        <div className="flex flex-col border-t border-neutral-800">
-          {CHANGELOG.map((entry, index) => (
-            <ReleaseAccordion key={entry.version} entry={entry} defaultOpen={index === 0} />
-          ))}
-        </div>
+        <ReleaseList />
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { requireFull } from "@/lib/auth/require-full";
 import { AppBar } from "@/components/shell/app-bar";
 import { SettingsGroup } from "@/components/settings/settings-group";
 import { SettingsRow } from "@/components/settings/settings-row";
+import { UnseenDot } from "@/components/changelog/unseen-dot";
 import { SignOutForm } from "@/components/sign-out-form";
 import { CHANGELOG, LATEST_VERSION } from "@/content/changelog";
 
@@ -26,6 +27,7 @@ export default async function SettingsPage() {
             label="What's new"
             href="/settings/whats-new"
             value={`${CHANGELOG.length} ${CHANGELOG.length === 1 ? "release" : "releases"}`}
+            trailing={<UnseenDot />}
           />
         </SettingsGroup>
 
