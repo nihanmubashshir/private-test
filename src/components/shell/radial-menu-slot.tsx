@@ -2,6 +2,7 @@ import { requireFull } from "@/lib/auth/require-full";
 import { getActivePlan } from "@/lib/gym/queries";
 import { getActiveStopwatches } from "@/lib/stopwatch/server";
 import { getLatestWeighIn } from "@/lib/weight/queries";
+import { listPrayerHistory } from "@/lib/prayers/queries";
 import { RadialMenu } from "./radial-menu";
 
 /**
@@ -14,10 +15,12 @@ import { RadialMenu } from "./radial-menu";
  */
 export async function RadialMenuSlot() {
   const supabase = await requireFull();
-  const [plan, actives, latest] = await Promise.all([
+  const [plan, actives, latest, prayers] = await Promise.all([
     getActivePlan(supabase),
     getActiveStopwatches(supabase),
     getLatestWeighIn(supabase),
+    // Two days' worth is enough to cover "today" whichever side of midnight the app zone lands on.
+    listPrayerHistory(supabase, { limit: 10 }),
   ]);
 
   return (
@@ -25,6 +28,7 @@ export async function RadialMenuSlot() {
       planDays={plan ? plan.days.map((day) => ({ weekday: day.weekday, id: day.id, isRest: day.isRest })) : null}
       gymRunning={actives.some((active) => active.kind === "gym")}
       lastWeightKg={latest?.valueKg ?? null}
+      recentPrayers={prayers}
     />
   );
 }

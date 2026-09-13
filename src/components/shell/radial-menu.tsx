@@ -11,7 +11,7 @@ import {
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { CalendarDays, Dumbbell, House, Lightbulb, Scale, Settings, type LucideIcon } from "lucide-react";
+import { CalendarDays, Dumbbell, House, Lightbulb, Moon, Scale, Settings, type LucideIcon } from "lucide-react";
 import { toast } from "sonner";
 import { startSession } from "@/app/(app)/gym/session/actions";
 import { createRequest } from "@/app/(app)/settings/requests/actions";
@@ -20,14 +20,21 @@ import { EASE_OUT_SOFT, transitions } from "@/lib/motion";
 import { useAppTimeZone, useWriteTimeZone } from "@/components/shell/app-time-zone";
 import { LogWeightSheet } from "@/components/weight/log-weight-sheet";
 import { RequestSheet, type RequestSheetValues } from "@/components/requests/request-sheet";
+import { LogPrayerSheet } from "@/components/prayers/log-prayer-sheet";
+import { dateKey } from "@/lib/time/format";
+import { WAQTS, type PrayerLog, type Waqt } from "@/lib/prayers/types";
 import { cn } from "@/lib/utils";
 
 /** Hold longer than this and it's the wheel, not a tap to Home (US-014 §3). */
 const HOLD_MS = 120;
 /** Moving further than this before the hold fires opens the wheel at once — "press and drag". */
 const DRAG_OPEN_PX = 8;
-/** Button centre to node centre. Keeps 48px nodes clear of each other across a 90° sweep. */
-const RADIUS = 172;
+/**
+ * Button centre to node centre. Keeps adjacent 48px nodes clear across a 90° sweep — bumped from
+ * 172 when a 7th node (US-015) tightened the spacing between them from 18° to ~15°; this keeps
+ * roughly the same few px of clearance the original 6-node wheel had.
+ */
+const RADIUS = 206;
 /** A node is under the finger within this distance of its centre: a 64px hit area, well past 44. */
 const HIT_RADIUS = 32;
 const BUTTON = 52;
@@ -35,7 +42,7 @@ const NODE = 48;
 /** The button's inset from the right edge, matching `right-5`. */
 const EDGE = 20;
 
-type ActionId = "home" | "gym" | "weight" | "request" | "plans" | "settings";
+type ActionId = "home" | "gym" | "weight" | "prayer" | "request" | "plans" | "settings";
 
 interface NodeSpec {
   id: ActionId;
@@ -46,9 +53,12 @@ interface NodeSpec {
 /**
  * In order along the arc, from the bottom edge to the right edge. Home sits where a right thumb
  * already rests along the bottom; Settings, the least frequent, is the furthest reach up the side.
+ * Prayer sits right after Home — up to 5 logs a day makes it the single most frequent action here
+ * (US-015).
  */
 const NODES: NodeSpec[] = [
   { id: "home", label: "Home", icon: House },
+  { id: "prayer", label: "Log prayer", icon: Moon },
   { id: "gym", label: "Start gym session", icon: Dumbbell },
   { id: "weight", label: "Log weight", icon: Scale },
   { id: "request", label: "Add request", icon: Lightbulb },
@@ -88,6 +98,8 @@ export interface RadialMenuProps {
   planDays: { weekday: number; id: string; isRest: boolean }[] | null;
   gymRunning: boolean;
   lastWeightKg: number | null;
+  /** Last couple of days, so "today" can be resolved once the app zone is known (US-015). */
+  recentPrayers: PrayerLog[];
 }
 
 /**
@@ -102,7 +114,7 @@ export interface RadialMenuProps {
  * CSS-vs-Motion rule reserves Motion for (design-system §9.1). Everything animated is `transform`
  * and `opacity`.
  */
-export function RadialMenu({ planDays, gymRunning, lastWeightKg }: RadialMenuProps) {
+export function RadialMenu({ planDays, gymRunning, lastWeightKg, recentPrayers }: RadialMenuProps) {
   const router = useRouter();
   const pathname = usePathname();
   const timeZone = useAppTimeZone();
@@ -114,6 +126,7 @@ export function RadialMenu({ planDays, gymRunning, lastWeightKg }: RadialMenuPro
   const [active, setActive] = useState<number | null>(null);
   const [weightOpen, setWeightOpen] = useState(false);
   const [requestOpen, setRequestOpen] = useState(false);
+  const [prayerWaqt, setPrayerWaqt] = useState<Waqt | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [, startTransition] = useTransition();
   const [requestPending, startRequestTransition] = useTransition();
@@ -127,7 +140,14 @@ export function RadialMenu({ planDays, gymRunning, lastWeightKg }: RadialMenuPro
 
   const today = timeZone && planDays ? (planDays.find((day) => day.weekday === weekdayInZone(timeZone)) ?? null) : null;
   // Disabled nodes stay visible and in place, so the wheel's layout never depends on state (§4).
-  const enabled = (id: ActionId) => id !== "gym" || (!gymRunning && today !== null && !today.isRest);
+  const enabled = (id: ActionId) =>
+    (id !== "gym" || (!gymRunning && today !== null && !today.isRest)) && (id !== "prayer" || timeZone !== null);
+
+  // The first not-yet-logged waqt today, or Isha (to review/edit) once all five are in.
+  const todayKey = timeZone ? dateKey(new Date().toISOString(), timeZone) : null;
+  const loggedToday = new Set(recentPrayers.filter((log) => log.prayerDate === todayKey).map((log) => log.waqt));
+  const nextWaqt: Waqt = WAQTS.find((waqt) => !loggedToday.has(waqt)) ?? WAQTS[WAQTS.length - 1];
+  const existingPrayer = recentPrayers.find((log) => log.prayerDate === todayKey && log.waqt === nextWaqt) ?? null;
 
   // Hidden while any sheet or dialog is open: vaul drawers and Radix dialogs both render
   // `role="dialog"` with `data-state="open"`, and both claim the bottom of the screen.
@@ -236,6 +256,10 @@ export function RadialMenu({ planDays, gymRunning, lastWeightKg }: RadialMenuPro
         break;
       case "weight":
         setWeightOpen(true);
+        break;
+      case "prayer":
+        if (!todayKey) return;
+        setPrayerWaqt(nextWaqt);
         break;
       case "request":
         setRequestOpen(true);
@@ -474,6 +498,16 @@ export function RadialMenu({ planDays, gymRunning, lastWeightKg }: RadialMenuPro
         onSubmit={submitRequest}
         pending={requestPending}
       />
+      {prayerWaqt && todayKey && (
+        <LogPrayerSheet
+          open
+          onClose={() => setPrayerWaqt(null)}
+          waqt={prayerWaqt}
+          prayerDate={todayKey}
+          timeZone={timeZone ?? writeTimeZone()}
+          existing={existingPrayer}
+        />
+      )}
     </>
   );
 }
