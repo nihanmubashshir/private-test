@@ -11,6 +11,36 @@ export function formatDate(iso: string, timeZone: string): string {
   }).format(new Date(iso));
 }
 
+/** `Sun, 13 Sep`. No year — used for day-group headers (01-design-system.md §10.2). */
+export function formatShortDate(iso: string, timeZone: string): string {
+  return new Intl.DateTimeFormat(APP_LOCALE, {
+    timeZone,
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+  }).format(new Date(iso));
+}
+
+/** `Sunday, 13 September`. No year — the Home eyebrow (US-005 §6.1). */
+export function formatFullDate(iso: string, timeZone: string): string {
+  return new Intl.DateTimeFormat(APP_LOCALE, {
+    timeZone,
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  }).format(new Date(iso));
+}
+
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+/** `Today` / `Yesterday` / `formatShortDate(...)`, relative to `now` in the given zone. */
+export function formatRelativeDay(iso: string, timeZone: string, now: Date = new Date()): string {
+  const target = dateKey(iso, timeZone);
+  if (target === dateKey(now.toISOString(), timeZone)) return "Today";
+  if (target === dateKey(new Date(now.getTime() - ONE_DAY_MS).toISOString(), timeZone)) return "Yesterday";
+  return formatShortDate(iso, timeZone);
+}
+
 /** `06:42`, 24-hour. */
 export function formatTime(iso: string, timeZone: string): string {
   return new Intl.DateTimeFormat(APP_LOCALE, {
