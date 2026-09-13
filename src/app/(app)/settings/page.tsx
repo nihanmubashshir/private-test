@@ -1,4 +1,4 @@
-import { CalendarDays, Dumbbell, History, Lightbulb, Moon, Sparkles, Target } from "lucide-react";
+import { BookOpen, CalendarDays, Dumbbell, History, Lightbulb, Moon, Sparkles, Target } from "lucide-react";
 import { requireFull } from "@/lib/auth/require-full";
 import { AppBar } from "@/components/shell/app-bar";
 import { SettingsGroup } from "@/components/settings/settings-group";
@@ -34,6 +34,7 @@ export default async function SettingsPage() {
 
         <SettingsGroup label="App" index={2}>
           <SettingsRow icon={Moon} label="Prayers" href="/prayers" />
+          <SettingsRow icon={BookOpen} label="Reading" href="/reading" />
           {/* Also the archive for completed goals, which leave Home after a week. */}
           <SettingsRow icon={Target} label="Goals" href="/goals" />
           <SettingsRow icon={Lightbulb} label="Requests" href="/settings/requests" />

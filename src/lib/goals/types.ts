@@ -11,7 +11,7 @@ import { WAQTS, type Waqt } from "@/lib/prayers/types";
  */
 
 export type GoalKind = "target" | "streak";
-export type GoalSubject = "weight" | "running" | "gym" | "workout" | "prayer";
+export type GoalSubject = "weight" | "running" | "gym" | "workout" | "prayer" | "book";
 export type GoalStatus = "active" | "paused" | "completed";
 export type TargetMetric = "weight" | "reps" | "volume";
 
@@ -21,6 +21,8 @@ export interface Goal {
   subject: GoalSubject;
   workoutId: string | null;
   workoutName: string | null;
+  bookId: string | null;
+  bookTitle: string | null;
   label: string;
   targetValue: number | null;
   startValue: number | null;
@@ -46,6 +48,8 @@ export interface GoalInputs {
   workouts: Record<string, { times: string[]; sets: BestSet[] }>;
   /** Every logged waqt, any status — Qadha still counts toward a prayer streak (US-015). */
   prayerLogs: { at: string; waqt: Waqt }[];
+  /** Per book id: pages read so far and the book's total (US-016). */
+  books: Record<string, { currentPage: number; totalPages: number }>;
 }
 
 export interface Progress {
@@ -65,6 +69,7 @@ export const SUBJECT_LABELS: Record<GoalSubject, string> = {
   gym: "Gym",
   workout: "Exercise",
   prayer: "Prayer",
+  book: "Book",
 };
 
 /** "In a row" streaks show a rolling 14-day view (US-012 §5.2). */
@@ -84,6 +89,9 @@ function timesFor(goal: Goal, inputs: GoalInputs): string[] {
       return goal.workoutId ? (inputs.workouts[goal.workoutId]?.times ?? []) : [];
     case "prayer":
       // Prayer streaks count waqts, not days — see prayerStreakProgress below.
+      return [];
+    case "book":
+      // Target-only — never reaches a streak (goals_book_target_only, US-016).
       return [];
   }
 }
@@ -127,6 +135,19 @@ function targetProgress(goal: Goal, inputs: GoalInputs): Progress {
       ratio,
       text: `${fmt(current)} → ${fmt(target)} kg`,
       spoken: `${fmt(current)} kilograms, target ${fmt(target)}, ${Math.round(ratio * 100)} percent of the way`,
+    };
+  }
+
+  if (goal.subject === "book") {
+    const info = goal.bookId ? inputs.books[goal.bookId] : undefined;
+    if (!info) {
+      return { ratio: 0, text: `— / ${fmt(target)} pages`, spoken: `No pages read yet, target ${fmt(target)} pages` };
+    }
+    const ratio = info.totalPages > 0 ? Math.min(1, info.currentPage / info.totalPages) : 0;
+    return {
+      ratio,
+      text: `${info.currentPage} / ${info.totalPages} pages`,
+      spoken: `${info.currentPage} of ${info.totalPages} pages, ${Math.round(ratio * 100)} percent read`,
     };
   }
 

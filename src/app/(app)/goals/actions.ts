@@ -28,9 +28,12 @@ const blankToNull = (v: FormDataEntryValue | null) => {
 const createSchema = z
   .object({
     kind: z.enum(["target", "streak"]),
-    subject: z.enum(["weight", "running", "gym", "workout", "prayer"]),
+    subject: z.enum(["weight", "running", "gym", "workout", "prayer", "book"]),
     workoutId: z.uuid().nullable(),
+    bookId: z.uuid().nullable(),
     label: z.string().trim().min(1, "Give the goal a name.").max(60),
+    // A book's target is its own page count, read server-side (like the weight goal's start
+    // value) — never sent from the client, so it's null here even for a valid book goal.
     targetValue: z.coerce.number().positive("The target must be above zero.").max(100000).nullable(),
     targetMetric: z.enum(["weight", "reps", "volume"]).nullable(),
     targetCount: z.coerce.number().int().min(1).max(365).nullable(),
@@ -40,9 +43,12 @@ const createSchema = z
   .superRefine((v, ctx) => {
     const issue = (message: string) => ctx.addIssue({ code: "custom", message });
     if ((v.subject === "workout") !== (v.workoutId !== null)) issue("Pick an exercise.");
+    if ((v.subject === "book") !== (v.bookId !== null)) issue("Pick a book.");
     if (v.kind === "target") {
-      if (v.targetValue === null) issue("Set a target.");
-      if (v.subject !== "weight" && v.subject !== "workout") issue("A target goal needs weight or an exercise.");
+      if (v.subject !== "book" && v.targetValue === null) issue("Set a target.");
+      if (!["weight", "workout", "book"].includes(v.subject)) {
+        issue("A target goal needs weight, an exercise, or a book.");
+      }
       if (v.subject === "workout" && v.targetMetric === null) issue("Choose what the target measures.");
     }
     if (v.kind === "streak") {
@@ -53,6 +59,8 @@ const createSchema = z
       // A prayer streak counts consecutive waqts, not qualifying days — "trailing N days" has no
       // meaning at that grain (goals_prayer_no_window, US-015).
       if (v.subject === "prayer" && v.windowDays !== null) issue("A prayer streak is always in a row.");
+      // "Finish this book" has no repeatable habit to streak (goals_book_target_only, US-016).
+      if (v.subject === "book") issue("A book goal is always a target.");
     }
   });
 
@@ -63,6 +71,7 @@ export async function createGoal(_prev: GoalActionResult, formData: FormData): P
     kind: formData.get("kind"),
     subject: formData.get("subject"),
     workoutId: blankToNull(formData.get("workoutId")),
+    bookId: blankToNull(formData.get("bookId")),
     label: formData.get("label") ?? "",
     targetValue: blankToNull(formData.get("targetValue")),
     targetMetric: blankToNull(formData.get("targetMetric")),
@@ -85,14 +94,24 @@ export async function createGoal(_prev: GoalActionResult, formData: FormData): P
     startValue = data ? Number(data.value_kg) : null;
   }
 
+  // A book's target is its own page count — read here, never trusted from the client, the same
+  // reason weight's start value is (US-016).
+  let bookTargetValue: number | null = v.targetValue;
+  if (v.kind === "target" && v.subject === "book" && v.bookId) {
+    const { data } = await supabase.from("books").select("total_pages").eq("id", v.bookId).maybeSingle();
+    bookTargetValue = data?.total_pages ?? null;
+    if (bookTargetValue === null) return fail("That book no longer exists.");
+  }
+
   const { data, error } = await supabase
     .from("goals")
     .insert({
       kind: v.kind,
       subject: v.subject,
       workout_id: v.workoutId,
+      book_id: v.bookId,
       label: v.label,
-      target_value: v.kind === "target" ? v.targetValue : null,
+      target_value: v.kind === "target" ? bookTargetValue : null,
       start_value: startValue,
       target_metric: v.kind === "target" && v.subject === "workout" ? v.targetMetric : null,
       target_count: v.kind === "streak" ? v.targetCount : null,

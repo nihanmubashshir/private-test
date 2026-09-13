@@ -15,7 +15,7 @@ export async function listGoals(supabase: Client): Promise<Goal[]> {
   const { data, error } = await supabase
     .from("goals")
     .select(
-      "id, kind, subject, workout_id, label, target_value, start_value, target_metric, target_count, window_days, status, completed_at, workouts ( name )",
+      "id, kind, subject, workout_id, book_id, label, target_value, start_value, target_metric, target_count, window_days, status, completed_at, workouts ( name ), books ( title )",
     )
     .order("created_at", { ascending: true });
   if (error || !data) return [];
@@ -26,6 +26,8 @@ export async function listGoals(supabase: Client): Promise<Goal[]> {
     subject: row.subject,
     workoutId: row.workout_id,
     workoutName: row.workouts?.name ?? null,
+    bookId: row.book_id,
+    bookTitle: row.books?.title ?? null,
     label: row.label,
     targetValue: num(row.target_value),
     startValue: num(row.start_value),
@@ -47,8 +49,9 @@ export async function loadGoalInputs(supabase: Client, goals: Goal[]): Promise<G
   const since = new Date(Date.now() - LOOKBACK_DAYS * 86_400_000).toISOString();
   const needs = (subject: Goal["subject"]) => goals.some((goal) => goal.subject === subject);
   const workoutIds = [...new Set(goals.map((goal) => goal.workoutId).filter((id): id is string => id !== null))];
+  const bookIds = [...new Set(goals.map((goal) => goal.bookId).filter((id): id is string => id !== null))];
 
-  const [latestWeight, weighIns, runs, gym, sets, prayers] = await Promise.all([
+  const [latestWeight, weighIns, runs, gym, sets, prayers, bookRows] = await Promise.all([
     needs("weight")
       ? supabase.from("weigh_ins").select("value_kg").order("measured_at", { ascending: false }).limit(1).maybeSingle()
       : Promise.resolve({ data: null }),
@@ -79,6 +82,9 @@ export async function loadGoalInputs(supabase: Client, goals: Goal[]): Promise<G
     needs("prayer")
       ? supabase.from("prayers").select("prayed_at, waqt").gte("prayed_at", since)
       : Promise.resolve({ data: [] as { prayed_at: string; waqt: Waqt }[] }),
+    bookIds.length > 0
+      ? supabase.from("books").select("id, current_page, total_pages").in("id", bookIds)
+      : Promise.resolve({ data: [] as { id: string; current_page: number; total_pages: number }[] }),
   ]);
 
   const workouts: GoalInputs["workouts"] = {};
@@ -95,5 +101,8 @@ export async function loadGoalInputs(supabase: Client, goals: Goal[]): Promise<G
     gymTimes: (gym.data ?? []).map((row) => row.started_at),
     workouts,
     prayerLogs: (prayers.data ?? []).map((row) => ({ at: row.prayed_at, waqt: row.waqt })),
+    books: Object.fromEntries(
+      (bookRows.data ?? []).map((row) => [row.id, { currentPage: row.current_page, totalPages: row.total_pages }]),
+    ),
   };
 }

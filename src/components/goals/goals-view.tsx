@@ -13,6 +13,7 @@ import {
   type Progress,
 } from "@/lib/goals/types";
 import type { Workout } from "@/lib/gym/types";
+import type { Book } from "@/lib/reading/types";
 import { formatShortDate } from "@/lib/time/format";
 import { useAppTimeZone } from "@/components/shell/app-time-zone";
 import { GoalProgress } from "@/components/goals/goal-progress";
@@ -29,6 +30,7 @@ export interface GoalsViewProps {
   goals: Goal[];
   inputs: GoalInputs;
   workouts: Workout[];
+  books: Book[];
   /** `?new=weight` from a subject's own screen opens the sheet with that subject picked. */
   initialSubject: GoalSubject | null;
   /** `?goal=<id>` from a Home row opens that goal's detail. */
@@ -36,12 +38,17 @@ export interface GoalsViewProps {
 }
 
 function subjectLine(goal: Goal): string {
-  const subject = goal.subject === "workout" ? (goal.workoutName ?? "Exercise") : SUBJECT_LABELS[goal.subject];
+  const subject =
+    goal.subject === "workout"
+      ? (goal.workoutName ?? "Exercise")
+      : goal.subject === "book"
+        ? (goal.bookTitle ?? "Book")
+        : SUBJECT_LABELS[goal.subject];
   return `${subject} · ${goal.kind === "target" ? "target" : "streak"}`;
 }
 
 /** The goals screen — also the archive for completed goals (US-012 §4, §5). */
-export function GoalsView({ goals, inputs, workouts, initialSubject, openGoalId }: GoalsViewProps) {
+export function GoalsView({ goals, inputs, workouts, books, initialSubject, openGoalId }: GoalsViewProps) {
   const timeZone = useAppTimeZone();
   const [newOpen, setNewOpen] = useState(initialSubject !== null);
   const [selectedId, setSelectedId] = useState<string | null>(openGoalId);
@@ -106,6 +113,7 @@ export function GoalsView({ goals, inputs, workouts, initialSubject, openGoalId 
         open={newOpen}
         onClose={() => setNewOpen(false)}
         workouts={workouts}
+        books={books}
         existing={goals}
         initialSubject={initialSubject}
       />

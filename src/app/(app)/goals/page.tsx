@@ -3,10 +3,11 @@ import { requireFull } from "@/lib/auth/require-full";
 import { listGoals, loadGoalInputs } from "@/lib/goals/queries";
 import type { GoalSubject } from "@/lib/goals/types";
 import { listWorkouts } from "@/lib/gym/queries";
+import { listBooks } from "@/lib/reading/queries";
 import { AppBar } from "@/components/shell/app-bar";
 import { GoalsView } from "@/components/goals/goals-view";
 
-const subjectParam = z.enum(["weight", "running", "gym", "workout", "prayer"]).nullable().catch(null);
+const subjectParam = z.enum(["weight", "running", "gym", "workout", "prayer", "book"]).nullable().catch(null);
 const goalParam = z.uuid().nullable().catch(null);
 
 export default async function GoalsPage({
@@ -22,7 +23,7 @@ export default async function GoalsPage({
   const initialSubject: GoalSubject | null = subjectParam.parse(first(params.new));
   const openGoalId = goalParam.parse(first(params.goal));
 
-  const [goals, workouts] = await Promise.all([listGoals(supabase), listWorkouts(supabase)]);
+  const [goals, workouts, books] = await Promise.all([listGoals(supabase), listWorkouts(supabase), listBooks(supabase)]);
   const inputs = await loadGoalInputs(supabase, goals);
 
   return (
@@ -33,6 +34,7 @@ export default async function GoalsPage({
           goals={goals}
           inputs={inputs}
           workouts={workouts}
+          books={books}
           initialSubject={initialSubject}
           openGoalId={openGoalId}
         />

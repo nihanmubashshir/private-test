@@ -6,6 +6,7 @@ import { Minus, Plus } from "lucide-react";
 import { createGoal, type GoalActionResult } from "@/app/(app)/goals/actions";
 import { SUBJECT_LABELS, type Goal, type GoalKind, type GoalSubject, type TargetMetric } from "@/lib/goals/types";
 import type { Workout } from "@/lib/gym/types";
+import type { Book } from "@/lib/reading/types";
 import { EntrySheet } from "@/components/ui/entry-sheet";
 import { FormError } from "@/components/ui/form-error";
 import { Button } from "@/components/ui/button";
@@ -25,8 +26,8 @@ const METRICS: { label: string; value: TargetMetric }[] = [
   { label: "Best set volume", value: "volume" },
 ];
 
-/** A target needs a single number to reach, which only weight and an exercise have (US-012 §3). */
-const TARGET_SUBJECTS: GoalSubject[] = ["weight", "workout"];
+/** A target needs a single number to reach, which weight, an exercise and a book have (US-012 §3, US-016). */
+const TARGET_SUBJECTS: GoalSubject[] = ["weight", "workout", "book"];
 const ALL_SUBJECTS: GoalSubject[] = ["weight", "running", "gym", "workout", "prayer"];
 /** A prayer streak counts waqts, not days — "trailing N days" doesn't apply (US-015). */
 const NO_WINDOW_SUBJECTS: GoalSubject[] = ["prayer"];
@@ -35,16 +36,18 @@ export interface GoalSheetProps {
   open: boolean;
   onClose: () => void;
   workouts: Workout[];
+  books: Book[];
   /** For the soft "you already have one" warning — never a block (US-012 §4). */
   existing: Goal[];
   initialSubject?: GoalSubject | null;
 }
 
 /** Create a goal (US-012 §5.3). */
-export function GoalSheet({ open, onClose, workouts, existing, initialSubject = null }: GoalSheetProps) {
+export function GoalSheet({ open, onClose, workouts, books, existing, initialSubject = null }: GoalSheetProps) {
   const [kind, setKind] = useState<GoalKind>("target");
   const [subject, setSubject] = useState<GoalSubject>("weight");
   const [workoutId, setWorkoutId] = useState("");
+  const [bookId, setBookId] = useState("");
   const [label, setLabel] = useState("");
   const [labelEdited, setLabelEdited] = useState(false);
   const [targetValue, setTargetValue] = useState("");
@@ -65,6 +68,7 @@ export function GoalSheet({ open, onClose, workouts, existing, initialSubject = 
       // Running and gym only make sense as streaks.
       setKind(TARGET_SUBJECTS.includes(start) ? "target" : "streak");
       setWorkoutId("");
+      setBookId("");
       setLabel("");
       setLabelEdited(false);
       setTargetValue("");
@@ -85,14 +89,18 @@ export function GoalSheet({ open, onClose, workouts, existing, initialSubject = 
   }, [state]);
 
   const workoutName = workouts.find((w) => w.id === workoutId)?.name ?? null;
-  const subjectName = subject === "workout" ? (workoutName ?? "Exercise") : SUBJECT_LABELS[subject];
+  const bookTitle = books.find((b) => b.id === bookId)?.title ?? null;
+  const subjectName =
+    subject === "workout" ? (workoutName ?? "Exercise") : subject === "book" ? (bookTitle ?? "Book") : SUBJECT_LABELS[subject];
 
   // A sensible default name until the owner types their own.
   const streakUnit = subject === "prayer" ? "waqts" : "days";
   const suggested =
-    kind === "target"
-      ? `${subjectName} ${targetValue || "…"}${subject === "workout" && metric === "reps" ? " reps" : " kg"}`
-      : `${subjectName} ${count} ${windowDays === null ? `${streakUnit} in a row` : `of ${windowDays} days`}`;
+    subject === "book"
+      ? `Finish ${bookTitle ?? "this book"}`
+      : kind === "target"
+        ? `${subjectName} ${targetValue || "…"}${subject === "workout" && metric === "reps" ? " reps" : " kg"}`
+        : `${subjectName} ${count} ${windowDays === null ? `${streakUnit} in a row` : `of ${windowDays} days`}`;
   const effectiveLabel = labelEdited ? label : suggested;
 
   const duplicate = existing.some(
@@ -100,7 +108,8 @@ export function GoalSheet({ open, onClose, workouts, existing, initialSubject = 
       goal.status === "active" &&
       goal.kind === kind &&
       goal.subject === subject &&
-      (subject !== "workout" || goal.workoutId === workoutId),
+      (subject !== "workout" || goal.workoutId === workoutId) &&
+      (subject !== "book" || goal.bookId === bookId),
   );
 
   const subjects = kind === "target" ? TARGET_SUBJECTS : ALL_SUBJECTS;
@@ -112,7 +121,8 @@ export function GoalSheet({ open, onClose, workouts, existing, initialSubject = 
   const canSave =
     effectiveLabel.trim() !== "" &&
     (subject !== "workout" || workoutId !== "") &&
-    (kind === "streak" || Number(targetValue) > 0);
+    (subject !== "book" || bookId !== "") &&
+    (kind === "streak" || subject === "book" || Number(targetValue) > 0);
 
   return (
     <EntrySheet open={open} onClose={onClose} title="New goal">
@@ -120,6 +130,7 @@ export function GoalSheet({ open, onClose, workouts, existing, initialSubject = 
         <input type="hidden" name="kind" value={kind} />
         <input type="hidden" name="subject" value={subject} />
         <input type="hidden" name="workoutId" value={subject === "workout" ? workoutId : ""} />
+        <input type="hidden" name="bookId" value={subject === "book" ? bookId : ""} />
         <input type="hidden" name="label" value={effectiveLabel} />
         <input type="hidden" name="targetValue" value={kind === "target" ? targetValue : ""} />
         <input type="hidden" name="targetMetric" value={kind === "target" && subject === "workout" ? metric : ""} />
@@ -136,6 +147,7 @@ export function GoalSheet({ open, onClose, workouts, existing, initialSubject = 
           onChange={(next) => {
             setKind(next);
             if (next === "target" && !TARGET_SUBJECTS.includes(subject)) setSubject("weight");
+            if (next === "streak" && !ALL_SUBJECTS.includes(subject)) setSubject("weight");
           }}
         />
 
@@ -172,8 +184,29 @@ export function GoalSheet({ open, onClose, workouts, existing, initialSubject = 
           </label>
         )}
 
+        {subject === "book" && (
+          <label className="flex flex-col gap-1.5">
+            <span className="text-body-sm text-neutral-400">Book</span>
+            <select value={bookId} onChange={(e) => setBookId(e.target.value)} className={inputClass}>
+              <option value="">Choose…</option>
+              {books.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.title}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+
         {kind === "target" ? (
-          <>
+          subject === "book" ? (
+            <p className="text-body-sm text-neutral-500">
+              {bookTitle
+                ? `Tracks pages read out of ${books.find((b) => b.id === bookId)?.totalPages ?? "…"} total.`
+                : "Its total page count is the target — no number to type."}
+            </p>
+          ) : (
+            <>
             {subject === "workout" && (
               <label className="flex flex-col gap-1.5">
                 <span className="text-body-sm text-neutral-400">Measured by</span>
@@ -210,7 +243,8 @@ export function GoalSheet({ open, onClose, workouts, existing, initialSubject = 
                 Your latest reading is taken as the starting point, so losing weight fills the bar too.
               </p>
             )}
-          </>
+            </>
+          )
         ) : (
           <>
             {NO_WINDOW_SUBJECTS.includes(subject) ? (
