@@ -71,6 +71,10 @@
   --ease-out-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
 
   /* ---- control sizing ---- */
+  /* Shell bar heights (US-007). Named so sticky offsets stop being magic numbers: anything that
+     sticks below a bar offsets by the same token the bar sizes itself with. */
+  --spacing-app-bar: 3.25rem;
+  --spacing-compact-bar: 2.75rem;
   --spacing-tap: 2.75rem; /* 44px minimum target */
   --spacing-cta: 3.75rem; /* 60px — the focus view's primary Start/Stop (US-005 §6.4) */
 }

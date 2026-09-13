@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { z } from "zod";
 import { Plus } from "lucide-react";
 import { requireFull } from "@/lib/auth/require-full";
 import { getActiveStopwatches, listCompletedSessions } from "@/lib/stopwatch/server";
@@ -9,10 +8,7 @@ import { AppBar } from "@/components/shell/app-bar";
 import { PullToRefresh } from "@/components/shell/pull-to-refresh";
 import { ToastOnParam } from "@/components/shell/toast-on-param";
 import { ActivityList } from "@/components/trackers/activity-list";
-
-const DEFAULT_SHOW = 30;
-const MAX_SHOW = 500;
-const showSchema = z.coerce.number().int().min(1).max(MAX_SHOW).catch(DEFAULT_SHOW);
+import { parseShow, DEFAULT_SHOW } from "@/lib/pagination";
 
 export default async function RunningPage({
   searchParams,
@@ -20,9 +16,7 @@ export default async function RunningPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const supabase = await requireFull();
-  const params = await searchParams;
-  const showValue = Array.isArray(params.show) ? params.show[0] : params.show;
-  const show = showSchema.parse(showValue);
+  const show = parseShow(await searchParams);
 
   const [actives, sessions] = await Promise.all([
     getActiveStopwatches(supabase),

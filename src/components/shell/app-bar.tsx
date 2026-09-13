@@ -36,7 +36,7 @@ export function AppBar({ title, backHref, mode = "back", rightSlot, onBeforeNavi
   return (
     <div
       className={cn(
-        "sticky top-0 z-20 flex h-[calc(3.25rem+env(safe-area-inset-top))] items-end gap-2 bg-neutral-950 pb-1",
+        "sticky top-0 z-20 flex h-[calc(var(--spacing-app-bar)+env(safe-area-inset-top))] items-end gap-2 bg-neutral-950 pb-1",
         scrolled && "border-b border-neutral-800",
       )}
     >

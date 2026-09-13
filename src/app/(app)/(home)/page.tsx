@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { requireFull } from "@/lib/auth/require-full";
 import { getActiveStopwatches, listCompletedSessions } from "@/lib/stopwatch/server";
 import { stopwatchKinds, type StopwatchKind } from "@/lib/stopwatch/registry";
@@ -7,7 +6,6 @@ import { TodayEyebrow } from "@/components/shell/today-eyebrow";
 import { SettingsButton } from "@/components/shell/settings-button";
 import { PullToRefresh } from "@/components/shell/pull-to-refresh";
 import { ToastOnParam } from "@/components/shell/toast-on-param";
-import { Button } from "@/components/ui/button";
 import { TrackerCard } from "@/components/trackers/tracker-card";
 import { RecentActivity } from "@/components/trackers/recent-activity";
 
@@ -47,12 +45,8 @@ export default async function HomePage() {
 
         {recent.length > 0 && (
           <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-h2 text-neutral-50">Recent activity</h2>
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/activity">See all</Link>
-              </Button>
-            </div>
+            {/* No "See all": /activity is gone (US-007 §4) and each row links to its own tracker. */}
+            <h2 className="text-h2 text-neutral-50">Recent activity</h2>
             <RecentActivity sessions={recent} />
           </div>
         )}

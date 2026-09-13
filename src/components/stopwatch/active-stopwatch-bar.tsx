@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { StopwatchElapsed } from "./stopwatch-elapsed";
 import { useStopwatchAction } from "./use-stopwatch-action";
 import { stopStopwatchAction } from "@/lib/stopwatch/actions";
@@ -15,8 +14,6 @@ const REFRESH_THROTTLE_MS = 10_000;
 
 export interface ActiveStopwatchBarProps {
   actives: ActiveStopwatch[];
-  /** Docks above the tab bar on tab roots, or at the raw bottom (+ safe area) on stack screens. */
-  dockAboveTabBar: boolean;
 }
 
 function configFor(kind: ActiveStopwatch["kind"]): StopwatchKindConfig {
@@ -33,10 +30,13 @@ function isOwnScreen(pathname: string, active: ActiveStopwatch): boolean {
 }
 
 /**
- * Mounted in both the (tabs) and (stack) group layouts. Hidden entirely when there's nothing to
- * show, and hides any item whose tracker page (or a form screen under it) is the current page.
+ * Mounted once in the app layout. Hidden entirely when there's nothing to show, and hides any item
+ * whose tracker page (or a form screen under it) is the current page.
+ *
+ * Docks to the bottom safe area. It used to need a taller offset on tab roots; US-007 removed the
+ * tab bar, so there is one resting position.
  */
-export function ActiveStopwatchBar({ actives, dockAboveTabBar }: ActiveStopwatchBarProps) {
+export function ActiveStopwatchBar({ actives }: ActiveStopwatchBarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const barRef = useRef<HTMLDivElement>(null);
@@ -71,12 +71,7 @@ export function ActiveStopwatchBar({ actives, dockAboveTabBar }: ActiveStopwatch
   return (
     <div
       ref={barRef}
-      className={cn(
-        "fixed inset-x-0 z-20 mx-3 flex flex-col divide-y divide-neutral-800 rounded-lg border border-neutral-800 bg-neutral-900 px-3",
-        dockAboveTabBar
-          ? "bottom-[calc(3.5rem+env(safe-area-inset-bottom)+0.5rem)]"
-          : "bottom-[calc(env(safe-area-inset-bottom)+0.5rem)]",
-      )}
+      className="fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+0.5rem)] z-20 mx-3 flex flex-col divide-y divide-neutral-800 rounded-lg border border-neutral-800 bg-neutral-900 px-3"
     >
       {visible.map((active) => (
         <StopwatchBarRow key={active.kind} active={active} />

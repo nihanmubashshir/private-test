@@ -30,7 +30,7 @@ export function LargeTitle({ title, eyebrow, rightSlot }: LargeTitleProps) {
       <div
         aria-hidden={!compact}
         className={cn(
-          "fixed inset-x-0 top-0 z-30 flex h-[calc(2.75rem+env(safe-area-inset-top))] items-end justify-center border-b border-neutral-800 bg-neutral-950 pb-2",
+          "fixed inset-x-0 top-0 z-30 flex h-[calc(var(--spacing-compact-bar)+env(safe-area-inset-top))] items-end justify-center border-b border-neutral-800 bg-neutral-950 pb-2",
           "motion-safe:transition-opacity motion-safe:duration-[120ms] motion-reduce:transition-none",
           compact ? "opacity-100" : "pointer-events-none opacity-0",
         )}

@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function StopwatchFocusLoading() {
   return (
     <div className="flex min-h-dvh flex-col">
-      <div className="flex h-[calc(3.25rem+env(safe-area-inset-top))] items-end gap-2 bg-neutral-950 pb-1">
+      <div className="flex h-[calc(var(--spacing-app-bar)+env(safe-area-inset-top))] items-end gap-2 bg-neutral-950 pb-1">
         <Skeleton className="ml-3 size-6 rounded-sm" />
       </div>
       <div className="flex flex-1 flex-col items-center justify-center gap-3 px-4">
