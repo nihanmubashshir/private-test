@@ -185,6 +185,8 @@ Components, variants, and tokens added by agents beyond the handoff. Add a row f
 | US-009 | `components/charts/{sparkline,weight-chart}.tsx` | Hand-rolled SVG charts — no charting dependency (roadmap D3) | Gold line, y axis **never including zero**, 7-day day-weighted moving average behind the raw line, a >14-day gap breaks the line, drag-to-scrub with an `aria-live` caption. Sparkline keeps a uniform aspect ratio (a stretched one turns its end dot into an ellipse); the full chart stretches and therefore puts its axis labels in positioned HTML, since a non-uniform scale squashes SVG `<text>` |
 | US-009 | `components/weight/*` | Home card, log/edit sheet, detail screen, reading row | Hero in mono `2.5rem`; direction is never coloured — a gain is not an error state; delete is optimistic with a 5s Undo toast rather than a confirm sheet |
 
+| US-010 | `components/gym/*` | Exercise library, plan library, weekly editor, Home gym card | Week strip is horizontally scrollable pills (320px floor); reorder is up/down buttons, not drag, which would fight that scroll and the page's; a rest day is a quiet row, not a card |
+
 ## 9. shadcn/ui + Radix (added in US-005)
 
 shadcn/ui components are **copied source** in `src/components/ui/`, built on Radix primitives. They are a behavior and accessibility

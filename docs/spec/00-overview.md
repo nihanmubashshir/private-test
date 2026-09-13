@@ -263,6 +263,7 @@ There is no `tests/` directory — no automated test suite is maintained (see US
 | [US-007](stories/US-007-app-shell.md) | App shell rework — Home as the only root | Done |
 | [US-008](stories/US-008-app-time-zone.md) | App-wide time zone setting | Done |
 | [US-009](stories/US-009-weight-tracking.md) | Weight tracking with trajectory | Done |
+| [US-010](stories/US-010-gym-plans.md) | Workout library and gym plans | Done |
 
 The stories from US-006 on are the **design-2 wave**. Their order, the decisions behind them, and
 the task breakdown live in [`design-2-roadmap.md`](design-2-roadmap.md); read it before picking one up.
