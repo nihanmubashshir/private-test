@@ -96,6 +96,39 @@ export type Database = {
         }
         Relationships: []
       }
+      weigh_ins: {
+        Row: {
+          created_at: string
+          id: string
+          measured_at: string
+          note: string | null
+          owner_id: string
+          time_zone: string
+          updated_at: string
+          value_kg: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          measured_at: string
+          note?: string | null
+          owner_id?: string
+          time_zone: string
+          updated_at?: string
+          value_kg: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          measured_at?: string
+          note?: string | null
+          owner_id?: string
+          time_zone?: string
+          updated_at?: string
+          value_kg?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
