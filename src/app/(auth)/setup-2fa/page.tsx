@@ -2,19 +2,11 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthState } from "@/lib/auth/state";
 import { homeFor } from "@/lib/auth/route-guard";
-import { Button } from "@/components/ui/button";
-import { CopySecretButton } from "@/components/ui/copy-secret-button";
-import { SignOutForm } from "@/components/sign-out-form";
-import { QrDetails } from "./qr-details";
-import { EnrollForm } from "./enroll-form";
+import { SetupTwoFactorFlow } from "./setup-flow";
 
 // The secret/QR must never be cached; see next.config.ts for the
 // Cache-Control: no-store header on this exact path.
 export const dynamic = "force-dynamic";
-
-function groupSecret(secret: string): string {
-  return secret.match(/.{1,4}/g)?.join(" ") ?? secret;
-}
 
 /**
  * Enrollment runs here, in the Server Component's render, rather than a
@@ -60,44 +52,5 @@ export default async function SetupTwoFactorPage() {
   // (see GoTrueClient.js) — it's ready to use as an <img src> as-is.
   const qrSrc = totp.qr_code;
 
-  return (
-    <div className="flex flex-col gap-5">
-      <h1 className="text-2xl leading-[1.15] font-semibold tracking-[-0.02em] text-neutral-50 sm:text-h1">
-        Set up two-factor authentication
-      </h1>
-      <p className="text-body-sm text-neutral-300">
-        Two-factor authentication is required. Add this account to Bitwarden, Google
-        Authenticator, or another authenticator app.
-      </p>
-
-      <div className="flex flex-col gap-2">
-        <p className="font-mono text-[11px] tracking-[0.1em] text-neutral-500 uppercase">
-          Setup key
-        </p>
-        <div className="rounded-md border border-neutral-700 bg-neutral-900 p-3.5 font-mono text-base tracking-[0.12em] break-all text-neutral-50">
-          {groupSecret(totp.secret)}
-        </div>
-        <CopySecretButton secret={totp.secret} />
-      </div>
-
-      <Button
-        asChild
-        variant="secondary"
-        fullWidth
-        className="border-accent-700 bg-accent-950 text-accent-300 hover:border-accent-700 hover:bg-accent-950"
-      >
-        <a href={totp.uri}>Open in authenticator app</a>
-      </Button>
-
-      <QrDetails summary="Scan a QR code instead">
-        <div className="flex justify-center rounded-md bg-white p-4">
-          <img src={qrSrc} alt="QR code for authenticator app" width={200} height={200} />
-        </div>
-      </QrDetails>
-
-      <EnrollForm factorId={factorId} />
-
-      <SignOutForm fullWidth />
-    </div>
-  );
+  return <SetupTwoFactorFlow factorId={factorId} secret={totp.secret} uri={totp.uri} qrSrc={qrSrc} />;
 }

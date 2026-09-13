@@ -9,10 +9,12 @@ export interface OtpInputProps {
   error?: string;
   defaultValue?: string;
   autoFocus?: boolean;
+  /** Fires once the value reaches 6 digits, whether typed or pasted (01-design-system.md §6.8). */
+  onComplete?: (value: string) => void;
 }
 
 /** One real <input>, not six boxes — keeps paste, password managers, and autofill working. */
-export function OtpInput({ label, name, error, defaultValue, autoFocus }: OtpInputProps) {
+export function OtpInput({ label, name, error, defaultValue, autoFocus, onComplete }: OtpInputProps) {
   const id = useId();
   const errorId = `${id}-error`;
   const [hasValue, setHasValue] = useState(Boolean(defaultValue));
@@ -34,7 +36,11 @@ export function OtpInput({ label, name, error, defaultValue, autoFocus }: OtpInp
         placeholder="••••••"
         aria-invalid={Boolean(error) || undefined}
         aria-describedby={error ? errorId : undefined}
-        onChange={(event) => setHasValue(event.target.value.length > 0)}
+        onChange={(event) => {
+          const { value } = event.target;
+          setHasValue(value.length > 0);
+          if (value.length === 6) onComplete?.(value);
+        }}
         className={cn(
           "min-h-[60px] rounded-md border bg-neutral-900 text-center font-mono text-otp tracking-[0.35em] text-neutral-50 placeholder:text-neutral-600",
           "focus:border-accent-500 focus:outline-2 focus:outline-offset-2 focus:outline-accent-500",
