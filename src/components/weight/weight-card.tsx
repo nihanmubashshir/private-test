@@ -10,6 +10,7 @@ import { Sparkline } from "@/components/charts/sparkline";
 import { LogWeightSheet } from "@/components/weight/log-weight-sheet";
 import { Button } from "@/components/ui/button";
 import { deltaVsAWeekAgo, describeTrend } from "@/lib/weight/summary";
+import { formatKg } from "@/lib/weight/limits";
 
 export interface WeightCardProps {
   latest: WeighIn | null;
@@ -45,7 +46,7 @@ export function WeightCard({ latest, recent }: WeightCardProps) {
           <>
             <div className="flex items-baseline gap-2">
               <span className="font-mono text-[2.5rem] leading-none text-neutral-50 tabular-nums">
-                {latest.valueKg.toFixed(1)}
+                {formatKg(latest.valueKg)}
               </span>
               <span className="text-control text-neutral-400">kg</span>
             </div>

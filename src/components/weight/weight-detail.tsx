@@ -11,6 +11,7 @@ import { WeightChart } from "@/components/charts/weight-chart";
 import { LogWeightSheet } from "@/components/weight/log-weight-sheet";
 import { WeighInRow } from "@/components/weight/weigh-in-row";
 import { Button } from "@/components/ui/button";
+import { formatKg, formatKgDelta } from "@/lib/weight/limits";
 import { cn } from "@/lib/utils";
 
 export interface WeightDetailProps {
@@ -27,7 +28,7 @@ function chartLabel(range: WeightRange, points: { v: number }[]): string {
   const to = points[points.length - 1].v;
   const change = to - from;
   const direction = change > 0 ? "up" : change < 0 ? "down" : "level";
-  return `Weight, ${range}: ${direction} ${Math.abs(change).toFixed(1)} kilograms, from ${from.toFixed(1)} to ${to.toFixed(1)}.`;
+  return `Weight, ${range}: ${direction} ${formatKg(Math.abs(change))} kilograms, from ${formatKg(from)} to ${formatKg(to)}.`;
 }
 
 /** The weight detail screen (US-009 §5.3). */
@@ -56,7 +57,7 @@ export function WeightDetail({ range, inRange, all }: WeightDetailProps) {
         <div className="flex flex-col gap-1">
           <div className="flex items-baseline gap-2">
             <span className="font-mono text-[2.5rem] leading-none text-neutral-50 tabular-nums">
-              {latest.valueKg.toFixed(1)}
+              {formatKg(latest.valueKg)}
             </span>
             <span className="text-control text-neutral-400">kg</span>
           </div>
@@ -100,15 +101,15 @@ export function WeightDetail({ range, inRange, all }: WeightDetailProps) {
       )}
 
       <div className="grid grid-cols-3 gap-2">
-        <Stat label="Change" value={change === null ? "—" : `${change > 0 ? "+" : ""}${change.toFixed(1)}`} sub="kg" />
+        <Stat label="Change" value={change === null ? "—" : formatKgDelta(change)} sub="kg" />
         <Stat
           label="Lowest"
-          value={lowest ? lowest.valueKg.toFixed(1) : "—"}
+          value={lowest ? formatKg(lowest.valueKg) : "—"}
           sub={lowest && timeZone ? formatShortDate(lowest.measuredAt, timeZone) : ""}
         />
         <Stat
           label="Highest"
-          value={highest ? highest.valueKg.toFixed(1) : "—"}
+          value={highest ? formatKg(highest.valueKg) : "—"}
           sub={highest && timeZone ? formatShortDate(highest.measuredAt, timeZone) : ""}
         />
       </div>

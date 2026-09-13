@@ -1,4 +1,5 @@
 import type { WeighIn } from "@/lib/weight/queries";
+import { formatKg } from "@/lib/weight/limits";
 
 export interface Delta {
   kg: number;
@@ -39,8 +40,7 @@ export function deltaVsAWeekAgo(readings: WeighIn[]): Delta | null {
 /** Plain-language trend, also used as the sparkline's `aria-label`. */
 export function describeTrend(delta: Delta | null): string {
   if (!delta) return "Not enough readings yet";
-  const rounded = Math.abs(delta.kg).toFixed(1);
-  if (Number(rounded) === 0) return "No change this week";
+  if (Math.abs(delta.kg) < 0.00005) return "No change this week";
   const arrow = delta.kg > 0 ? "↑" : "↓";
-  return `${arrow} ${rounded} kg this week`;
+  return `${arrow} ${formatKg(Math.abs(delta.kg))} kg this week`;
 }

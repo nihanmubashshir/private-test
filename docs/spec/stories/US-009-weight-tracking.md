@@ -22,7 +22,7 @@ exclusion would all be wrong.
 |--------|-------|
 | `measured_at` | When the reading was taken, not when it was typed |
 | `time_zone` | The app zone (US-008), stored per record |
-| `value_kg` | `numeric(5,2)`, CHECK 20–400 |
+| `value_kg` | `numeric(7,4)`, CHECK 20–400. Widened from `numeric(5,2)` on owner instruction — the column silently rounded anything finer to 2dp, so raising the keypad limit alone would have thrown the digits away at the database |
 | `note` | Optional, 1–140 chars |
 
 Index on `(owner_id, measured_at desc)` — every read is "newest first" or a range scan over it.
@@ -42,8 +42,13 @@ opens one, still covers half the screen on a short phone, and still accepts a se
 
 Entry rules are **pure string transitions**, not number maths, because `"82."` is a legal
 intermediate state no numeric type can hold and parsing early turns a half-typed `"8"` into a
-weight. Rules: at most 3 integer digits and 1 decimal; a second `.` is ignored; a leading `.`
+weight. Rules: at most 3 integer digits and **4 decimals**; a second `.` is ignored; a leading `.`
 becomes `0.`; `0` followed by a digit replaces rather than appends.
+
+`formatKg()` renders at least one decimal and at most four, trimming trailing zeros — `toFixed(4)`
+everywhere would show every ordinary reading as `82.4000`, and `toFixed(1)` would hide precision
+the owner deliberately typed. The chart's **axis labels** stay at one decimal: an axis label is a
+scale marker, and four decimals is unreadable at 11px.
 
 **Range is validated on Save, never while typing.** On the way to `82` the value passes through
 `8`, and flashing "must be at least 20 kg" mid-entry reads as the keypad rejecting the keypress.
@@ -116,9 +121,9 @@ reading by id, and the alternative is a soft-delete column every query then filt
 
 ## 8. Acceptance criteria
 
-1. Logging `82.4` stores `82.40` and displays `82.4 kg`.
+1. Logging `82.4` stores `82.4000` and displays `82.4 kg`; logging `82.4321` keeps all four decimals.
 2. The OS keyboard never opens anywhere in the log flow except the note field.
-3. A second decimal point, or a second digit after it, has no effect.
+3. A second decimal point has no effect, and a fifth digit after the point is ignored.
 4. `19.9` or `400.1` cannot be saved and shows an inline range message **on Save**, not while typing.
 5. Save with nothing typed is impossible, and the placeholder is never submitted.
 6. The time defaults to now, can be edited to any past datetime, and cannot be set in the future.

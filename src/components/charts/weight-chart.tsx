@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { formatShortDate } from "@/lib/time/format";
+import { formatKg } from "@/lib/weight/limits";
 import { gridlines, movingAverage, splitOnGaps, valueExtent, type Point } from "@/lib/weight/series";
 
 const WIDTH = 340;
@@ -163,6 +164,8 @@ export function WeightChart({ points, timeZone, showTrend, label }: WeightChartP
             className="pointer-events-none absolute left-0.5 -translate-y-full font-mono text-[11px] text-neutral-500"
             aria-hidden
           >
+            {/* One decimal, not formatKg: an axis label is a scale marker, and four decimals
+                there is unreadable at 11px. The scrubbed value below shows full precision. */}
             {value.toFixed(1)}
           </span>
         ))}
@@ -176,7 +179,7 @@ export function WeightChart({ points, timeZone, showTrend, label }: WeightChartP
 
       {/* Live region rather than an SVG tooltip: the value has to be readable, not just drawn. */}
       <figcaption className="min-h-5 text-center text-body-sm text-neutral-300" aria-live="polite">
-        {active ? `${active.v.toFixed(1)} kg · ${formatShortDate(new Date(active.t).toISOString(), timeZone)}` : ""}
+        {active ? `${formatKg(active.v)} kg · ${formatShortDate(new Date(active.t).toISOString(), timeZone)}` : ""}
       </figcaption>
     </figure>
   );

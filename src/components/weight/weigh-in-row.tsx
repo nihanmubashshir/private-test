@@ -8,6 +8,7 @@ import type { WeighIn } from "@/lib/weight/queries";
 import { createWeighIn, deleteWeighIn } from "@/app/(app)/weight/actions";
 import { useAppTimeZone } from "@/components/shell/app-time-zone";
 import { formatShortDate, formatTime } from "@/lib/time/format";
+import { formatKg, formatKgDelta } from "@/lib/weight/limits";
 
 export interface WeighInRowProps {
   reading: WeighIn;
@@ -87,19 +88,16 @@ export function WeighInRow({ reading, previous, onEdit }: WeighInRowProps) {
           </span>
         </span>
         <span className="flex shrink-0 flex-col items-end gap-0.5">
-          <span className="font-mono text-control text-neutral-50 tabular-nums">{reading.valueKg.toFixed(1)}</span>
+          <span className="font-mono text-control text-neutral-50 tabular-nums">{formatKg(reading.valueKg)}</span>
           {delta !== null && (
-            <span className="font-mono text-[11px] text-neutral-500 tabular-nums">
-              {delta > 0 ? "+" : ""}
-              {delta.toFixed(1)}
-            </span>
+            <span className="font-mono text-[11px] text-neutral-500 tabular-nums">{formatKgDelta(delta)}</span>
           )}
         </span>
       </button>
       <button
         type="button"
         onClick={remove}
-        aria-label={`Delete reading of ${reading.valueKg.toFixed(1)} kilograms`}
+        aria-label={`Delete reading of ${formatKg(reading.valueKg)} kilograms`}
         className="flex size-tap shrink-0 items-center justify-center text-neutral-500 active:text-danger-400"
       >
         <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />

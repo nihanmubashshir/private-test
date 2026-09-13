@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { createWeighIn, updateWeighIn, type WeightActionResult } from "@/app/(app)/weight/actions";
-import { MIN_KG, MAX_KG } from "@/lib/weight/limits";
+import { MIN_KG, MAX_KG, formatKg } from "@/lib/weight/limits";
 import type { WeighIn } from "@/lib/weight/queries";
 import { useAppTimeZone, useWriteTimeZone } from "@/components/shell/app-time-zone";
 import { fromIso, toIso } from "@/lib/time/wall-time";
@@ -105,7 +105,7 @@ export function LogWeightSheet({ open, onClose, lastValueKg, editing }: LogWeigh
         <div className="flex items-baseline justify-center gap-2 py-2" aria-live="polite">
           {value === "" ? (
             <span className="font-mono text-5xl text-neutral-600 tabular-nums">
-              {lastValueKg !== null && lastValueKg !== undefined ? lastValueKg.toFixed(1) : "0.0"}
+              {lastValueKg !== null && lastValueKg !== undefined ? formatKg(lastValueKg) : "0.0"}
             </span>
           ) : (
             <span className="font-mono text-5xl text-neutral-50 tabular-nums">{value}</span>

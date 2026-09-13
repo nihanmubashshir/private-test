@@ -7,13 +7,14 @@
  */
 
 const MAX_INTEGER_DIGITS = 3;
-const MAX_DECIMALS = 1;
+/** Four, on owner instruction — a precise scale reads finer than one decimal. */
+const MAX_DECIMALS = 4;
 
 export function pressDigit(current: string, digit: string): string {
   const [whole = "", fraction] = current.split(".");
 
   if (fraction !== undefined) {
-    // At most one digit after the point; further presses are ignored, not queued.
+    // Further presses past the limit are ignored, not queued.
     if (fraction.length >= MAX_DECIMALS) return current;
     return `${whole}.${fraction}${digit}`;
   }
@@ -37,7 +38,7 @@ export function pressBackspace(current: string): string {
 
 /** True once the string is a complete number, so Save can enable. */
 export function isComplete(current: string): boolean {
-  return /^\d{1,3}(\.\d)?$/.test(current) && Number(current) > 0;
+  return new RegExp(`^\\d{1,3}(\\.\\d{1,${MAX_DECIMALS}})?$`).test(current) && Number(current) > 0;
 }
 
 export function parseValue(current: string): number | null {
