@@ -1,6 +1,7 @@
 # US-003 — Global stopwatch pattern
 
-> Status: **Ready** · Depends on: US-001 (done)
+> Status: **Done** · Depends on: US-001 (done)
+> **UX superseded by [US-005](US-005-mobile-redesign.md)** where screens, layout, or navigation differ. Data, security, validation, and time rules here still apply.
 > Read [`../00-overview.md`](../00-overview.md) (especially §6 time handling and timed entities) and
 > [`../01-design-system.md`](../01-design-system.md) first.
 > This story builds a **reusable foundation with no tracker of its own**. The first consumer is

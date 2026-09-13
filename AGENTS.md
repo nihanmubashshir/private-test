@@ -47,11 +47,13 @@ URL, per the `docs/setup.md` hosted checklist.
 
 1. **Mobile first.** Write base styles for phones and add `sm:`/`md:`/`lg:` for larger screens. No horizontal scroll at 320px.
    Touch targets ≥44px. Input font size ≥16px. Follow overview §7.
-2. **Follow the design system.** Use Tailwind only, with the tokens from `docs/design/README.md`, and no component libraries.
+2. **Follow the design system.** Use Tailwind with the tokens from `docs/design/README.md`, plus **shadcn/ui on Radix** themed with those tokens (guide §9). No other UI kits.
    Dark only. Use only the design tokens: no default Tailwind palettes (`gray`, `zinc`, `amber`…) and no arbitrary hex values in components.
    Reusable styling lives in `src/components/ui/`. Read `docs/spec/01-design-system.md` before any UI work.
    The design is a **system, not a full set of screens**. Design any screen that isn't drawn yourself, from its components and feel
    (guide §7). Don't wait for or ask for designer frames. Record any new component or token in guide §8.
+   **Every screen follows the mobile UX patterns (guide §10):** tab/stack navigation, skeleton `loading.tsx` per data route, pressed
+   states, sticky bottom CTAs, sheets for confirmations, toasts for success. The app is used as an installed PWA, so there must be no blank or jumping loads.
 3. **No new backend or services.** Use Server Components, Server Actions, Route Handlers, and Supabase. Ask before adding a dependency
    that brings in a hosted service.
 4. **Never use the Supabase secret key in `src/`.** It is for `scripts/` only. Never prefix secrets with `NEXT_PUBLIC_`.

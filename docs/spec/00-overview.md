@@ -18,7 +18,7 @@ The application is built and maintained by AI agents working from the specs in `
 | P1 | **Mobile first** | Design and build for a ~375px-wide phone screen first, then enhance for larger screens with `sm:`/`md:`/`lg:` Tailwind breakpoints. Everything must be usable one-handed on a phone. |
 | P2 | **Single user, locked down** | Signups disabled at every layer. Every page except `/login` requires an authenticated session **with TOTP verified (AAL2)**. |
 | P3 | **No extra backend** | Next.js (Server Components, Server Actions, Route Handlers) + Supabase only. No separate API server, no extra hosted services unless a spec says so. |
-| P4 | **Follow the design system** | A dark-only, high-fidelity design lives in `docs/design/`. Build it with plain Tailwind CSS and its tokens, no component library. See [`01-design-system.md`](01-design-system.md). |
+| P4 | **Follow the design system** | A dark-only, high-fidelity design lives in `docs/design/`. Build it with Tailwind CSS and its tokens, using shadcn/ui (Radix) components themed with those tokens. No other UI kit. See [`01-design-system.md`](01-design-system.md). |
 | P5 | **Secure by default** | Secrets never reach the browser. Row Level Security (RLS) on every table. Access checks are enforced in the database, not only in the UI. |
 
 ## 2. Tech stack
@@ -26,7 +26,7 @@ The application is built and maintained by AI agents working from the specs in `
 | Concern | Choice | Notes |
 |---------|--------|-------|
 | Framework | **Next.js**, latest stable, **App Router**, TypeScript `strict` | Use Server Actions for mutations. In Next.js 16+ the request interceptor file is `src/proxy.ts`; older versions call it `middleware.ts`. Use whichever the installed version expects. |
-| Styling | **Tailwind CSS**, latest stable (v4, CSS-first config via `@theme` in `globals.css`) | Tokens come from `docs/design/README.md`. No UI kit (no shadcn, MUI, etc.). Fonts are Manrope and DM Mono, loaded via `next/font`. |
+| Styling | **Tailwind CSS**, latest stable (v4, CSS-first config via `@theme` in `globals.css`) | Tokens come from `docs/design/README.md`. **shadcn/ui on Radix primitives** (themed with our tokens, 01-design-system §9), `lucide-react` icons. No other UI kit (no MUI, Chakra, etc.). Fonts are Manrope and DM Mono, loaded via `next/font`. |
 | Database / Auth | **Supabase** (Postgres + Supabase Auth, including built-in MFA/TOTP) | Use `@supabase/supabase-js` + `@supabase/ssr` for cookie-based sessions. |
 | Local dev DB | Supabase CLI (`supabase start`, Docker) | All schema changes are SQL migrations in `supabase/migrations/`. |
 | Validation | `zod` | Validate every Server Action input. |
@@ -192,6 +192,9 @@ Add columns specific to the entity after `time_zone`. Drop the no-overlap constr
 
 ## 7. Mobile-first UI rules (apply to every screen)
 
+> The app is used mainly as an installed PWA on a phone. Navigation, screen patterns, loading states, and touch polish are defined in
+> **01-design-system §10 (Mobile UX patterns)**, which every screen must follow in addition to the rules below.
+
 - Build the base styles for phones first. Add larger-screen styles only with `sm:`+ prefixes.
 - Content column: `w-full max-w-md mx-auto px-4`. Pages must not scroll horizontally at 320px wide.
 - Touch targets must be at least **44×44px** (`min-h-11`). Primary buttons are full-width on mobile.
@@ -241,3 +244,4 @@ There is no `tests/` directory — no automated test suite is maintained (see US
 | [US-002](stories/US-002-password-reset.md) | Password reset by email | ⏸ Paused (do not implement) |
 | [US-003](stories/US-003-global-stopwatch.md) | Global stopwatch pattern | Ready |
 | [US-004](stories/US-004-running-tracker.md) | Running tracker | Ready (after US-003) |
+| [US-005](stories/US-005-mobile-redesign.md) | Mobile-first redesign (Wise-inspired UX, shadcn/Radix, PWA loading) | Ready |

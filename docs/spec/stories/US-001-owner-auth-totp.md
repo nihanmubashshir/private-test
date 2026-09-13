@@ -1,6 +1,7 @@
 # US-001 — Owner account, sign-in, and mandatory TOTP
 
-> Status: **Ready** · Depends on: nothing (first story; includes project scaffolding)
+> Status: **Done** · Depends on: nothing (first story; includes project scaffolding)
+> **UX superseded by [US-005](US-005-mobile-redesign.md)** where screens, layout, or navigation differ. Data, security, validation, and time rules here still apply.
 > Read [`../00-overview.md`](../00-overview.md) and [`../01-design-system.md`](../01-design-system.md) first.
 
 ## 1. User story

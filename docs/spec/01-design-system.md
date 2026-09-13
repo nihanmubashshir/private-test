@@ -91,7 +91,8 @@ never need arbitrary hex values or sizes:
 | `badge.tsx` | US-001 | success, accent, neutral, warning, danger, plus a mono variant. `/` uses the success `aal2` badge. |
 | `copy-secret-button.tsx` | US-001 | `'use client'`. 2s "Copied" state, `aria-live="polite"`, copies with spaces stripped. |
 | `sheet.tsx` (modal / bottom sheet) | US-003 | Exactly per the README. Used for discard/delete confirmations. |
-| `toast.tsx`, table, skeleton | **Later**, when a story first needs them | Follow the README exactly when they're built. Don't build them early. |
+| `confirm-sheet.tsx` (replaces `sheet.tsx`), `skeleton.tsx`, `toaster.tsx`, `dropdown-menu.tsx`, `toggle-group.tsx`, `drawer.tsx`, `dialog.tsx` | US-005 | On shadcn/Radix, styled per the README (§9). |
+| table | **Later**, when a story first needs it | Follow the README exactly when it's built. Don't build it early. |
 
 ## 6. Resolved conflicts (design README vs drawn v2 screens)
 
@@ -155,3 +156,75 @@ Components, variants, and tokens added by agents beyond the handoff. Add a row f
 | US-003 | `components/stopwatch/active-stopwatch-bar.tsx` | Global "something is still running" bar mounted in `(app)/layout.tsx` | Fixed to the bottom, `neutral-900` bg, `neutral-800` top hairline, 56px per active row, an 8px `success-400` status dot, a secondary (not gold) Stop button; hidden on the active item's own tracker page |
 | US-004 | Tracker card (`app/(app)/running-card.tsx`) | The `/` home entry point for a tracker — one full-card link per registry entry | `min-h-14` full-card `Link`, `neutral-800` border, `neutral-900` bg, hover `surface-hover`; left: tracker name (`text-control` weight 600) + a `text-body-sm` `neutral-400` subline (running: `success-400` dot + live `StopwatchElapsed`; else last-run summary or "No runs yet"); right: a `neutral-500` `›` chevron |
 | US-004 | List row (`app/(app)/running/run-list.tsx`) | A completed session row in a tracker's list, grouped by local day | Group header: eyebrow-style date label + DM Mono 13px `neutral-400` day total. Row: `min-h-14`, `neutral-800` hairline between rows, hover `surface-hover`; left DM Mono 15px times (`neutral-500` `+1` if the session crosses midnight, `neutral-500` 11px zone label after mount if it differs from the device); right DM Mono 15px duration, plus a warning `Badge` "Check times" past 12h |
+## 9. shadcn/ui + Radix (added in US-005)
+
+shadcn/ui components are **copied source** in `src/components/ui/`, built on Radix primitives. They are a behavior and accessibility
+foundation. **Their look always comes from our tokens and the README**, never from shadcn defaults.
+
+### 9.1 Rules
+- Add components with `pnpm dlx shadcn@latest add <name>`, then restyle to the README before use. Never accept an overwrite of an
+  existing design-exact primitive (`button`, `input`, `otp-input`, `card`, `badge`, `alert`, `form-error`, `copy-secret-button`, `confirm-sheet`).
+- Do **not** add shadcn's `sheet` (side panel). Bottom sheets use `drawer`, desktop dialogs use `dialog`, and `confirm-sheet` combines them.
+- Prefer native inputs on mobile: `<input type="date|time">` over Calendar/Popover pickers, and native `<select>` over Radix Select,
+  unless a story says otherwise.
+- The only UI dependencies are Radix, `cva`, `clsx`, `tailwind-merge`, `lucide-react`, `vaul`, `sonner`, and `tw-animate-css`. Ask before adding another.
+
+### 9.2 Semantic variable mapping (`:root` only, no `.dark` block)
+
+| shadcn variable | Our token | Note |
+|---|---|---|
+| `--background` / `--foreground` | `neutral-950` / `neutral-50` | |
+| `--card`, `--popover` / `*-foreground` | `neutral-900` / `neutral-50` | |
+| `--primary` / `--primary-foreground` | `accent-500` / `on-accent` | Gold, primary action only |
+| `--secondary` / `--secondary-foreground` | `neutral-800` / `neutral-50` | |
+| `--muted` / `--muted-foreground` | `neutral-900` / `neutral-400` | |
+| `--accent` / `--accent-foreground` | `neutral-800` / `neutral-50` | **Not gold.** In shadcn, "accent" is the subtle hover/highlight surface. `bg-accent` ≠ `bg-accent-500`. |
+| `--destructive` | `danger-400` | |
+| `--border` / `--input` | `neutral-800` / `neutral-700` | |
+| `--ring` | `accent-500` | Matches our focus ring |
+| `--radius` | `10px` | Our `--radius-sm/md/lg` (6/10/14) stay authoritative. Delete shadcn's calc-based radius lines. |
+
+### 9.3 `cn` and tailwind-merge
+`cn` uses `extendTailwindMerge` with our font-size tokens (`display`, `h1`, `h2`, `body-sm`, `control`, `otp`) registered as font sizes, and
+`tap`/`cta` as spacing. Any new text or spacing token must be added there too, or class merging will silently drop classes.
+
+### 9.4 Icons
+`lucide-react` only. 20px in rows and buttons, 24px in the tab bar, `strokeWidth={1.75}`, `aria-hidden` (the control carries the label).
+Neutral colors only (`neutral-50` / `-300` / `-500`). Semantic colors only inside feedback (alerts, badges). **Never gold**, except an icon inside the gold primary button, which uses `on-accent`.
+Leading "icon circles" in rows and cards: 40px (56px in heroes), `rounded-full`, `bg-neutral-800`, icon `neutral-50`.
+
+## 10. Mobile UX patterns (added in US-005, apply to every screen)
+
+The app is used mainly as an **installed PWA on a phone**. The UX takes interaction patterns from the Wise mobile app, and the visuals stay 100% this
+system. Full rationale and screen-by-screen application: [US-005](stories/US-005-mobile-redesign.md).
+
+### 10.1 Navigation model
+- **Tab roots** (bottom tab bar, large-title header): `/`, `/activity`, `/account`. New trackers never add tabs; they appear on Home.
+- **Stack screens** (sticky app bar with back `‹` or close `×`, no tab bar): everything else. Back/close always goes to a **fixed parent
+  route**, never `history.back()`.
+- **Forms and focused tasks** are stack screens with a close button, one sticky bottom primary CTA, and a confirmation when closing with unsaved changes.
+- **Confirmations and small choices** use `confirm-sheet`/Drawer. **Success** uses a toast (optionally with one action). **Errors** stay inline, as one
+  alert above the relevant primary button.
+
+### 10.2 Screen anatomy
+- **Hero first:** the most important value (elapsed time, duration) at the top, large DM Mono `tabular-nums`, with a quiet label above and context below.
+- **Rows:** leading icon circle · title + subtitle · trailing value (+ subvalue). Min 64px (56px in detail/field lists), pressed state
+  `surface-hover`. Tapping a row opens a read-only detail screen. Edit/Delete live on detail (overflow menu + a bottom button), never in lists.
+- **Lists by day:** sticky day headers (`Today` / `Yesterday` / date, relative labels applied after mount) with the day total on the right.
+- **Empty states:** icon circle, one-line title, one-line hint, and one action.
+- **One gold button per screen.** Tabs, segmented controls, progress bars, and icons are never gold.
+
+### 10.3 Loading and feedback
+- Every data route has a `loading.tsx` skeleton that **mirrors the final layout exactly** (no layout shift). Layout chrome (tab bar/app bar) is never inside a
+  skeleton. Skeletons fade in after 120ms.
+- Links show pending state (`useLinkStatus`). Refreshes and action redirects show the 2px top `NavigationProgress` after 150ms.
+- Start/stop and other instant-feeling actions are **optimistic** (`useOptimistic`), revert on failure, and offer Retry.
+- Every tappable element has an `active:` pressed state (`motion-safe:active:scale-[0.98]` for buttons).
+- Offline shows the connectivity banner. Navigation while offline shows `/offline`. Never cache authenticated HTML or data.
+
+### 10.4 Touch and standalone polish
+- Respect all safe-area insets: status bar (top bars), home indicator (tab bar, sticky CTAs, toasts, sheets).
+- Keyboard: viewport `interactiveWidget: "resizes-content"`. Sticky CTAs sit above the keyboard. Auth/form content sits in the top third.
+- `overscroll-behavior-y: none` on body, pull to refresh on tab roots, `touch-action: manipulation`, no tap highlight, and `user-select: none` on
+  chrome/buttons/rows only.
+- Keep screens awake (Wake Lock) only where the user watches a running timer.
